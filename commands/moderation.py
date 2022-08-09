@@ -9,7 +9,7 @@ class Moderation(commands.Cog):
     async def say(self, ctx):
         if ctx.message.author.guild_permissions.manage_messages:
             # this particular here i need to make it like this coz i need more than the first argument
-            mes = ctx.message.content.split(self.bot.command_prefix + "say")[1]
+            mes = ctx.message.content.split(self.bot.command_prefix.append("say"))[1]
             await ctx.message.delete()
             await ctx.send(mes)
         else:
