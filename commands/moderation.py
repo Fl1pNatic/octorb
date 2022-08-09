@@ -9,7 +9,9 @@ class Moderation(commands.Cog):
     async def say(self, ctx):
         if ctx.message.author.guild_permissions.manage_messages:
             # this particular here i need to make it like this coz i need more than the first argument
-            mes = ctx.message.content.split(self.bot.command_prefix.append("say"))[1]
+            pref = ctx.message.content.split(" ")[0]
+            cont = ctx.message.content + " "
+            mes = cont[len(pref):-1]
             await ctx.message.delete()
             await ctx.send(mes)
         else:
@@ -28,7 +30,7 @@ class Moderation(commands.Cog):
             await ctx.reply("You cannot use this command")
 
     @commands.command()
-    async def mdelete(self, ctx):
+    async def mdelete(self,ctx):
         if ctx.message.author.guild_permissions.manage_messages:
             delArg = ctx.message.content.split(" ")[1]
             deleteM = await ctx.fetch_message(int(delArg))
