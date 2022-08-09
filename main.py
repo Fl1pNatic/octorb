@@ -1,7 +1,6 @@
 # 🐙SQUID GAMES!11!1!1!11!1!1!1
 import os
 import nextcord
-from STAYALIVEBABY import keep_alive
 import random
 from nextcord.ext import commands
 import asyncio
@@ -211,7 +210,7 @@ i'm not afraid of facing the end! """)
 @bot.command()
 async def say(ctx):
     if ctx.message.author.guild_permissions.manage_messages:
-        mes = await remove_command(ctx.message.content, "sq!say")
+        mes = await ctx.message.content.split(" ")[1]
         await ctx.message.delete()
         await ctx.send(mes)
     else:
@@ -227,7 +226,7 @@ async def gallery(ctx):
         )
         return
 
-    galArg = await remove_command(ctx.message.content, "sq!gallery")
+    galArg = ctx.message.content.split(" ")[1]
 
     if len(galArg) == 0:
         await ctx.reply(
@@ -252,7 +251,7 @@ async def gallery(ctx):
 @bot.command()
 async def pin(ctx):
     if ctx.message.author.guild_permissions.manage_messages:
-        pinArg = await remove_command(ctx.message.content, "sq!pin")
+        pinArg = ctx.message.content.split(" ")[1]
         pinM = await ctx.fetch_message(int(pinArg))
         if pinM.pinned == False:
             await pinM.pin()
@@ -265,7 +264,7 @@ async def pin(ctx):
 @bot.command()
 async def mdelete(ctx):
     if ctx.message.author.guild_permissions.manage_messages:
-        delArg = await remove_command(ctx.message.content, "sq!mdelete")
+        delArg = ctx.message.content.split(" ")[1]
         deleteM = await ctx.fetch_message(int(delArg))
         await deleteM.delete()
         await ctx.message.delete()
@@ -278,12 +277,8 @@ async def yocount(ctx):
     return
 
 
-# Helper commands
-async def remove_command(value, commandname):
-    cont = value + " "
-    return cont[len(commandname + " "):-1]
 
-
+# Helper Commands
 async def getuser(userid):
     guild = bot.get_guild(guildid)
     user = await guild.fetch_member(userid)
@@ -297,7 +292,5 @@ async def on_member_join(member):
     user = await getuser(member.id)
     await user.add_roles(role)
 
-
-keep_alive()
 
 bot.run(TOKEN)
