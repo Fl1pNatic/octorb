@@ -20,3 +20,7 @@ class Other(commands.Cog):
     @commands.command()
     async def help(self, ctx):
         await ctx.send(embed=help_embed)
+
+    @commands.command()
+    async def source(self, ctx):
+        await ctx.send("This bot is **open-source** which means that anyone can contribute to it.\n\nYou can find the source code here - <https://github.com/Fl1pNatic/squidcraftbot>")
