@@ -12,8 +12,6 @@ help_embed.add_field(name="Fun",
 help_embed.add_field(name="Moderation",
  value="say | pin | mdelete",
  inline=False)
- 
-help_embed.set_footer(text="Prefix: sq!")
 
 class Other(commands.Cog):
     def __init__(self, bot):

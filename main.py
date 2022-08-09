@@ -17,12 +17,12 @@ TOKEN = dotenv_values()["TOKEN"]
 guildid = 1005860045919100958
 
 #game = nextcord.Game(random.choice(game_list))
-game = nextcord.Game("sq!help for commands list")
+game = nextcord.Game("sq! | s! | !help for commands list")
 
 # intents.
 intents = nextcord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix="sq!",
+bot = commands.Bot(command_prefix=["sq!", "!", "s!"],
                    activity=game,
                    intents=intents,
                    help_command=None)
