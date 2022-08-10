@@ -38,3 +38,12 @@ class Moderation(commands.Cog):
             await ctx.message.delete()
         else:
             await ctx.reply("You cannot use this command")
+
+    @commands.command()
+    async def kick(self, ctx, member: nextcord.Member, *, reason=None):
+        if ctx.message.author.guild_permissions.kick_members:
+            await member.kick(reason=reason)
+            await ctx.member.send(f"You were kicked from WYS MC Server, reason: {reason}")
+            await ctx.reply(f"Kicked him because `{reason}`")
+        else:
+            await ctx.reply("You cannot use this command")
