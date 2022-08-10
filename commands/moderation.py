@@ -42,8 +42,8 @@ class Moderation(commands.Cog):
     @commands.command()
     async def kick(self, ctx, member: nextcord.Member, *, reason=None):
         if ctx.message.author.guild_permissions.kick_members:
-            await member.kick(reason=reason)
             await ctx.member.send(f"You were kicked from WYS MC Server, reason: {reason}")
-            await ctx.reply(f"Kicked him because `{reason}`")
+            await member.kick(reason=reason)
+            await ctx.reply(f"Member kicked: `{reason}`")
         else:
             await ctx.reply("You cannot use this command")
