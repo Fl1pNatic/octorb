@@ -6,7 +6,7 @@ help_embed = nextcord.Embed(title="Help",
                             color=0xff00bb)
 
 help_embed.add_field(name="Fun",
-    value="ask | squidgames | helloai | helloaiv1 | jonasspin | shellyspin ",
+    value="ask | gallery | squidgames | helloai | helloaiv1 | jonasspin | shellyspin  ",
     inline=False)
 
 help_embed.add_field(name="Moderation",
