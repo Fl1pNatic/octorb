@@ -4,6 +4,8 @@ import importlib
 import sys
 from nextcord.ext import commands as botCommands
 from dotenv import dotenv_values, load_dotenv
+import git
+import os
 
 from commands.fun import fun
 from commands.moderation import moderation
@@ -16,7 +18,6 @@ TOKEN = dotenv_values()["TOKEN"]
 command_prefix=["sq!", "!", "s!"]
 if "DEVMODE" in dotenv_values():
     command_prefix=["t!"]
-    print("TESTING MODE, PREFIX IS t!")
 bot = botCommands.Bot(command_prefix=command_prefix,
                     activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="sq! | s! | !help for commands list"),
                    intents=nextcord.Intents.all(),
@@ -27,10 +28,11 @@ bot.add_cog(fun(bot))
 bot.add_cog(other(bot))
 bot.add_cog(moderation(bot))
 
+
+
 @bot.event
 async def on_ready():
     print(f"It's {bot.user}in' time")
-    print(f"Prefixes: "+str(bot.command_prefix))
 
 # Helper Commands
 async def getuser(userid, guildid):
@@ -105,6 +107,17 @@ async def reloadmodule(ctx:botCommands.Context, *args):
     module = args[0]
     await unloadModule(module, ctx)
     await loadModule(module, ctx)
+
+@bot.command()
+async def update(ctx:botCommands.Context):
+    if ctx.message.author.guild_permissions.manage_guild == False:
+        await ctx.send("You have no perms")
+        return
+    repo: git.Repo = git.Repo(os.path.dirname(__file__))
+    for remote in repo.remotes:
+        remote.pull()
+    await ctx.send("Pulled changes.")
+    
 
 
 bot.run(TOKEN)
