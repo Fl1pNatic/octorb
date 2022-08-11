@@ -12,7 +12,6 @@ from commands.moderation import moderation
 from commands.other import other
 
 load_dotenv()
-
 TOKEN = dotenv_values()["TOKEN"]
 
 command_prefix=["sq!", "!", "s!"]
@@ -33,7 +32,7 @@ bot.add_cog(moderation(bot))
 @bot.event
 async def on_ready():
     print(f"It's {bot.user}in' time")
-    update()
+    await gitupdate()
 
 # Helper Commands
 async def getuser(userid, guildid):
@@ -73,7 +72,7 @@ async def unloadModule(module, ctx):
     del sys.modules["commands."+module]
     await ctx.send("Module unloaded.")
 
-async def update():
+async def gitupdate():
     repo: git.Repo = git.Repo(os.path.dirname(__file__))
     for remote in repo.remotes:
         remote.pull()
@@ -120,7 +119,7 @@ async def update(ctx:botCommands.Context):
     if ctx.message.author.guild_permissions.manage_guild == False:
         await ctx.send("You have no perms")
         return
-    update(ctx)
+    await gitupdate()
     
 
 
