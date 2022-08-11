@@ -1,5 +1,5 @@
-import random
 from nextcord.ext import commands
+from random import choice
 
 answer_list = [
     "you sharted", "Maybe not.", "Probably.",
@@ -40,7 +40,7 @@ class fun(commands.Cog):
 
     @commands.command()
     async def ask(self, ctx, *q):
-        a = random.choice(tuple(answer_list))
+        a = choice(tuple(answer_list))
         if len(q)!=0:
             await ctx.reply(a)
         else:
@@ -70,46 +70,8 @@ class fun(commands.Cog):
         await ctx.reply("Image №" + galArg + ": " + imL[int(galArg)])
 
     @commands.command()
-    async def coinflip(self, ctx):
-        result = random.choice(tuple([0, 1]))
-        await ctx.reply("Heads" if result == 1 else "Tails")
-
-    @commands.command()
-    async def rng1000(self, ctx, *args):
-        if len(args) < 2:
-            await ctx.reply("Input minimum and maximum number (In range of -1000 to 1000)")
-            return
-
-        min = args[0]
-        max = args[1]
-        if isinstance(int(min), int) == False or isinstance(int(max), int) == False:
-            await ctx.reply("You have to input numbers")
-            return
-
-        min = int(min)
-        max = int(max)
-        if int(min) < -1000 or int(min) > 1000:
-            await ctx.reply("Minimum number is too low or high")
-            return
-        if max < -1000 or max > 1000:
-            await ctx.reply("Maximum number is too low or high")    
-            return
-        if max < min:
-            await ctx.reply("Maximum number MUST be higher than minimum")
-            return
-        
-        result = random.randrange(min, max)     
-        await ctx.reply(result)
-
-    # @commands.command()
-    async def math(self, ctx, *args):
-            if len(args) < 2 or args == None:
-                await ctx.reply("Input a math action")
-            return
-    
-    @commands.command()
     async def yo(self, ctx):
-        yo = random.choice(tuple(yo_vars))
+        yo = choice(tuple(yo_vars))
         await ctx.send(yo)
 
     @commands.command()

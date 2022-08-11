@@ -8,6 +8,7 @@ import git
 import os
 
 from commands.fun import fun
+from .commands.math import math
 from commands.moderation import moderation
 from commands.other import other
 
@@ -22,12 +23,10 @@ bot = botCommands.Bot(command_prefix=command_prefix,
                    intents=nextcord.Intents.all(),
                    help_command=None)
 
-
 bot.add_cog(fun(bot))
 bot.add_cog(other(bot))
 bot.add_cog(moderation(bot))
-
-
+bot.add_cog(math(bot))
 
 @bot.event
 async def on_ready():

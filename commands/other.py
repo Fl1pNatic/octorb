@@ -14,6 +14,10 @@ help_embed.add_field(name="Moderation",
  value="say | pin | delete | kick | ban",
  inline=False)
 
+help_embed.add_field(name="Math",
+ value="math | rng1000 | coinflip",
+ inline=False)
+
 help_embed.add_field(name="Other",
  value="help | source | minecraft",
  inline=False)
