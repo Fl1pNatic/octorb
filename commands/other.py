@@ -6,7 +6,7 @@ help_embed = nextcord.Embed(title="Help",
                             color=0xff00bb)
 
 help_embed.add_field(name="Fun",
-    value="ask | gallery | coinflip",
+    value="ask | gallery | coinflip | rng1000",
     inline=False)
 
 help_embed.add_field(name="Moderation",

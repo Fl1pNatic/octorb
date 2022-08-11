@@ -58,15 +58,14 @@ class fun(commands.Cog):
         if isinstance(int(galArg), int) == False:
             await ctx.reply("Enter a valid **numerical** ID (ID's start from 0)")
             return
-
+        
         imL = open("images.txt", "r").readlines()
-        if int(galArg) > len(imL) + 1 or int(galArg) < 0:
+        
+        if int(galArg) > len(imL) or int(galArg) < 0:
             await ctx.reply("Not a valid ID")
-            imL.close()
             return
 
         await ctx.reply("Image №" + galArg + ": " + imL[int(galArg)])
-        imL.close()
 
     @commands.command()
     async def coinflip(self, ctx):
