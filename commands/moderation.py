@@ -9,9 +9,9 @@ class moderation(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def say(self, ctx, *arg):
+    async def say(self, ctx, *, arg=None):
         if ctx.message.author.guild_permissions.manage_messages:
-            if len(arg) == 0:
+            if arg == None:
                 await ctx.reply("cmon make me say smth")
                 return
             await ctx.message.delete()
