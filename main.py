@@ -8,7 +8,7 @@ import git
 import os
 
 from commands.fun import fun
-from .commands.math import math
+from commands.math import math
 from commands.moderation import moderation
 from commands.other import other
 

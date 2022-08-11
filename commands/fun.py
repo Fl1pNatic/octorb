@@ -63,7 +63,7 @@ class fun(commands.Cog):
         
         imL = open("images.txt", "r").readlines()
         
-        if int(galArg) > len(imL) or int(galArg) < 0:
+        if int(galArg) > len(imL) - 1 or int(galArg) < 0:
             await ctx.reply("Not a valid ID")
             return
 
