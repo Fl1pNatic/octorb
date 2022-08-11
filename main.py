@@ -120,7 +120,7 @@ async def update(ctx:botCommands.Context):
         await ctx.send("You have no perms")
         return
     await gitupdate()
-    ctx.reply("Pulled Changes")
+    await ctx.reply("Pulled Changes")
     
 
 
