@@ -13,7 +13,7 @@ help_embed.add_field(name="Moderation",
  value="say | pin | mdelete",
  inline=False)
 
-class Other(commands.Cog):
+class other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

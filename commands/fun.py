@@ -32,7 +32,7 @@ answer_list = [
     "Killing an ant is more fun that responding to that", "💀💀💀"
 ]
 
-class Fun(commands.Cog):
+class fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
