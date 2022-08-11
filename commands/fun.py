@@ -104,6 +104,11 @@ class fun(commands.Cog):
     async def yo(self, ctx):
         yo = random.choice(tuple(yo_vars))
         await ctx.send(yo)
+        
+    @commands.command()
+    async def yo2(self, ctx):
+        yo = random.choice(tuple(yo_vars))
+        await ctx.send("yo2")
 
     @commands.command()
     async def squidgames(self, ctx):
