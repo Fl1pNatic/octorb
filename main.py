@@ -15,7 +15,7 @@ TOKEN = dotenv_values()["TOKEN"]
 
 command_prefix=["sq!", "!", "s!"]
 bot = botCommands.Bot(command_prefix=command_prefix,
-                    activity=nextcord.Game("sq! | s! | !help for commands list"),
+                    activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="sq! | s! | !help for commands list"),
                    intents=nextcord.Intents.all(),
                    help_command=None)
 
@@ -71,8 +71,11 @@ async def unloadModule(module, ctx):
 
 @bot.command()
 async def loadmodule(ctx:botCommands.Context, *args):
+    if ctx.message.author.guild_permissions.manage_guild == False:
+        await ctx.send("You have no perms")
+        return   
     if len(args) == 0:
-        await ctx.send("You must specify a module to load.")
+        await ctx.send("You must specify a module to load, idio.")
         return
     module = args[0]
     await loadModule(module, ctx)
@@ -80,16 +83,22 @@ async def loadmodule(ctx:botCommands.Context, *args):
 
 @bot.command()
 async def unloadmodule(ctx:botCommands.Context, *args):
+    if ctx.message.author.guild_permissions.manage_guild == False:
+        await ctx.send("You have no perms")
+        return    
     if len(args) == 0:
-        await ctx.send("You must specify a module to unload.")
+        await ctx.send("You must specify a module to unload, idit.")
         return
     module = args[0]
     await unloadModule(module, ctx)
 
 @bot.command()
 async def reloadmodule(ctx:botCommands.Context, *args):
+    if ctx.message.author.guild_permissions.manage_guild == False:
+        await ctx.send("You have no perms")
+        return
     if len(args) == 0:
-        await ctx.send("You must specify a module to unload.")
+        await ctx.send("You must specify a module to reload, idot.")
         return
     module = args[0]
     await unloadModule(module, ctx)

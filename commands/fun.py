@@ -37,29 +37,23 @@ class fun(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def ask(self, ctx):
+    async def ask(self, ctx, *q):
         a = random.choice(tuple(answer_list))
-        if ctx.message.content != "sq!ask":
+        if len(q)!=0:
             await ctx.reply(a)
         else:
             await ctx.reply("You need to ask something, you degenerate.")
 
     @commands.command()
-    async def gallery(self, ctx):
+    async def gallery(self, ctx, *arg):
 
-        if ctx.message.content == "sq!gallery":
+        if len(arg) == 0:
             await ctx.reply(
                 "Gallery is a collection of screenshots from the server\n\n**How to use**\nInput a valid numerical ID (ID's start from 0)"
             )
             return
 
-        galArg = ctx.message.content.split(" ")[1]
-
-        if len(galArg) == 0:
-            await ctx.reply(
-                "Gallery is a collection of screenshots from the server\n\n**How to use**\nInput a valid numerical ID (ID's start from 0)"
-            )
-            return
+        galArg = arg[0]
 
         if isinstance(int(galArg), int) == False:
             await ctx.reply("Enter a valid **numerical** ID (ID's start from 0)")
@@ -73,6 +67,37 @@ class fun(commands.Cog):
 
         await ctx.reply("Image №" + galArg + ": " + imL[int(galArg)])
         imL.close()
+
+    @commands.command()
+    async def coinflip(self, ctx):
+        result = random.choice(tuple([0, 1]))
+        await ctx.reply("Heads" if result == 1 else "Tails")
+
+    @commands.command()
+    async def rng1000(self, ctx, *, args=None):
+        if len(args) < 2 or args == None:
+            await ctx.reply("Input minimum and maximum number (In range of -1000 to 1000)")
+            return
+
+        min = args[0]
+        max = args[1]
+        if isinstance(int(min), int) == False or isinstance(int(max), int) == False:
+            await ctx.reply("You have to input numbers")
+            return
+
+        min = int(min)
+        max = int(max)
+        print(min)
+        print(max)
+        if int(min) < -1000 or int(min) > 1000:
+            await ctx.reply("Minimum number is too low or high")
+            return
+        if max < -1000 or max > 1000:
+            await ctx.reply("Maximum number is too low or high")    
+            return
+        
+        result = random.randrange(min, max)     
+        await ctx.reply(result)
 
     @commands.command()
     async def squidgames(self, ctx):

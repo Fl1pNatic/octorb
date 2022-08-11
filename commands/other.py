@@ -6,11 +6,15 @@ help_embed = nextcord.Embed(title="Help",
                             color=0xff00bb)
 
 help_embed.add_field(name="Fun",
-    value="ask | gallery | squidgames | helloai | helloaiv1 | jonasspin | shellyspin  ",
+    value="ask | gallery | coinflip",
     inline=False)
 
 help_embed.add_field(name="Moderation",
- value="say | pin | mdelete",
+ value="say | pin | delete | kick | ban",
+ inline=False)
+
+help_embed.add_field(name="Other",
+ value="help | source | minecraft",
  inline=False)
 
 class other(commands.Cog):
@@ -24,3 +28,9 @@ class other(commands.Cog):
     @commands.command()
     async def source(self, ctx):
         await ctx.send("This bot is **open-source** which means that anyone can contribute to it.\n\nYou can find the source code here - <https://github.com/Fl1pNatic/squidcraftbot>")
+
+    @commands.command()
+    async def minecraft(self, ctx):
+        await ctx.send("You can join the server using this IP: 132.145.106.236\n\nNo cracked accounts. Minecraft 1.19")
+
+                
