@@ -14,6 +14,8 @@ load_dotenv()
 TOKEN = dotenv_values()["TOKEN"]
 
 command_prefix=["sq!", "!", "s!"]
+if "DEVMODE" in dotenv_values():
+    command_prefix=["t!"]
 bot = botCommands.Bot(command_prefix=command_prefix,
                     activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="sq! | s! | !help for commands list"),
                    intents=nextcord.Intents.all(),
