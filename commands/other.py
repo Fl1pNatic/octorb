@@ -1,5 +1,6 @@
 import nextcord
 from nextcord.ext import commands
+import git, os
 
 help_embed = nextcord.Embed(title="Help",
                             description="What each command does",
@@ -32,5 +33,17 @@ class other(commands.Cog):
     @commands.command()
     async def minecraft(self, ctx):
         await ctx.send("You can join the server using this IP: 132.145.106.236\n\nNo cracked accounts. Minecraft 1.19")
+
+    @commands.command()
+    async def changelog(self, ctx):
+        repo: git.Git = git.Git(os.path.dirname(__file__))
+        commits = repo.log('--pretty=%s').split("\n")[:10]
+        commitsHashes = repo.log('--pretty=%h').split("\n")[:10]
+        embed = nextcord.Embed(title="Changelog", color=0xff00bb)
+        for commit in range(len(commits)):
+            embed.add_field(name="`"+commitsHashes[commit]+"`", value="`"+commits[commit]+"`", inline=False)
+
+        await ctx.send(embed=embed)
+
 
                 
