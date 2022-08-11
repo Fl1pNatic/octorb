@@ -32,6 +32,8 @@ answer_list = [
     "Killing an ant is more fun that responding to that", "💀💀💀"
 ]
 
+yo_vars = ["yo", "yoyo", "yoyoyo", "toe"]
+
 class fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -97,6 +99,11 @@ class fun(commands.Cog):
         
         result = random.randrange(min, max)     
         await ctx.reply(result)
+    
+    @commands.command()
+    async def yo(self, ctx):
+        yo = random.choice(tuple(yo_vars))
+        await ctx.send(yo)
 
     @commands.command()
     async def squidgames(self, ctx):

@@ -16,6 +16,7 @@ TOKEN = dotenv_values()["TOKEN"]
 command_prefix=["sq!", "!", "s!"]
 if "DEVMODE" in dotenv_values():
     command_prefix=["t!"]
+    print("TESTING MODE, PREFIX IS t!")
 bot = botCommands.Bot(command_prefix=command_prefix,
                     activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="sq! | s! | !help for commands list"),
                    intents=nextcord.Intents.all(),
@@ -26,11 +27,10 @@ bot.add_cog(fun(bot))
 bot.add_cog(other(bot))
 bot.add_cog(moderation(bot))
 
-
-
 @bot.event
 async def on_ready():
     print(f"It's {bot.user}in' time")
+    print(f"Prefixes: "+str(bot.command_prefix))
 
 # Helper Commands
 async def getuser(userid, guildid):
