@@ -33,6 +33,7 @@ bot.add_cog(moderation(bot))
 @bot.event
 async def on_ready():
     print(f"It's {bot.user}in' time")
+    update()
 
 # Helper Commands
 async def getuser(userid, guildid):
@@ -71,6 +72,12 @@ async def unloadModule(module, ctx):
     bot.remove_cog(module)
     del sys.modules["commands."+module]
     await ctx.send("Module unloaded.")
+
+async def update():
+    repo: git.Repo = git.Repo(os.path.dirname(__file__))
+    for remote in repo.remotes:
+        remote.pull()
+    print("Pulled Changes")
 
 
 @bot.command()
@@ -113,10 +120,7 @@ async def update(ctx:botCommands.Context):
     if ctx.message.author.guild_permissions.manage_guild == False:
         await ctx.send("You have no perms")
         return
-    repo: git.Repo = git.Repo(os.path.dirname(__file__))
-    for remote in repo.remotes:
-        remote.pull()
-    await ctx.send("Pulled changes.")
+    update(ctx)
     
 
 
