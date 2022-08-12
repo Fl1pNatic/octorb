@@ -29,7 +29,7 @@ if not "DEVMODE" in dotenv_values():
     db = mysql.connector.connect(host=dotenv_values()['DBHOST'], user=dotenv_values()['DBUSERNAME'], password=dotenv_values()['DBPASSWORD'], database=dotenv_values()['DB'])
 
 
-setattr(db,"db")
+setattr(bot,"db", db)
 bot.add_cog(fun(bot))
 bot.add_cog(other(bot))
 bot.add_cog(moderation(bot))
