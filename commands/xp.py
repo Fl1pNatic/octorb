@@ -92,4 +92,4 @@ class xp(commands.Cog):
             return
         cursor:mysql.connector.connection.MySQLCursor = self.db.cursor()
         cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s", (ctx.message.guild.id, ctx.message.author.id))
-        await ctx.reply("You have ", cursor.fetchone()[0] + " XP")
+        await ctx.reply(f"You have {cursor.fetchone()[0]} XP")
