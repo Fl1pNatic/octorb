@@ -18,6 +18,10 @@ help_embed.add_field(name="Math",
  value="math | rng1000 | coinflip",
  inline=False)
 
+help_embed.add_field(name="XP",
+ value="xp",
+ inline=False)
+
 help_embed.add_field(name="Other",
  value="help | source | minecraft",
  inline=False)
