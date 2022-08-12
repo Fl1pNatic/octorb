@@ -134,8 +134,5 @@ class xp(commands.Cog):
             return
         memb = args[0]
         xp = args[1]
-        try:
-            await self.storeXP([{"server":ctx.guild.id, "member":memb, "xp":xp}])
-        except:
-            await ctx.reply("Nope, couldn't do that")
+        await self.storeXP([{"server":ctx.guild.id, "member":memb, "xp":xp}])
         
