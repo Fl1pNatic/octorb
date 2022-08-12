@@ -64,10 +64,24 @@ class xp(commands.Cog):
             #   }
         changedData = []
         newData = []
-        for user in xpStore:
-            if str(user["server"]) in members.keys():
-                if str(user["user"]) in members[str(user["server"])].keys():
-                    changedData.append((user["server"], user["user"], user["xp"]+members[user["server"]][user["user"]]))
+        for userdata in xpStore:
+            server = str(userdata["server"])
+            user = str(userdata["user"])
+            xp = int(userdata["xp"])
+            if server in members.keys():
+                if user in members[server].keys():
+                    changedData.append((server, user, xp+members[server][user]))
                     continue
-            newData.append((user["server"], user["user"], user["xp"]))
-        print(newData)
+            newData.append((server, user, xp))
+        
+        updateCommand = "UPDATE xp SET memberXp = %i WHERE serverId = %s AND memberId = %s"
+        createCommand = "INSERT INTO xp (serverId, memberId, memberXp) VALUES (%s, %s, %i)"
+
+        for user in changedData:
+            cursor.execute(updateCommand, (user[3], user[0], user[1]))
+        for user in newData:
+            cursor.execute(createCommand, (user[0],user[1],user[3]))
+
+        self.db.commit()
+        print(cursor.rowcount)
+        
