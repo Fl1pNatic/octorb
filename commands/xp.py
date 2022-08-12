@@ -6,6 +6,7 @@ from readline import replace_history_item
 import nextcord
 from nextcord.ext import commands
 import asyncio
+import typing
 import mysql.connector
 xp = {}
 
@@ -91,20 +92,36 @@ class xp(commands.Cog):
         print(cursor.rowcount)
         
     @commands.command()
-    async def xp(self, ctx):
+    async def xp(self, ctx, user: typing.Optional[str]):
         if self.db == None:
             await ctx.reply("You have 69 XP")
             return
+        
         cursor:mysql.connector.connection.MySQLCursor = self.db.cursor()
+        if user is None:
+            try:
+                cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s", (ctx.message.guild.id, ctx.message.author.id))
+                embed = nextcord.Embed(title="XP", color=0xff00bb)
+                embed.add_field(name=f"{ctx.message.author.display_name}", value=f"`XP: {cursor.fetchone()[0]}`")
+                embed.set_thumbnail(ctx.message.author.display_avatar.url +"?size=1024")
+                await ctx.reply(embed=embed)
+                return
+            except:
+                await ctx.reply("You don't have any XP")
+                return
+        print(user)
+        ctx.message.author: nextcord.Member = ctx.message.guild.get_member()
         try:
             cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s", (ctx.message.guild.id, ctx.message.author.id))
             embed = nextcord.Embed(title="XP", color=0xff00bb)
             embed.add_field(name=f"{ctx.message.author.display_name}", value=f"`XP: {cursor.fetchone()[0]}`")
             embed.set_thumbnail(ctx.message.author.display_avatar.url +"?size=1024")
             await ctx.reply(embed=embed)
+            return
         except:
             await ctx.reply("You don't have any XP")
             return
+
 
         
     @commands.command()
