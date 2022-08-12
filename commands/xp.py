@@ -115,8 +115,9 @@ class xp(commands.Cog):
             embed.set_thumbnail(ctx.message.author.display_avatar.url +"?size=1024")
             await ctx.reply(embed=embed)
             return
-        except:
+        except(Exception) as e:
             await ctx.reply("You don't have any XP")
+            await ctx.reply(f"{e}")
             return
 
 
