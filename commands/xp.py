@@ -93,7 +93,9 @@ class xp(commands.Cog):
         cursor:mysql.connector.connection.MySQLCursor = self.db.cursor()
         try:
             cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s", (ctx.message.guild.id, ctx.message.author.id))
-            await ctx.reply(f"You have {cursor.fetchone()[0]} XP")
+            embed = nextcord.Embed(title="XP", color=0xff00bb)
+            embed.add_field(name=f"{ctx.message.author.discriminator}", value=f"`{cursor.fetchall()[0]}")
+            await ctx.reply(embed=embed)
         except:
             await ctx.reply("You don't have any XP")
             return
