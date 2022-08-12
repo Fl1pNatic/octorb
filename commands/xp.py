@@ -96,7 +96,7 @@ class xp(commands.Cog):
             cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s", (ctx.message.guild.id, ctx.message.author.id))
             embed = nextcord.Embed(title="XP", color=0xff00bb)
             embed.add_field(name=f"{ctx.message.author.display_name}", value=f"`{cursor.fetchone()[0]}`")
-            embed.image = ctx.message.author.display_avatar.with_size(128)
+            embed.image = ctx.message.author.display_avatar.url
             await ctx.reply(embed=embed)
         except:
             await ctx.reply("You don't have any XP")
