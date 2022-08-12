@@ -85,7 +85,7 @@ class xp(commands.Cog):
         self.db.commit()
         print(cursor.rowcount)
         
-    @commands.command()
+    # @commands.command()
     async def xp(self, ctx):
         if self.db == None:
             await ctx.reply("You have 69 XP")
