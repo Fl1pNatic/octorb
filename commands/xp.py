@@ -122,7 +122,7 @@ class xp(commands.Cog):
         await ctx.send(embed = embed)
         
     @commands.command()
-    async def givexp(self, ctx, *args):
+    async def givexp(self, ctx, memb: nextcord.Member, xp):
         if self.db is None:
             print("No db?")
             return
@@ -132,7 +132,5 @@ class xp(commands.Cog):
         if len(args) < 2:
             await ctx.reply("Not enough arguments")
             return
-        memb = args[0]
-        xp = args[1]
-        await self.storeXP([{"server":ctx.guild.id, "user":memb, "xp":xp}])
+        await self.storeXP([{"server":ctx.guild.id, "user":memb.id, "xp":xp}])
         
