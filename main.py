@@ -29,13 +29,12 @@ if not "DEVMODE" in dotenv_values():
     db = mysql.connector.connect(host=dotenv_values()['DBHOST'], user=dotenv_values()['DBUSERNAME'], password=dotenv_values()['DBPASSWORD'], database=dotenv_values()['DB'])
 
 
-
+setattr(db,"db")
 bot.add_cog(fun(bot))
 bot.add_cog(other(bot))
 bot.add_cog(moderation(bot))
 bot.add_cog(math(bot))
 bot.add_cog(xp(bot))
-setattr(db,"db")
 @bot.event
 async def on_ready():
     print(f"It's {bot.user}in' time")
