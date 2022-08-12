@@ -139,9 +139,9 @@ class xp(commands.Cog):
     @commands.command()
     async def givexp(self, ctx, memb, xp):
         if type(memb) is discord.Member:
-            UserID = str(memb.id)
+            memb = str(memb.id)
         else:
-            UserID = str(memb)
+            memb = str(memb)
         if self.db is None:
             print("No db?")
             return
