@@ -17,7 +17,7 @@ class xp(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: nextcord.Message):
-        print(self.messageCounts)
+        # print(self.messageCounts)
         if message.author.bot:
             return
         if not message.guild.id in self.messageCounts:

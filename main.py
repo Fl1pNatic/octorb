@@ -37,6 +37,14 @@ async def on_ready():
 async def on_disconnect():
     print("Disconnected from Discord")
 
+@bot.event
+async def on_message(message: nextcord.Message):
+    if message.guild == None:
+        if message.author.bot:
+            return
+        await message.channel.send("You are not allowed to use the bot in DMs")
+        return
+
 # Helper Commands
 async def getuser(userid, guildid):
     guild = bot.get_guild(guildid)
