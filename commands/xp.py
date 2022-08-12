@@ -98,25 +98,16 @@ class xp(commands.Cog):
             return
         
         cursor:mysql.connector.connection.MySQLCursor = self.db.cursor()
-        if user is None:
+        if user is not None:
+            if(user.startswith("<@")):
+                user = user[2:len(user)-1]
+            print(user)
             try:
-                cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s", (ctx.message.guild.id, ctx.message.author.id))
-                embed = nextcord.Embed(title="XP", color=0xff00bb)
-                embed.add_field(name=f"{ctx.message.author.display_name}", value=f"`XP: {cursor.fetchone()[0]}`")
-                embed.set_thumbnail(ctx.message.author.display_avatar.url +"?size=1024")
-                await ctx.reply(embed=embed)
+                user = int(user)
+                ctx.message.author: nextcord.Member = ctx.message.guild.get_member(user)
+            except(Exception) as e:
+                await ctx.send("Invalid user")
                 return
-            except:
-                await ctx.reply("You don't have any XP")
-                return
-        if(user.startswith("<@")):
-            user = user[2:len(user)-1]
-        print(user)
-        try: user = int(user)
-        except(Exception) as e:
-            await ctx.send("Invalid user")
-            return
-        ctx.message.author: nextcord.Member = ctx.message.guild.get_member(user)
         try:
             cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s", (ctx.message.guild.id, ctx.message.author.id))
             embed = nextcord.Embed(title="XP", color=0xff00bb)
