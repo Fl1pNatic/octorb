@@ -113,7 +113,7 @@ class xp(commands.Cog):
             embed = discord.Embed(title="XP", color=0xff00bb)
             embed.add_field(name=f"{ctx.message.author.display_name}", value=f"`XP: {cursor.fetchone()[0]}`")
             print(str(ctx.message.author.avatar_url) +"?size=1024")
-            embed.set_thumbnail(str(ctx.message.author.avatar_url) +"?size=1024")
+            embed.set_thumbnail(str(ctx.message.author.avatar_url))
             await ctx.reply(embed=embed)
             return
         except(Exception) as e:
