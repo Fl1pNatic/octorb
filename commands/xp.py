@@ -143,8 +143,9 @@ class xp(commands.Cog):
         if ctx.message.author.guild_permissions.manage_guild == False:
             await ctx.reply("To be fair, even I don't know why you thought you can do this")
             return
-        if len(args) < 2:
-            await ctx.reply("Not enough arguments")
-            return
         await self.storeXP([{"server":ctx.guild.id, "user":memb.id, "xp":xp}])
         
+    @givexp.error()
+    async def info_error(ctx, error):
+        if isinstance(error, commands.BadArgument):
+            await ctx.send("Incorrect arguments.")
