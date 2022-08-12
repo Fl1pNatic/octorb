@@ -2,6 +2,7 @@ from email import message
 from math import log
 from concurrent.futures import process
 import random
+from readline import replace_history_item
 import nextcord
 from nextcord.ext import commands
 import asyncio
@@ -95,7 +96,7 @@ class xp(commands.Cog):
         try:
             cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s", (ctx.message.guild.id, ctx.message.author.id))
             embed = nextcord.Embed(title="XP", color=0xff00bb)
-            embed.add_field(name=f"{ctx.message.author.display_name}", value=f"`{cursor.fetchone()[0]}`")
+            embed.add_field(name=f"{ctx.message.author.display_name}", value=f"`XP: {cursor.fetchone()[0]}`")
             embed.set_thumbnail(ctx.message.author.display_avatar.url +"?size=1024")
             await ctx.reply(embed=embed)
         except:
@@ -117,4 +118,21 @@ class xp(commands.Cog):
         
         await ctx.send(embed = embed)
         
+    @commands.command()
+    async def givexp(self, ctx, *args):
+        if self.db is None:
+            print("No db?")
+            return
+        if ctx.message.author.guild_permissions.manage_guild == False:
+            await ctx.reply("To be fair, even I don't know why you thought you can do this")
+            return
+        if len(args) < 2:
+            await ctx.reply("Not enough arguments")
+            return
+        memb = args[0]
+        xp = args[1]
+        try:
+            await storeXP([{"server":ctx.guild.id, "member":memb, "xp":xp}])
+        except:
+            await ctx.reply("Nope, couldn't do that")
         
