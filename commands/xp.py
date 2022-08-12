@@ -97,4 +97,20 @@ class xp(commands.Cog):
         except:
             await ctx.reply("You don't have any XP")
             return
+
+        
+    @commands.command()
+    async def xptop(self, ctx):
+        if self.db == None:
+            await ctx.reply("Squidward")
+            return
+        cursor:mysql.connector.connection.MySQLCursor = self.db.cursor()
+        cursor.execute("SELECT memberXp, memberId FROM xp WHERE serverId = %s ORDER BY memberXp DESC", (ctx.message.guild.id))
+        embed = nextcord.Embed(title="XP Leaderboards", color=0xff00bb)
+        data = cursor.fetchall()
+        for i in range(min(len(data), 5)):
+            embed.add_field(name=f"{i+1}. <@{data[i][1]}> ", value=f"`{data[i][0]}`", inline=True)
+        
+        await ctx.send(embed = embed)
+        
         
