@@ -1,5 +1,5 @@
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 import random
 
 error_messages = ["No perms?", "You got no perms", "haha **no** (permissions)", "You don't have permissions to do this", "h-hiii you cant execute this command uwu"]
@@ -44,7 +44,7 @@ class moderation(commands.Cog):
             await ctx.reply(e)
 
     @commands.command()
-    async def kick(self, ctx, member: nextcord.Member, *, reason=None):
+    async def kick(self, ctx, member: discord.Member, *, reason=None):
         e=random.choice(tuple(error_messages))
         if ctx.message.author.guild_permissions.kick_members:
             if member == None:
@@ -57,7 +57,7 @@ class moderation(commands.Cog):
             await ctx.reply(e)
 
     @commands.command()
-    async def ban(self, ctx, member: nextcord.Member, *, reason=None):
+    async def ban(self, ctx, member: discord.Member, *, reason=None):
         e=random.choice(tuple(error_messages))
         if ctx.message.author.guild_permissions.ban_members:
             await ctx.member.send(f"You were banned from Will You Craft Server, reason: {reason}")

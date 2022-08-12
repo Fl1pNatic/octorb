@@ -1,8 +1,8 @@
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 import git, os
 
-help_embed = nextcord.Embed(title="Help",
+help_embed = discord.Embed(title="Help",
                             description="What each command does",
                             color=0xff00bb)
 
@@ -47,7 +47,7 @@ class other(commands.Cog):
         repo: git.Git = git.Git(os.path.dirname(__file__))
         commits = repo.log('--pretty=%s').split("\n")[:10]
         commitsHashes = repo.log('--pretty=%h').split("\n")[:10]
-        embed = nextcord.Embed(title="Changelog", color=0xff00bb)
+        embed = discord.Embed(title="Changelog", color=0xff00bb)
         for commit in range(len(commits)):
             embed.add_field(name="`"+commitsHashes[commit]+"`", value="`"+commits[commit]+"`", inline=False)
 

@@ -1,8 +1,7 @@
-from inspect import Attribute
-import nextcord
+import discord
 import importlib
 import sys
-from nextcord.ext import commands as botCommands
+from discord.ext import commands as botCommands
 from dotenv import dotenv_values, load_dotenv
 import git
 import os
@@ -21,8 +20,8 @@ TOKEN = dotenv_values()["TOKEN"]
 
 command_prefix = ["sq!", "!", "s!"] if not "DEVMODE" in dotenv_values() else ["t!"]
 bot = botCommands.Bot(command_prefix=command_prefix,
-                    activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="sq! | s! | !help for commands list"),
-                   intents=nextcord.Intents.all(),
+                    activity=discord.Activity(type=discord.ActivityType.watching, name="sq! | s! | !help for commands list"),
+                   intents=discord.Intents.all(),
                    help_command=None)
 db = None
 if not "DEVMODE" in dotenv_values():
@@ -45,7 +44,7 @@ async def on_disconnect():
     print("Disconnected from Discord")
 
 @bot.event
-async def on_message(message: nextcord.Message):
+async def on_message(message: discord.Message):
     if message.guild == None:
         if message.author.bot:
             return
@@ -60,9 +59,9 @@ async def getuser(userid, guildid):
     return user
 
 @bot.event
-async def on_member_join(member: nextcord.Member):
+async def on_member_join(member: discord.Member):
     guild = bot.get_guild(member.guild.id)
-    role = nextcord.utils.get(guild.roles, name='Member')
+    role = discord.utils.get(guild.roles, name='Member')
     user = await getuser(member.id, member.guild.id)
     await user.add_roles(role)
 

@@ -3,8 +3,8 @@ from math import log
 from concurrent.futures import process
 import random
 from readline import replace_history_item
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 import asyncio
 import typing
 import mysql.connector
@@ -21,7 +21,7 @@ class xp(commands.Cog):
         await self.processXP()
 
     @commands.Cog.listener()
-    async def on_message(self, message: nextcord.Message):
+    async def on_message(self, message: discord.Message):
         # print(self.messageCounts)
         if message.author.bot or message.guild is None:
             return
@@ -104,13 +104,13 @@ class xp(commands.Cog):
             print(user)
             try:
                 user = int(user)
-                ctx.message.author: nextcord.Member = ctx.message.guild.get_member(user)
+                ctx.message.author: discord.Member = ctx.message.guild.get_member(user)
             except(Exception) as e:
                 await ctx.send("Invalid user")
                 return
         try:
             cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s", (ctx.message.guild.id, ctx.message.author.id))
-            embed = nextcord.Embed(title="XP", color=0xff00bb)
+            embed = discord.Embed(title="XP", color=0xff00bb)
             embed.add_field(name=f"{ctx.message.author.display_name}", value=f"`XP: {cursor.fetchone()[0]}`")
             embed.set_thumbnail(ctx.message.author.display_avatar.url +"?size=1024")
             await ctx.reply(embed=embed)
@@ -128,7 +128,7 @@ class xp(commands.Cog):
             return
         cursor:mysql.connector.connection.MySQLCursor = self.db.cursor()
         cursor.execute("SELECT memberXp, memberId FROM xp WHERE serverId = %s ORDER BY memberXp DESC", [str(ctx.message.guild.id)])
-        embed = nextcord.Embed(title="XP Leaderboards", color=0xff00bb)
+        embed = discord.Embed(title="XP Leaderboards", color=0xff00bb)
         data = cursor.fetchall()
         for i in range(min(len(data), 5)):
             embed.add_field(name=f"{i+1}.", value=f"<@{data[i][1]}>: `{data[i][0]}`", inline=False)
@@ -146,8 +146,3 @@ class xp(commands.Cog):
             await ctx.reply("To be fair, even I don't know why you thought you can do this")
             return
         await self.storeXP([{"server":ctx.guild.id, "user":memb.id, "xp":xp}])
-        
-    @givexp.error
-    async def info_error(ctx, error):
-        if isinstance(error, commands.BadArgument):
-            await ctx.send("Incorrect arguments.")
