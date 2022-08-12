@@ -148,4 +148,4 @@ class xp(commands.Cog):
         if ctx.message.author.guild_permissions.manage_guild == False:
             await ctx.reply("To be fair, even I don't know why you thought you can do this")
             return
-        await self.storeXP([{"server":ctx.guild.id, "user":memb.id, "xp":xp}])
+        await self.storeXP([{"server":ctx.guild.id, "user":memb, "xp":xp}])
