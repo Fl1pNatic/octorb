@@ -19,7 +19,7 @@ help_embed.add_field(name="Math",
  inline=False)
 
 help_embed.add_field(name="XP",
- value="xp",
+ value="xp | xptop | givexp",
  inline=False)
 
 help_embed.add_field(name="Other",
