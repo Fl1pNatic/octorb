@@ -6,12 +6,15 @@ from nextcord.ext import commands as botCommands
 from dotenv import dotenv_values, load_dotenv
 import git
 import os
-
+import mysql.connector
 from commands.fun import fun
 from commands.math import math
 from commands.moderation import moderation
 from commands.other import other
 from commands.xp import xp
+
+
+
 
 load_dotenv()
 TOKEN = dotenv_values()["TOKEN"]
@@ -21,12 +24,17 @@ bot = botCommands.Bot(command_prefix=command_prefix,
                     activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="sq! | s! | !help for commands list"),
                    intents=nextcord.Intents.all(),
                    help_command=None)
+db = None
+if not "DEVMODE" in dotenv_values():
+    db = mysql.connector.connect(host=dotenv_values()['DBHOST'], user=dotenv_values()['DBUSERNAME'], password=dotenv_values()['DBPASSWORD'], database=dotenv_values()['DB'])
+
+
 
 bot.add_cog(fun(bot))
 bot.add_cog(other(bot))
 bot.add_cog(moderation(bot))
 bot.add_cog(math(bot))
-bot.add_cog(xp(bot))
+bot.add_cog(xp(bot, db))
 
 @bot.event
 async def on_ready():
