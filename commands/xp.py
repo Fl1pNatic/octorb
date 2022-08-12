@@ -74,8 +74,8 @@ class xp(commands.Cog):
                     continue
             newData.append((server, user, xp))
         
-        updateCommand = "UPDATE xp SET memberXp = %i WHERE serverId = %s AND memberId = %s"
-        createCommand = "INSERT INTO xp (serverId, memberId, memberXp) VALUES (%s, %s, %i)"
+        updateCommand = "UPDATE xp SET memberXp = %s WHERE serverId = %s AND memberId = %s"
+        createCommand = "INSERT INTO xp (serverId, memberId, memberXp) VALUES (%s, %s, %s)"
 
         for user in changedData:
             cursor.execute(updateCommand, (user[2], user[0], user[1]))
