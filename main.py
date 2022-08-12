@@ -16,9 +16,7 @@ from commands.other import other
 load_dotenv()
 TOKEN = dotenv_values()["TOKEN"]
 
-command_prefix=["sq!", "!", "s!"]
-if "DEVMODE" in dotenv_values():
-    command_prefix=["t!"]
+command_prefix = ["sq!", "!", "s!"] if not "DEVMODE" in dotenv_values() else ["t!"]
 bot = botCommands.Bot(command_prefix=command_prefix,
                     activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="sq! | s! | !help for commands list"),
                    intents=nextcord.Intents.all(),
@@ -34,6 +32,10 @@ bot.add_cog(math(bot))
 async def on_ready():
     print(f"It's {bot.user}in' time")
     await gitupdate()
+
+@bot.event
+async def on_disconnect():
+    print("Disconnected from Discord")
 
 # Helper Commands
 async def getuser(userid, guildid):
