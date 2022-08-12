@@ -78,9 +78,9 @@ class xp(commands.Cog):
         createCommand = "INSERT INTO xp (serverId, memberId, memberXp) VALUES (%s, %s, %i)"
 
         for user in changedData:
-            cursor.execute(updateCommand, (user[3], user[0], user[1]))
+            cursor.execute(updateCommand, (user[2], user[0], user[1]))
         for user in newData:
-            cursor.execute(createCommand, (user[0],user[1],user[3]))
+            cursor.execute(createCommand, (user[0],user[1],user[2]))
 
         self.db.commit()
         print(cursor.rowcount)
