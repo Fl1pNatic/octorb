@@ -136,7 +136,9 @@ class xp(commands.Cog):
         await ctx.send(embed = embed)
         
     @commands.command()
-    async def givexp(self, ctx, memb: nextcord.Member, xp):
+    async def givexp(self, ctx, memb, xp):
+        if memb.startswith("<@"):
+            memb = memb[2:len(memb)-1]
         if self.db is None:
             print("No db?")
             return
