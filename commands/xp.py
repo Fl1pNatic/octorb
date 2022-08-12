@@ -20,7 +20,7 @@ class xp(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: nextcord.Message):
         # print(self.messageCounts)
-        if message.author.bot or message.guild is None:
+        if message.author.bot or message.guild is None or message.content.startswith(self.bot.command_prefix):
             return
         if not message.guild.id in self.messageCounts:
             self.messageCounts[message.guild.id] = {}
@@ -109,7 +109,7 @@ class xp(commands.Cog):
         embed = nextcord.Embed(title="XP Leaderboards", color=0xff00bb)
         data = cursor.fetchall()
         for i in range(min(len(data), 5)):
-            embed.add_field(name=f"{i+1}.", value=f"<@{data[i][1]}>:  `{data[i][0]}`", inline=False)
+            embed.add_field(name=f"{i+1}.<@{data[i][1]}>:", value=f"`{data[i][0]}`", inline=False)
         
         await ctx.send(embed = embed)
         
