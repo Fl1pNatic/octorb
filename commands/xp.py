@@ -1,15 +1,15 @@
 from email import message
 import nextcord
 from nextcord.ext import commands
+messageCounts = {}
 
 class xp(commands.Cog):
-    bot = commands.Bot(intents=nextcord.Intents.all())
-    def __init__(self, bot) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    @bot.event
-    async def on_message(message: nextcord.Message):
-        messageCounts = {message.guild.id:{message.author.id: message}}
+    @commands.Cog.listener()
+    async def on_message(self, message: nextcord.Message):
+        print(messageCounts)
         if message.author.bot:
             print("vej")
             return
@@ -17,14 +17,14 @@ class xp(commands.Cog):
             messageCounts[message.guild.id] = {}
             print("vrej")
 
-        if not message.author.id in messageCounts:
+        if not message.author.id in messageCounts[message.guild.id]:
             messageCounts[message.guild.id][message.author.id] = 1
             print("vrebj")
             return
         messageCounts[message.guild.id][message.author.id] += 1
         print(messageCounts[message.guild.id][message.author.id])
         # await calcXP(messageCounts)
-        await message.channel.send(messageCounts[message.guild.id][message.author.id])
+        #await message.channel.send(messageCounts[message.guild.id][message.author.id])
 
     async def calcXP():
         pass

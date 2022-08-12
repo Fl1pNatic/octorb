@@ -11,6 +11,7 @@ from commands.fun import fun
 from commands.math import math
 from commands.moderation import moderation
 from commands.other import other
+from commands.xp import xp
 # from commands.xp import xp
 
 load_dotenv()
@@ -26,6 +27,7 @@ bot.add_cog(fun(bot))
 bot.add_cog(other(bot))
 bot.add_cog(moderation(bot))
 bot.add_cog(math(bot))
+bot.add_cog(xp(bot))
 # bot.add_cog(xp(bot))
 
 @bot.event
