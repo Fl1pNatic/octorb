@@ -34,7 +34,7 @@ class xp(commands.Cog):
     async def processXP(self):
         while True:
             await self.calcXP()
-            await asyncio.sleep(15)
+            await asyncio.sleep(60)
 
     async def calcXP(self):
         xpStores = []
