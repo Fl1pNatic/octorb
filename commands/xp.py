@@ -138,8 +138,8 @@ class xp(commands.Cog):
         
     @commands.command()
     async def givexp(self, ctx, memb, xp):
-        if type(memb) is discord.Member:
-            memb = str(memb.id)
+        if memb.startswith("<@"):
+            memb = memb[2:len(memb)-1]
         else:
             memb = str(memb)
         if self.db is None:
