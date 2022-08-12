@@ -44,6 +44,7 @@ async def on_message(message: nextcord.Message):
             return
         await message.channel.send("You are not allowed to use the bot in DMs")
         return
+    await bot.process_commands(message)
 
 # Helper Commands
 async def getuser(userid, guildid):
