@@ -8,10 +8,10 @@ import mysql.connector
 xp = {}
 
 class xp(commands.Cog):
-    def __init__(self, bot: commands.Bot, db) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.messageCounts = {}
-        self.db:mysql.connector.MySQLConnection = db
+        self.db:mysql.connector.MySQLConnection = bot.db
 
     @commands.Cog.listener()
     async def on_ready(self):
