@@ -1,5 +1,5 @@
 discord.py==1.7.3
 GitPython==3.1.27
-mysql_connector_repackaged==0.3.1
+mysql-connector-python==8.0.30
 py_expression_eval==0.3.14
 python-dotenv==0.20.0
