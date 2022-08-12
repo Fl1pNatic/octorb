@@ -138,8 +138,10 @@ class xp(commands.Cog):
         
     @commands.command()
     async def givexp(self, ctx, memb, xp):
-        if memb.startswith("<@"):
-            memb = memb[2:len(memb)-1]
+        if type(memb) is discord.Member:
+            UserID = str(memb.id)
+        else
+            UserID = str(memb)
         if self.db is None:
             print("No db?")
             return
