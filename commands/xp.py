@@ -134,5 +134,5 @@ class xp(commands.Cog):
             return
         memb = args[0]
         xp = args[1]
-        await self.storeXP([{"server":ctx.guild.id, "member":memb, "xp":xp}])
+        await self.storeXP([{"server":ctx.guild.id, "user":memb, "xp":xp}])
         
