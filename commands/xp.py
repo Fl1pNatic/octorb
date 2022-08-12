@@ -145,7 +145,7 @@ class xp(commands.Cog):
             return
         await self.storeXP([{"server":ctx.guild.id, "user":memb.id, "xp":xp}])
         
-    @givexp.error()
+    @givexp.error
     async def info_error(ctx, error):
         if isinstance(error, commands.BadArgument):
             await ctx.send("Incorrect arguments.")
