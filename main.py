@@ -12,7 +12,6 @@ from commands.math import math
 from commands.moderation import moderation
 from commands.other import other
 from commands.xp import xp
-# from commands.xp import xp
 
 load_dotenv()
 TOKEN = dotenv_values()["TOKEN"]
@@ -28,7 +27,6 @@ bot.add_cog(other(bot))
 bot.add_cog(moderation(bot))
 bot.add_cog(math(bot))
 bot.add_cog(xp(bot))
-# bot.add_cog(xp(bot))
 
 @bot.event
 async def on_ready():
