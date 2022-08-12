@@ -21,8 +21,11 @@ class xp(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: nextcord.Message):
         # print(self.messageCounts)
-        if message.author.bot or message.guild is None or message.content.startswith(self.bot.command_prefix):
+        if message.author.bot or message.guild is None:
             return
+        for prefix in (self.bot.command_prefix):
+            if message.content.startswith(prefix):
+                return
         if not message.guild.id in self.messageCounts:
             self.messageCounts[message.guild.id] = {}
 
