@@ -109,8 +109,14 @@ class xp(commands.Cog):
             except:
                 await ctx.reply("You don't have any XP")
                 return
+        if(user.startswith("<@")):
+            user = user[2:len(user)-1]
         print(user)
-        ctx.message.author: nextcord.Member = ctx.message.guild.get_member()
+        try: user = int(user)
+        except(Exception) as e:
+            await ctx.send("Invalid user")
+            return
+        ctx.message.author: nextcord.Member = ctx.message.guild.get_member(user)
         try:
             cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s", (ctx.message.guild.id, ctx.message.author.id))
             embed = nextcord.Embed(title="XP", color=0xff00bb)
