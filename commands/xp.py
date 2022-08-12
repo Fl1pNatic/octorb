@@ -109,7 +109,7 @@ class xp(commands.Cog):
         embed = nextcord.Embed(title="XP Leaderboards", color=0xff00bb)
         data = cursor.fetchall()
         for i in range(min(len(data), 5)):
-            embed.add_field(name=f"{i+1}.", value=f"<@{data[i][1]}>:  `{data[i][0]}`", inline=True)
+            embed.add_field(name=f"{i+1}.", value=f"<@{data[i][1]}>:  `{data[i][0]}`", inline=False)
         
         await ctx.send(embed = embed)
         
