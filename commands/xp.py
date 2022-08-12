@@ -105,7 +105,7 @@ class xp(commands.Cog):
             await ctx.reply("Squidward")
             return
         cursor:mysql.connector.connection.MySQLCursor = self.db.cursor()
-        cursor.execute("SELECT memberXp, memberId FROM xp WHERE serverId = %s ORDER BY memberXp DESC", (str(ctx.message.guild.id)))
+        cursor.execute("SELECT memberXp, memberId FROM xp WHERE serverId = %s ORDER BY memberXp DESC", [str(ctx.message.guild.id)])
         embed = nextcord.Embed(title="XP Leaderboards", color=0xff00bb)
         data = cursor.fetchall()
         for i in range(min(len(data), 5)):
