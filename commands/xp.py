@@ -140,7 +140,7 @@ class xp(commands.Cog):
     async def givexp(self, ctx, memb, xp):
         if type(memb) is discord.Member:
             UserID = str(memb.id)
-        else
+        else:
             UserID = str(memb)
         if self.db is None:
             print("No db?")
