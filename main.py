@@ -34,7 +34,7 @@ bot.add_cog(fun(bot))
 bot.add_cog(other(bot))
 bot.add_cog(moderation(bot))
 bot.add_cog(math(bot))
-bot.add_cog(xp(bot, db))
+bot.add_cog(xp(bot))
 bot.db = db
 @bot.event
 async def on_ready():
