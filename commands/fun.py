@@ -70,3 +70,16 @@ class fun(commands.Cog):
             command = f"UPDATE quickCommands SET output = '{message}' WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}'"
         cursor.execute(command)
         self.bot.db.commit()
+        await ctx.reply("Created quick command.")
+
+    @commands.command()
+    @commands.has_guild_permissions(manage_messages=True)
+    async def deletequickcommand(self, ctx, commandName: str):
+        cursor = self.bot.db.cursor()
+        cursor.execute(f"DELETE FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}';")
+        self.bot.db.commit()
+        if cursor.rowcount == 0:
+            await ctx.reply("No quick command with this name.")
+            return
+        await ctx.reply("Deleted quick command.")
+
