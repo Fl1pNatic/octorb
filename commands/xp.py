@@ -93,27 +93,20 @@ class xp(commands.Cog):
         print(cursor.rowcount)
         
     @commands.command()
-    async def xp(self, ctx, user: typing.Optional[str]):
+    async def xp(self, ctx: commands.Context, user: typing.Optional[discord.Member]):
         if self.db == None:
             await ctx.reply("You have 69 XP")
             return
         
         cursor:mysql.connector.connection.MySQLCursor = self.db.cursor()
         if user is not None:
-            if(user.startswith("<@")):
-                user = user[2:len(user)-1]
-            print(user)
-            try:
-                user = int(user)
-                ctx.message.author: discord.Member = ctx.message.guild.get_member(user)
-            except(Exception) as e:
-                await ctx.send("Invalid user")
-                return
+            ctx.message.author: discord.Member = user
+            
         try:
             cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s", (ctx.message.guild.id, ctx.message.author.id))
             embed = discord.Embed(title="XP", color=0xff00bb)
             embed.add_field(name=f"{ctx.message.author.display_name}", value=f"`XP: {cursor.fetchone()[0]}`")
-            embed.set_thumbnail(url=str(ctx.message.author.avatar_url))
+            embed.set_thumbnail(url=str(ctx.message.author.avatar.url))
             await ctx.reply(embed=embed)
             return
         except(Exception) as e:
