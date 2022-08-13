@@ -39,12 +39,9 @@ class fun(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def ask(self, ctx, *q):
+    async def ask(self, ctx, *q: any):
         a = choice(tuple(answer_list))
-        if len(q)!=0:
-            await ctx.reply(a)
-        else:
-            await ctx.reply("You need to ask something, you degenerate.")
+        await ctx.reply(a)
 
     @commands.command()
     async def gallery(self, ctx, *arg):

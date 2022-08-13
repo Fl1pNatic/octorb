@@ -33,16 +33,17 @@ if not "DEVMODE" in dotenv_values():
 
 
 setattr(bot,"db", db)
-bot.add_cog(fun(bot))
-bot.add_cog(other(bot))
-bot.add_cog(moderation(bot))
-bot.add_cog(math(bot))
-bot.add_cog(xp(bot))
+
 
 @bot.event
 async def on_ready():
     print(f"It's {bot.user}in' time")
     await gitupdate()
+    await bot.add_cog(fun(bot))
+    await bot.add_cog(other(bot))
+    await bot.add_cog(moderation(bot))
+    await bot.add_cog(math(bot))
+    await bot.add_cog(xp(bot))
 
 @bot.event
 async def on_disconnect():
@@ -142,6 +143,21 @@ async def on_command_error(ctx, error):
     match type(error):
         case permissionErrors.NonDeveloperError:
             await ctx.send("This command is limited to SquidBot Developers.")
+        case botCommands.errors.MissingRequiredArgument:
+            await ctx.send(f"Missing argument: {error.param.name}" )
         case _: raise(error)
+
+@bot.check
+async def botperms_check(ctx: botCommands.Context):
+    def predicate(ctx):
+        perms = []
+        guild = ctx.guild
+        me = guild.me if guild is not None else ctx.bot.user
+        permissions = ctx.channel.permissions_for(me)
+
+        if getattr(permissions, "send_messages") is False:
+            raise botCommands.BotMissingPermissions(["send_messages"])
+        return True
+        
 
 bot.run(TOKEN)

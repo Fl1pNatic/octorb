@@ -8,24 +8,13 @@ class math(commands.Cog):
         self.bot = bot    
 
     @commands.command()
+    @commands.bot_has_permissions
     async def coinflip(self, ctx):
         result = random.choice(tuple([0, 1]))
         await ctx.reply("Heads" if result == 1 else "Tails")
 
     @commands.command()
-    async def rng1000(self, ctx, *args):
-        if len(args) < 2:
-            await ctx.reply("Input minimum and maximum number (In range of -1000 to 1000)")
-            return
-
-        min = args[0]
-        max = args[1]
-        if isinstance(int(min), int) == False or isinstance(int(max), int) == False:
-            await ctx.reply("You have to input numbers")
-            return
-
-        min = int(min)
-        max = int(max)
+    async def rng1000(self, ctx, min: int, max: int):
         if int(min) < -1000 or int(min) > 1000:
             await ctx.reply("Minimum number is too low or high")
             return
@@ -40,13 +29,13 @@ class math(commands.Cog):
         await ctx.reply(result)
 
     @commands.command()
-    async def math(self, ctx, *, eq=None):
+    async def math(self, ctx, *, equation):
         mathPars = Parser()
         if eq==None:
             await ctx.reply("Input a math expression")
             return
         try:
-            await ctx.reply(mathPars.parse(eq).evaluate({}))
+            await ctx.reply(mathPars.parse(equation).evaluate({}))
         except:
-            await ctx.reply("'"+eq+"' is not a valid expression")
+            await ctx.reply("'"+equation+"' is not a valid expression")
             return              

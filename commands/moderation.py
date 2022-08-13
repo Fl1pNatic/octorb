@@ -9,59 +9,53 @@ class moderation(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def say(self, ctx, *, arg=None):
-        if ctx.message.author.guild_permissions.manage_messages:
-            if arg == None:
-                await ctx.reply("cmon make me say smth")
-                return
-            await ctx.message.delete()
-            await ctx.send(arg)
-        else:
-            await ctx.reply("I am not saying whatever you want me to say")
+    @commands.has_permissions(manage_messages=True)
+    async def say(self, ctx, *, phrase):
+        await ctx.message.delete()
+        await ctx.send(phrase)
 
     @commands.command()
-    async def pin(self, ctx, pinID=None):
-        e=random.choice(tuple(error_messages))
-        if ctx.message.author.guild_permissions.manage_messages:
-            if pinID == None:
-                await ctx.reply("You gotta supply id of the message as well")
-            pinM = await ctx.fetch_message(int(pinID))
-            if pinM.pinned == False:
-                await pinM.pin()
-            else:
-                await pinM.unpin()
-        else:
-            await ctx.reply(e)
+    @commands.has_permissions(manage_messages=True)
+    async def pin(self, ctx, messageId: discord.Message):
+        if messageId.pinned:
+            await messageId.unpin()
+            await ctx.send("Unpinned message.")
+            return
+        await messageId.pin()
+        await ctx.send("Pinned message.")
 
     @commands.command()
-    async def delete(self, ctx, mID=None):
-        e=random.choice(tuple(error_messages))
-        if ctx.message.author.guild_permissions.manage_messages:
-            deleteM = await ctx.fetch_message(mID)
-            await deleteM.delete()
-            await ctx.message.delete()
-        else:
-            await ctx.reply(e)
+    @commands.has_permissions(manage_messages=True)
+    async def delete(self, ctx, message: discord.Message):
+        await message.delete()
+        await ctx.message.delete()
 
     @commands.command()
+    @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
-        e=random.choice(tuple(error_messages))
-        if ctx.message.author.guild_permissions.kick_members:
-            if member == None:
-                await ctx.reply("Specify who you want to kick")
-                return
-            await ctx.member.send(f"You were kicked from Will You Craft Server, reason: {reason}")
-            await member.kick(reason=reason)
-            await ctx.reply(f"Member kicked: `{reason}`")
-        else:
-            await ctx.reply(e)
+        await member.send(f"You were kicked from Will You Craft Server, {f'reason: {reason}' if reason is not None else 'no reason was given.'}")
+        await member.kick(reason=reason if reason is not None else 'no reason was given.')
+        await ctx.reply(f"Member kicked: {f'reason: {reason}' if reason is not None else 'no reason was given.'}")
 
     @commands.command()
+    @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
-        e=random.choice(tuple(error_messages))
-        if ctx.message.author.guild_permissions.ban_members:
-            await ctx.member.send(f"You were banned from Will You Craft Server, reason: {reason}")
-            await member.ban(reason=reason)
-            await ctx.reply(f"Member banned: `{reason}`")
+        await member.send(f"You were banned from Will You Craft Server, {f'reason: {reason}' if reason is not None else 'no reason was given.'}")
+        await member.ban(reason=reason if reason is not None else 'no reason was given.')
+        await ctx.reply(f"Member banned: {f'reason: {reason}' if reason is not None else 'no reason was given.'}")       
+
+    @commands.command()
+    @commands.has_permissions(ban_members=True)
+    async def pardon(self, ctx, member: int):
+        bans = await ctx.guild.bans()
+        banned_users = [user.user.id for user in bans]
+        if member in banned_users:
+            await ctx.guild.unban(bans[banned_users.index(member)].user)
+            await ctx.reply(f"Member pardoned.")   
         else:
-            await ctx.reply(e)            
+            await ctx.reply("User does not appear to be banned.")
+    
+    @pardon.error
+    async def pardon_error(self, ctx, error):
+        if isinstance(error, commands.errors.CommandInvokeError):
+            await ctx.reply("Error pardoning member.")
