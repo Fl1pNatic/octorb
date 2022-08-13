@@ -66,12 +66,12 @@ class fun(commands.Cog):
         cursor = self.bot.db.cursor()
         commandName = commandName.replace("'","\'").replace('"','\"')
         message = message.replace("'","\'").replace('"','\"')
-        cursor.execute(f"SELECT COUNT(*) FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}';")
+        cursor.execute("SELECT COUNT(*) FROM quickCommands WHERE serverId = %s AND command = %s;", (ctx.guild.id, commandName))
         currentAmount = cursor.fetchone()
-        command = f"INSERT INTO quickCommands VALUES ( '{ctx.guild.id}', '{commandName}', '{message}' )"
         if currentAmount[0] != 0:
-            command = f"UPDATE quickCommands SET output = '{message}' WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}'"
-        cursor.execute(command)
+            cursor.execute("UPDATE quickCommands SET output = %s WHERE serverId = %s AND command = %s",(message, ctx.guild.id, commandName))
+        else:
+            cursor.execute("INSERT INTO quickCommands VALUES ( %s, %s, %s )", (ctx.guild.id, commandName, message))
         self.bot.db.commit()
         await ctx.reply("Created quick command.")
 
@@ -80,7 +80,7 @@ class fun(commands.Cog):
     async def deletequickcommand(self, ctx, commandName: str):
         cursor = self.bot.db.cursor()
         commandName = commandName.replace("'","\'").replace('"','\"')
-        cursor.execute(f"DELETE FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}';")
+        cursor.execute("DELETE FROM quickCommands WHERE serverId = %s AND command = %s;", (ctx.guild.id, commandName))
         self.bot.db.commit()
         if cursor.rowcount == 0:
             await ctx.reply("No quick command with this name.")
@@ -90,7 +90,7 @@ class fun(commands.Cog):
     @commands.command()
     async def getquickcommands(self, ctx):
         cursor = self.bot.db.cursor()
-        cursor.execute(f"SELECT command FROM quickCommands WHERE serverId = '{ctx.guild.id}'")
+        cursor.execute("SELECT command FROM quickCommands WHERE serverId = %s", (ctx.guild.id))
         embed = discord.Embed(
             title="Quick commands list.",
             color=0xff00bb,
@@ -108,7 +108,7 @@ class fun(commands.Cog):
         command = str(error)[9:-14]
         cursor = self.bot.db.cursor()
         command = command.replace("'","\'").replace('"','\"')
-        cursor.execute(f"SELECT output FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = '{command}'")
+        cursor.execute("SELECT output FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = %s", (command))
 
         returns = cursor.fetchall()
         if len(returns) == 0:
