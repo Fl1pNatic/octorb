@@ -63,11 +63,9 @@ class fun(commands.Cog):
     @commands.has_guild_permissions(manage_messages=True)
     async def createquickcommand(self, ctx, commandName: str, *, message: str):
         cursor = self.bot.db.cursor()
-        cursor.execute(f"SELECT * FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}';")
+        currentAmount = cursor.execute(f"SELECT COUNT(*) FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}';").fetchone()
         command = f"INSERT INTO quickCommands VALUES ( '{ctx.guild.id}', '{commandName}', '{message}' )"
-        if cursor.rowcount != 0:
+        if currentAmount != 0:
             command = f"UPDATE quickCommands SET output = '{message}' WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}'"
-        cursor.close()
-        cursor = self.bot.db.cursor()
         cursor.execute(command)
         self.db.commit()
