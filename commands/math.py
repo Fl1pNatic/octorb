@@ -28,11 +28,8 @@ class math(commands.Cog):
         await ctx.reply(result)
 
     @commands.command()
-    async def math(self, ctx, *, equation):
+    async def math(self, ctx, *, equation: str):
         mathPars = Parser()
-        if eq==None:
-            await ctx.reply("Input a math expression")
-            return
         try:
             await ctx.reply(mathPars.parse(equation).evaluate({}))
         except:
