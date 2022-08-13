@@ -1,4 +1,5 @@
 from discord.ext import commands
+import discord
 from random import choice
 
 answer_list = [
@@ -83,3 +84,16 @@ class fun(commands.Cog):
             return
         await ctx.reply("Deleted quick command.")
 
+    @commands.command()
+    async def getquickcommands(self, ctx):
+        cursor = self.bot.db.cursor()
+        cursor.execute(f"SELECT command FROM quickCommands WHERE serverId = '{ctx.guild.id}'")
+        embed = discord.Embed(
+            title="Quick commands list.",
+            color=0xff00bb,
+            description="Use like any other command!"
+        )
+        commands = cursor.fetchall()
+        for command in commands:
+            embed.add_field(name=command[0], value="\u200b", inline=False)
+        await ctx.send(embed=embed)
