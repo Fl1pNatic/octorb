@@ -8,6 +8,7 @@ from discord.ext import commands
 import asyncio
 import typing
 import mysql.connector
+from ..PermissionsChecks import permissionChecks
 xp = {}
 
 class xp(commands.Cog):
@@ -137,6 +138,7 @@ class xp(commands.Cog):
         await ctx.send(embed = embed)
         
     @commands.command()
+    @permissionChecks.developer()
     async def givexp(self, ctx, memb, xp):
         if memb.startswith("<@"):
             memb = memb[2:len(memb)-1]

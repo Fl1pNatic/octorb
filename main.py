@@ -11,6 +11,7 @@ from commands.math import math
 from commands.moderation import moderation
 from commands.other import other
 from commands.xp import xp
+from PermissionsChecks import permissionChecks, permissionErrors
 
 
 
@@ -22,7 +23,9 @@ command_prefix = ["sq!", "!", "s!"] if not "DEVMODE" in dotenv_values() else ["t
 bot = botCommands.Bot(command_prefix=command_prefix,
                     activity=discord.Activity(type=discord.ActivityType.watching, name="sq! | s! | !help for commands list"),
                    intents=discord.Intents.all(),
-                   help_command=None)
+                   help_command=None,
+                   case_insensitive=True
+                   )
 db = None
 if not "DEVMODE" in dotenv_values():
     db = mysql.connector.connect(host=dotenv_values()['DBHOST'], user=dotenv_values()['DBUSERNAME'], password=dotenv_values()['DBPASSWORD'], database=dotenv_values()['DB'])
@@ -34,6 +37,7 @@ bot.add_cog(other(bot))
 bot.add_cog(moderation(bot))
 bot.add_cog(math(bot))
 bot.add_cog(xp(bot))
+
 @bot.event
 async def on_ready():
     print(f"It's {bot.user}in' time")
@@ -98,10 +102,8 @@ async def gitupdate():
 
 
 @bot.command()
+@permissionChecks.developer()
 async def loadmodule(ctx:botCommands.Context, *args):
-    if ctx.message.author.guild_permissions.manage_guild == False:
-        await ctx.send("You have no perms")
-        return   
     if len(args) == 0:
         await ctx.send("You must specify a module to load, idio.")
         return
@@ -110,10 +112,8 @@ async def loadmodule(ctx:botCommands.Context, *args):
 
 
 @bot.command()
+@permissionChecks.developer()
 async def unloadmodule(ctx:botCommands.Context, *args):
-    if ctx.message.author.guild_permissions.manage_guild == False:
-        await ctx.send("You have no perms")
-        return    
     if len(args) == 0:
         await ctx.send("You must specify a module to unload, idit.")
         return
@@ -121,10 +121,8 @@ async def unloadmodule(ctx:botCommands.Context, *args):
     await unloadModule(module, ctx)
 
 @bot.command()
+@permissionChecks.developer()
 async def reloadmodule(ctx:botCommands.Context, *args):
-    if ctx.message.author.guild_permissions.manage_guild == False:
-        await ctx.send("You have no perms")
-        return
     if len(args) == 0:
         await ctx.send("You must specify a module to reload, idot.")
         return
@@ -133,13 +131,16 @@ async def reloadmodule(ctx:botCommands.Context, *args):
     await loadModule(module, ctx)
 
 @bot.command()
+@permissionChecks.developer()
 async def update(ctx:botCommands.Context):
-    if ctx.message.author.guild_permissions.manage_guild == False:
-        await ctx.send("You have no perms")
-        return
     await gitupdate()
     await ctx.reply("Pulled Changes")
     
-
+@bot.event
+async def on_command_error(ctx, error):
+    match type(error):
+        case permissionErrors.NonDeveloperError:
+            ctx.send("This command is limited to SquidBot Developers.")
+        case _: raise(error)
 
 bot.run(TOKEN)
