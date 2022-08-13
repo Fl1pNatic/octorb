@@ -6,12 +6,13 @@ from dotenv import dotenv_values, load_dotenv
 import git
 import os
 import mysql.connector
+from PermissionsChecks import permissionErrors, permissionChecks
 from commands.fun import fun
 from commands.math import math
 from commands.moderation import moderation
 from commands.other import other
 from commands.xp import xp
-from PermissionsChecks import permissionChecks, permissionErrors
+sys.path.append(".")
 
 
 

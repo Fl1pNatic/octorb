@@ -8,7 +8,7 @@ from discord.ext import commands
 import asyncio
 import typing
 import mysql.connector
-from ..PermissionsChecks import permissionChecks
+from PermissionsChecks import permissionChecks
 xp = {}
 
 class xp(commands.Cog):
