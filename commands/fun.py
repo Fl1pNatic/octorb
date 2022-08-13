@@ -90,7 +90,7 @@ class fun(commands.Cog):
     @commands.command()
     async def getquickcommands(self, ctx):
         cursor = self.bot.db.cursor()
-        cursor.execute("SELECT command FROM quickCommands WHERE serverId = %s", (ctx.guild.id))
+        cursor.execute("SELECT command FROM quickCommands WHERE serverId = %s", (ctx.guild.id,))
         embed = discord.Embed(
             title="Quick commands list.",
             color=0xff00bb,
@@ -108,7 +108,7 @@ class fun(commands.Cog):
         command = str(error)[9:-14]
         cursor = self.bot.db.cursor()
         command = command.replace("'","\'").replace('"','\"')
-        cursor.execute("SELECT output FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = %s", (command))
+        cursor.execute("SELECT output FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = %s", (command,))
 
         returns = cursor.fetchall()
         if len(returns) == 0:
