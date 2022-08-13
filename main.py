@@ -149,15 +149,13 @@ async def on_command_error(ctx, error):
 
 @bot.check
 async def botperms_check(ctx: botCommands.Context):
-    def predicate(ctx):
-        perms = []
-        guild = ctx.guild
-        me = guild.me if guild is not None else ctx.bot.user
-        permissions = ctx.channel.permissions_for(me)
+    guild = ctx.guild
+    me = guild.me if guild is not None else ctx.bot.user
+    permissions = ctx.channel.permissions_for(me)
 
-        if getattr(permissions, "send_messages") is False:
-            raise botCommands.BotMissingPermissions(["send_messages"])
-        return True
+    if getattr(permissions, "send_messages") is False:
+        raise botCommands.BotMissingPermissions(["send_messages"])
+    return True
         
 
 bot.run(TOKEN)
