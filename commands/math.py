@@ -8,7 +8,6 @@ class math(commands.Cog):
         self.bot = bot    
 
     @commands.command()
-    @commands.bot_has_permissions
     async def coinflip(self, ctx):
         result = random.choice(tuple([0, 1]))
         await ctx.reply("Heads" if result == 1 else "Tails")
