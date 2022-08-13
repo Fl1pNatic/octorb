@@ -69,4 +69,4 @@ class fun(commands.Cog):
         if currentAmount != 0:
             command = f"UPDATE quickCommands SET output = '{message}' WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}'"
         cursor.execute(command)
-        self.db.commit()
+        self.bot.db.commit()
