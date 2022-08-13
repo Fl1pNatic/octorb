@@ -82,7 +82,7 @@ async def loadModule(module, ctx):
         await ctx.send("Error loading module. "+error.msg)
         return
     try:
-        bot.add_cog(sys.modules[f"commands.{module}"].__getattribute__(f"{module}")(bot))
+        await bot.add_cog(sys.modules[f"commands.{module}"].__getattribute__(f"{module}")(bot))
     except(AttributeError) as error:
         await ctx.send("Error loading module. "+error.name)
         return
