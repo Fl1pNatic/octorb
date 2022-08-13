@@ -64,6 +64,8 @@ class fun(commands.Cog):
     @commands.has_guild_permissions(manage_messages=True)
     async def createquickcommand(self, ctx, commandName: str, *, message: str):
         cursor = self.bot.db.cursor()
+        commandName = commandName.replace("'","\'").replace('"','\"')
+        message = message.replace("'","\'").replace('"','\"')
         cursor.execute(f"SELECT COUNT(*) FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}';")
         currentAmount = cursor.fetchone()
         command = f"INSERT INTO quickCommands VALUES ( '{ctx.guild.id}', '{commandName}', '{message}' )"
@@ -77,6 +79,7 @@ class fun(commands.Cog):
     @commands.has_guild_permissions(manage_messages=True)
     async def deletequickcommand(self, ctx, commandName: str):
         cursor = self.bot.db.cursor()
+        commandName = commandName.replace("'","\'").replace('"','\"')
         cursor.execute(f"DELETE FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}';")
         self.bot.db.commit()
         if cursor.rowcount == 0:
@@ -104,7 +107,7 @@ class fun(commands.Cog):
         if not isinstance(error, commands.errors.CommandNotFound): return
         command = str(error)[9:-14]
         cursor = self.bot.db.cursor()
-
+        command = command.replace("'","\'").replace('"','\"')
         cursor.execute(f"SELECT output FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = '{command}'")
 
         returns = cursor.fetchall()
