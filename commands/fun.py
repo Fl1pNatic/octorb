@@ -105,7 +105,7 @@ class fun(commands.Cog):
         command = str(error)[9:-14]
         cursor = self.bot.db.cursor()
 
-        cursor.execute(f"SELECT output FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = {command}")
+        cursor.execute(f"SELECT output FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = '{command}'")
 
         returns = cursor.fetchall()
         if len(returns) == 0:
