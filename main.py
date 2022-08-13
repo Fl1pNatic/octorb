@@ -100,7 +100,6 @@ async def gitupdate():
     repo: git.Repo = git.Repo(os.path.dirname(__file__))
     for remote in repo.remotes:
         remote.pull()
-    print("Pulled Changes")
 
 
 @bot.command()
@@ -145,6 +144,8 @@ async def on_command_error(ctx, error):
             await ctx.send("This command is limited to SquidBot Developers.")
         case botCommands.errors.MissingRequiredArgument:
             await ctx.send(f"Missing argument: {error.param.name}" )
+        case botCommands.errors.CommandNotFound:
+            pass
         case _: raise(error)
 
 @bot.check

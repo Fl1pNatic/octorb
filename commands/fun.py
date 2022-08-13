@@ -96,4 +96,19 @@ class fun(commands.Cog):
         commands = cursor.fetchall()
         for command in commands:
             embed.add_field(name=command[0], value="\u200b", inline=False)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        if self.bot.db is None: return
+        if not isinstance(error, commands.errors.CommandNotFound): return
+        command = str(error)[9:-14]
+        cursor = self.bot.db.cursor()
+
+        cursor.execute(f"SELECT output FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = {command}")
+
+        returns = cursor.fetchall()
+        if len(returns) == 0:
+            return
+        
+        await ctx.send(returns[0][0])
