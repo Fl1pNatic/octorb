@@ -90,7 +90,6 @@ class xp(commands.Cog):
             cursor.execute(createCommand, (user[0],user[1],user[2]))
 
         self.db.commit()
-        print(cursor.rowcount)
         
     @commands.command()
     async def xp(self, ctx: commands.Context, user: typing.Optional[discord.Member]):
@@ -132,15 +131,8 @@ class xp(commands.Cog):
         
     @commands.command()
     @permissionChecks.developer()
-    async def givexp(self, ctx, memb, xp):
-        if memb.startswith("<@"):
-            memb = memb[2:len(memb)-1]
-        else:
-            memb = str(memb)
+    async def givexp(self, ctx, member: discord.member, xp: int):
         if self.db is None:
             print("No db?")
             return
-        if ctx.message.author.guild_permissions.manage_guild == False:
-            await ctx.reply("To be fair, even I don't know why you thought you can do this")
-            return
-        await self.storeXP([{"server":ctx.guild.id, "user":memb, "xp":xp}])
+        await self.storeXP([{"server":ctx.guild.id, "user":member.id, "xp":xp}])

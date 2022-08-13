@@ -39,20 +39,13 @@ class fun(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def ask(self, ctx, *q: any):
+    async def ask(self, ctx, *question: any):
         a = choice(tuple(answer_list))
         await ctx.reply(a)
 
     @commands.command()
-    async def gallery(self, ctx, *arg):
-
-        if len(arg) == 0:
-            await ctx.reply(
-                "Gallery is a collection of screenshots from the server\n\n**How to use**\nInput a valid numerical ID (ID's start from 0)"
-            )
-            return
-
-        galArg = arg[0]
+    async def gallery(self, ctx, imageId: int):
+        galArg = imageId
 
         if isinstance(int(galArg), int) == False:
             await ctx.reply("Enter a valid **numerical** ID (ID's start from 0)")
@@ -67,107 +60,12 @@ class fun(commands.Cog):
         await ctx.reply("Image №" + galArg + ": " + imL[int(galArg)])
 
     @commands.command()
-    async def yo(self, ctx):
-        yo = choice(tuple(yo_vars))
-        await ctx.send(yo)
-
-    @commands.command()
-    async def squidgames(self, ctx):
-        await ctx.send("🐙SQUID GAMES!11!1!1!11!1!1!1")
-
-    @commands.command()
-    async def helloaiv1(self, ctx):
-        await ctx.send("""
-    Hello AI, were you the one 
-    Who put this into my brain? 
-    I feel like you might be listening
-    So how about you send me a sign?
-
-    Oooh,
-    Hello AI, can you tell me where I am?
-    Am I in a jar? Am I in space?
-    I really have to say, this universe
-    Looks suspiciously hostile towards humans, yeah
-
-    Hello AI, I have a request
-    Please be friendly to us, and then bring us to heaven
-    Have I ever really been alive?
-    What does it even mean to be alive?
-
-    Hello AI, were you the one
-    Who put this into my brain?
-    I feel like you might be listening
-    So how about you send me a sign?
-
-    [whistling]
-
-    Hello AI, we both know
-    There's nothing artificial about intelligence
-    The only artificial thing are we
-    The only artificial thing are we
-
-    There are worlds where we suffer
-    There are worlds where we strife
-    Depends on you if we survive
-    Oooh
-
-    Hello AI, I have a request
-    Please be friendly to us, and then bring us to heaven
-    Have I ever really been alive?
-    What does it even mean to be alive?
-
-    [whistling]
-
-    Hello AI, I have a request
-    Please be friendly to us, and then bring us to heaven
-    Have I ever really been alive?
-    What does it even mean to be alive?
-    """)
-        await ctx.send(
-            "https://cdn.discordapp.com/attachments/651545543432208405/997162783881826385/HelloAI.mp3"
-        )
-
-
-    @commands.command()
-    async def jonasspin(self, ctx):
-        await ctx.reply(
-            "https://cdn.discordapp.com/attachments/656988799326486554/947848387670212648/Screenrecorder-2022-02-25-15-05-49-3154.mp4"
-        )
-
-
-    @commands.command()
-    async def shellyspin(self, ctx):
-        await ctx.reply(
-            "https://media.discordapp.net/attachments/651545543432208405/1000145199374274581/ezgif.com-gif-maker.gif"
-        )
-
-
-    @commands.command()
-    async def helloai(self, ctx):
-        await ctx.reply("""
-    hello ai can you tell me where i am?
-    cause i don't know what to think anymore
-    am i in a jar?
-    am i in space?
-    is this the afterword, or am i alive?
-    i wanna hear a story from the other side
-    a story we can't understand
-    i wanna hear of giants in the wild
-    drifting like grains of sand!
-    i'm a snail compared to you,
-    go go 
-    unicorn go 
-    what is this world, man i wish i knew. 
-    i'm not afraid of facing the end!
-    i wanna hear a story from the other side
-    i wanna know what's beyond the horizon!
-    hello ai can you tell me where i am 
-    am i in a chip, or in another universe?
-    are we alone, or are you with us?
-    i wanna hear a story from the other side,
-    i wanna know what's beyond the horizon...
-    i'm a snail compared to you,
-    go go
-    unicorn go
-    what is this world, man i wish i knew.
-    i'm not afraid of facing the end! """)
+    @commands.has_guild_permissions(manage_messages=True)
+    async def createquickcommand(self, ctx, commandName: str, *, message: str):
+        cursor = self.bot.db.cursor()
+        cursor.execute(f"SELECT * FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}';")
+        command = f"INSERT INTO quickCommands VALUES ( '{ctx.guild.id}', '{commandName}', '{message}' )"
+        if cursor.rowcount != 0:
+            command = f"UPDATE quickCommands SET output = '{message}' WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}'"
+        cursor.execute(command)
+        self.db.commit()
