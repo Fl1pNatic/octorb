@@ -141,7 +141,7 @@ async def update(ctx:botCommands.Context):
 async def on_command_error(ctx, error):
     match type(error):
         case permissionErrors.NonDeveloperError:
-            ctx.send("This command is limited to SquidBot Developers.")
+            await ctx.send("This command is limited to SquidBot Developers.")
         case _: raise(error)
 
 bot.run(TOKEN)
