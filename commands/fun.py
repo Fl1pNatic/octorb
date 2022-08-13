@@ -67,5 +67,7 @@ class fun(commands.Cog):
         command = f"INSERT INTO quickCommands VALUES ( '{ctx.guild.id}', '{commandName}', '{message}' )"
         if cursor.rowcount != 0:
             command = f"UPDATE quickCommands SET output = '{message}' WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}'"
+        cursor.close()
+        cursor = self.bot.db.cursor()
         cursor.execute(command)
         self.db.commit()
