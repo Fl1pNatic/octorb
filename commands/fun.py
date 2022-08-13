@@ -108,7 +108,7 @@ class fun(commands.Cog):
         command = str(error)[9:-14]
         cursor = self.bot.db.cursor()
         command = command.replace("'","\'").replace('"','\"')
-        cursor.execute("SELECT output FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = %s", (command,))
+        cursor.execute("SELECT output FROM quickCommands WHERE serverId = %s AND command = %s", (ctx.guild.id, command))
 
         returns = cursor.fetchall()
         if len(returns) == 0:
