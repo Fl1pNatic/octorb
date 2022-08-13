@@ -79,6 +79,7 @@ class fun(commands.Cog):
         cursor = self.bot.db.cursor()
         cursor.execute(f"DELETE FROM quickCommands WHERE serverId = '{ctx.guild.id}' AND command = '{commandName}';")
         self.bot.db.commit()
+        print(cursor.rowcount)
         if cursor.rowcount == 0:
             await ctx.reply("No quick command with this name.")
             return
