@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands, tasks
 import asyncio
 import typing
-import mysql.connector
 from PermissionsChecks import permissionChecks
 xp = {}
 
@@ -11,7 +10,7 @@ class xp(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.messageCounts = {}
-        self.db:mysql.connector.MySQLConnection = bot.db
+        self.db = bot.db
 
     async def cog_load(self):
         self.processXP.start()
@@ -49,7 +48,7 @@ class xp(commands.Cog):
         if self.db is None:
             # print(xpStore)
             return
-        cursor:mysql.connector.connection.MySQLCursor = self.db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("SELECT * FROM xp")
         results = cursor.fetchall()
         members = {}
@@ -90,7 +89,7 @@ class xp(commands.Cog):
             await ctx.reply("You have 69 XP")
             return
         
-        cursor:mysql.connector.connection.MySQLCursor = self.db.cursor()
+        cursor = self.db.cursor()
         if user is not None:
             ctx.message.author: discord.Member = user
             
@@ -113,7 +112,7 @@ class xp(commands.Cog):
         if self.db == None:
             await ctx.reply("Squidward")
             return
-        cursor:mysql.connector.connection.MySQLCursor = self.db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("SELECT memberXp, memberId FROM xp WHERE serverId = %s ORDER BY memberXp DESC", [str(ctx.message.guild.id)])
         embed = discord.Embed(title="XP Leaderboards", color=0xda7dff)
         data = cursor.fetchall()

@@ -5,7 +5,7 @@ from discord.ext import commands as botCommands
 from dotenv import dotenv_values, load_dotenv
 import git
 import os
-import mysql.connector
+import pymysql
 from PermissionsChecks import permissionErrors, permissionChecks, devCheck
 from commands.fun import fun
 from commands.math import math
@@ -27,7 +27,7 @@ bot = botCommands.Bot(command_prefix=command_prefix,
                    )
 db = None
 if not "DEVMODE" in dotenv_values():
-    db = mysql.connector.connect(host=dotenv_values()['DBHOST'], user=dotenv_values()['DBUSERNAME'], password=dotenv_values()['DBPASSWORD'], database=dotenv_values()['DB'], use_pure=True,auth_plugin='mysql_native_password')
+    db = pymysql.connect(host=dotenv_values()['DBHOST'], user=dotenv_values()['DBUSERNAME'], password=dotenv_values()['DBPASSWORD'], database=dotenv_values()['DB'])
 
 
 setattr(bot,"db", db)
