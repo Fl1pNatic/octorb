@@ -137,6 +137,10 @@ async def on_command_error(ctx, error):
             await ctx.send(f"Missing argument: {error.param.name}" )
         case botCommands.errors.CommandNotFound:
             pass
+        case botCommands.errors.CommandInvokeError:
+            if isinstance(error.original, discord.errors.HTTPException):
+                if error.original.code == 50035:
+                    await ctx.send("it's too big daddy, it won't fit")
         case _: raise(error)
 
 @bot.check
