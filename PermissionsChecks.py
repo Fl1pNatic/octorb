@@ -11,11 +11,15 @@ class permissionErrors:
     class NonDeveloperError(commands.CheckFailure):
         pass
 
+def devCheck(ctx: commands.Context):
+    if ctx.author.id in developer_ids:
+        return True
+    raise permissionErrors.NonDeveloperError()
+
 class permissionChecks:
     def developer():
         async def predicate(ctx: commands.Context):
-            if ctx.author.id in developer_ids:
+            if devCheck(ctx):
                 return True
-            raise permissionErrors.NonDeveloperError()
         return commands.check(predicate)
 

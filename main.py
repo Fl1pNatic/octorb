@@ -6,7 +6,7 @@ from dotenv import dotenv_values, load_dotenv
 import git
 import os
 import mysql.connector
-from PermissionsChecks import permissionErrors, permissionChecks
+from PermissionsChecks import permissionErrors, permissionChecks, devCheck
 from commands.fun import fun
 from commands.math import math
 from commands.moderation import moderation
@@ -148,6 +148,12 @@ async def botperms_check(ctx: botCommands.Context):
     if getattr(permissions, "send_messages") is False:
         raise botCommands.BotMissingPermissions(["send_messages"])
     return True
+
+if "DEVMODE" in dotenv_values():
+    @bot.check
+    async def devckeck(ctx: botCommands.Context):
+        if devCheck(ctx):
+            return True
         
 
 bot.run(TOKEN)
