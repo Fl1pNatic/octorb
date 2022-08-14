@@ -60,7 +60,7 @@ class fun(commands.Cog):
 
         await ctx.reply("Image №" + galArg + ": " + imL[int(galArg)])
 
-    @commands.Group()
+    @commands.group()
     async def quickcommand(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send("Use create, delete, or list!")
