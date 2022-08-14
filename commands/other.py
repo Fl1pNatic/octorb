@@ -23,7 +23,7 @@ help_embed.add_field(name="XP",
  inline=False)
 
 help_embed.add_field(name="Other",
- value="help | source | minecraft",
+ value="help | source ",
  inline=False)
 
 class other(commands.Cog):
