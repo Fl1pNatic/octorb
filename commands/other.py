@@ -26,6 +26,9 @@ class other(commands.Cog):
         aEmbed.add_field(name="Source", value="""This bot is **open-source** which means that anyone can contribute to it.
 
         You can find the source code here - <https://github.com/Fl1pNatic/octorb>""", inline=False)
+
+        aEmbed.add_field(name="Statistics", value=f"""Server count: {len(self.bot.guilds)}""")
+
         aEmbed.add_field(name="Technical", value=f"""discord.py version: {discord.__version__}
        """)
         await ctx.send(embed=aEmbed)

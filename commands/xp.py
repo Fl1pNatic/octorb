@@ -47,7 +47,7 @@ class xp(commands.Cog):
 
     async def storeXP(self, xpStore):
         if self.db is None:
-            print(xpStore)
+            # print(xpStore)
             return
         cursor:mysql.connector.connection.MySQLCursor = self.db.cursor()
         cursor.execute("SELECT * FROM xp")
