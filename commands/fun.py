@@ -1,8 +1,9 @@
+from os import O_WRONLY
 from discord.ext import commands
 import discord
 from random import choice
 import typing
-
+from owoify import owoify
 answer_list = [
     "you sharted", "Maybe not.", "Probably.",
     "Maybe you should get a life instead of being on discord.",
@@ -44,6 +45,10 @@ class fun(commands.Cog):
     async def ask(self, ctx, *question: any):
         a = choice(tuple(answer_list))
         await ctx.reply(a)
+
+    @commands.command()
+    async def owoify(self, ctx, *, phrase):
+        await ctx.reply(owoify.owoify(phrase))
 
     @commands.command()
     async def gallery(self, ctx, imageId: int):
