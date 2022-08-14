@@ -68,6 +68,9 @@ class fun(commands.Cog):
         message = message.replace("'","\'").replace('"','\"')
         cursor.execute("SELECT COUNT(*) FROM quickCommands WHERE serverId = %s AND command = %s;", (ctx.guild.id, commandName))
         currentAmount = cursor.fetchone()
+        if currentAmount[0] >=250:
+            await ctx.reply("You have too many quick commands!")
+            return
         if currentAmount[0] != 0:
             cursor.execute("UPDATE quickCommands SET output = %s WHERE serverId = %s AND command = %s",(message, ctx.guild.id, commandName))
         else:
@@ -97,8 +100,9 @@ class fun(commands.Cog):
             description="Use like any other command!"
         )
         commands = cursor.fetchall()
-        for command in commands:
-            embed.add_field(name=command[0], value="\u200b", inline=False)
+        # for command in commands:
+
+        embed.add_field(name="List", value=commands, inline=True)
         await ctx.reply(embed=embed)
 
     @commands.Cog.listener()
