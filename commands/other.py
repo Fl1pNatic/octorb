@@ -55,9 +55,10 @@ class other(commands.Cog):
         hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!")
         for fileC in os.listdir('./commands'):
             await ctx.send("file: " + fileC)
-            coga = self.bot.get_cog(fileC[0:-3])
-            await ctx.send(coga)
-            # if fileC.endswith('.py'):
+
+            if fileC.endswith('.py'):
+                coga = self.bot.get_cog(fileC[0:-3])
+                await ctx.send(coga)
               #   co = await self.bot.get_cog(str(fileC[0:-3]))
                 # await ctx.reply(co.qualified_name)
             # hEmbed.add_field(name=cog.qualified_name, value=cog.get_commands().name, inline=True)
