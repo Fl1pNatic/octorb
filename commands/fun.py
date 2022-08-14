@@ -1,6 +1,7 @@
 from discord.ext import commands
 import discord
 from random import choice
+import typing
 
 answer_list = [
     "you sharted", "Maybe not.", "Probably.",
@@ -59,6 +60,13 @@ class fun(commands.Cog):
             return
 
         await ctx.reply("Image №" + galArg + ": " + imL[int(galArg)])
+    
+    @commands.command()
+    async def avatar(self, ctx, user: typing.Optional[discord.Member]):
+        if user is not None:
+            ctx.message.author: discord.Member = user
+
+        await ctx.reply(user.display_name + "'s Avatar: \n" + user.display_avatar.url)
 
     @commands.command()
     @commands.has_guild_permissions(manage_messages=True)
