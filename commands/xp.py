@@ -1,7 +1,4 @@
-from email import message
 from math import log
-from concurrent.futures import process
-import random
 import discord
 from discord.ext import commands
 import asyncio
@@ -16,8 +13,7 @@ class xp(commands.Cog):
         self.messageCounts = {}
         self.db:mysql.connector.MySQLConnection = bot.db
 
-    @commands.Cog.listener()
-    async def on_ready(self):
+    async def cog_load(self):
         await self.processXP()
 
     @commands.Cog.listener()
