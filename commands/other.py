@@ -24,8 +24,10 @@ class other(commands.Cog):
         aEmbed.add_field(name="History", value="""The bot was originally made for a Minecraft SMP Discord server.
         It was started on 8th of August 2022 and renamed to Octorb on 14th of August 2022""", inline=False)
         aEmbed.add_field(name="Source", value="""This bot is **open-source** which means that anyone can contribute to it.
-        
+
         You can find the source code here - <https://github.com/Fl1pNatic/octorb>""", inline=False)
+        aEmbed.add_field(name="Technical", value=f"""discord.py version: {discord.__version__}
+       """)
         await ctx.send(embed=aEmbed)
 
     @commands.command()
