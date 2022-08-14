@@ -102,8 +102,7 @@ class fun(commands.Cog):
         commands = cursor.fetchall()
         cL = ""
         for command in commands:
-            # cL + command + " "
-            await ctx.reply(command)
+            cL + command[0] + " "
         # for command in commands:
 
         embed.add_field(name="List", value=cL, inline=True)
