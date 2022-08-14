@@ -14,7 +14,7 @@ class other(commands.Cog):
                 coga = self.bot.get_cog(fileC[0:-3])
                 comList = " "
                 for com in coga.get_commands():
-                    comList += str(com).capitalize() + ", "
+                    comList += str(com) + ", "
                 hEmbed.add_field(name=coga.qualified_name.capitalize(), value=comList[0:-2], inline=True)
         await ctx.send(embed=hEmbed)
 
