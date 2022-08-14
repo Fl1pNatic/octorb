@@ -141,7 +141,7 @@ async def update(ctx:botCommands.Context):
 async def on_command_error(ctx, error):
     match type(error):
         case permissionErrors.NonDeveloperError:
-            await ctx.send("This command is limited to SquidBot Developers.")
+            await ctx.send("This command is limited to Octorb Developers.")
         case botCommands.errors.MissingRequiredArgument:
             await ctx.send(f"Missing argument: {error.param.name}" )
         case botCommands.errors.CommandNotFound:
