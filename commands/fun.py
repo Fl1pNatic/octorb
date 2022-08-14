@@ -46,7 +46,7 @@ class fun(commands.Cog):
         a = choice(tuple(answer_list))
         await ctx.reply(a)
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def owoify(self, ctx, *, phrase):
         await ctx.reply(owoify(phrase))
 

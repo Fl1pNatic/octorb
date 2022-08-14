@@ -15,7 +15,7 @@ class other(commands.Cog):
         cogs = [cog for cog in cogs.values()]
         cogs.sort(key=lambda cog:cog.qualified_name)
         for cog in cogs:
-            hEmbed.add_field(name=cog.qualified_name.capitalize(), value=", ".join([command.name for command in cog.get_commands()]))
+            hEmbed.add_field(name=cog.qualified_name.capitalize(), value=", ".join([command.name for command in cog.get_commands() if command.hidden is False ]))
         await ctx.send(embed=hEmbed)
 
     @commands.command()
