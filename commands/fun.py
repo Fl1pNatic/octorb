@@ -65,6 +65,8 @@ class fun(commands.Cog):
     async def avatar(self, ctx, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
         if user is not None:
             ctx.message.author: discord.Member = user
+        if ctx.message.author.nick == None:
+            ctx.message.author.nick: str = ctx.message.author.name
         if default != True:
            await ctx.reply(str(ctx.message.author.nick) + "'s Avatar: \n" + ctx.message.author.display_avatar.url)
         else:
