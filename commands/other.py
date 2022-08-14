@@ -58,9 +58,12 @@ class other(commands.Cog):
                 coga = self.bot.get_cog(fileC[0:-3])
                 # await ctx.send(coga.qualified_name)
                 comList = " "
-                for com in coga.get_commands():
-                    comList += com + ", "
-                    await ctx.send(comList)
+                try:
+                    for com in coga.get_commands():
+                        comList += com + ", "
+                        await ctx.send(comList)
+                except Exception as e:
+                    await ctx.send(e)
                 hEmbed.add_field(name=coga.qualified_name, value=comList[0:-2], inline=True)
 
         # await ctx.reply(embed=hEmbed)
