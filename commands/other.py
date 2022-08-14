@@ -1,6 +1,5 @@
-import discord
 from discord.ext import commands
-import git, os
+import git, os, discord
 
 help_embed = discord.Embed(title="Help",
                             description="What each command does",
@@ -53,9 +52,11 @@ class other(commands.Cog):
     @commands.command()
     async def createHelpEmbed(self, ctx):
         hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!")
-        cog = self.bot.get_cog("Fun")
+        for file in os.listdir('.'):
+            if file.endswith('.py'):
+                co = self.bot.get_cog(file[0:-3])
+                await ctx.reply(co.qualified_name)
             # hEmbed.add_field(name=cog.qualified_name, value=cog.get_commands().name, inline=True)
-        await ctx.reply(cog.qualified_name)
 
         # await ctx.reply(embed=hEmbed)
                 
