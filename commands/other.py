@@ -7,7 +7,7 @@ help_embed = discord.Embed(title="Help",
                             color=0xff00bb)
 
 help_embed.add_field(name="Fun",
-    value="ask | gallery | coinflip | rng1000 | yo",
+    value="ask | gallery | coinflip | rng1000 | yo | quickcommands",
     inline=False)
 
 help_embed.add_field(name="Moderation",
@@ -29,6 +29,7 @@ help_embed.add_field(name="Other",
 class other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        # self.createHelpEmbed(self)
 
     @commands.command()
     async def help(self, ctx):
@@ -49,5 +50,8 @@ class other(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def createHelpEmbed(self, ctx):
+        await ctx.send(self.bot.cogs)
 
                 
