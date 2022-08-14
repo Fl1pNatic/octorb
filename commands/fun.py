@@ -72,6 +72,29 @@ class fun(commands.Cog):
         else:
            await ctx.reply(str(ctx.message.author.name) + "'s Avatar: \n" + ctx.message.author.avatar.url)
 
+    @commands.command()
+    async def userinfo(self, ctx, user: typing.Optional[discord.Member]):
+        if user is not None:
+            ctx.message.author: discord.Member = user
+
+        us = await self.bot.fetch_user(ctx.message.author.id)
+        mem = ctx.message.author
+
+        boostText = '`Never`' if len(str(mem.premium_since)[0:-9]) == 0 else f'`str(mem.premium_since)[0:-9]`'
+
+        uEmbed = discord.Embed(title="Info about: " + str(us), description="Through the power of Discord's API, here is some info about this user.", color=us.accent_color)
+        uEmbed.set_thumbnail(url=us.avatar.url)
+
+        uEmbed.add_field(name="Account info", value=f"""Created at: `{str(us.created_at)[0:-9]}`
+        User ID: `{us.id}`
+        Accent color: `{us.accent_color}`""", inline=False)
+
+        uEmbed.add_field(name="Member info", value=f"""Joined at: `{str(mem.joined_at)[0:-9]}`
+        Top Role: `{mem.top_role}`
+        Display Name: `{mem.display_name}`
+        Boosting since: {boostText}""", inline=False)
+        await ctx.reply(embed=uEmbed,)
+
     @commands.group()
     async def quickcommand(self, ctx):
         if ctx.invoked_subcommand is None:
