@@ -91,7 +91,7 @@ class fun(commands.Cog):
         await ctx.reply("Deleted quick command.")
 
     @commands.command()
-    async def getquickcommands(self, ctx):
+    async def quickcommands(self, ctx):
         cursor = self.bot.db.cursor()
         cursor.execute("SELECT command FROM quickCommands WHERE serverId = %s", (ctx.guild.id,))
         embed = discord.Embed(
