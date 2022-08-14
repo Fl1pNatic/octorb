@@ -1,3 +1,4 @@
+from typing import ItemsView, OrderedDict
 import discord
 from discord.ext import commands
 import git, os
@@ -10,8 +11,11 @@ class other(commands.Cog):
     async def help(self, ctx):
         hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!", color=0xda7dff)
 
-        for cogName, cog in self.bot.cogs.items():
-            hEmbed.add_field(name=cogName.capitalize(), value=", ".join([command.name for command in cog.get_commands()]))
+        cogs = self.bot.cogs
+        cogs = [cog for cog in cogs.values()]
+        cogs.sort(key=lambda cog:cog.qualified_name)
+        for cog in cogs:
+            hEmbed.add_field(name=cog.qualified_name.capitalize(), value=", ".join([command.name for command in cog.get_commands()]))
         await ctx.send(embed=hEmbed)
 
     @commands.command()
