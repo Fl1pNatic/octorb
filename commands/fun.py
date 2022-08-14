@@ -66,11 +66,13 @@ class fun(commands.Cog):
         cursor = self.bot.db.cursor()
         commandName = commandName.replace("'","\'").replace('"','\"')
         message = message.replace("'","\'").replace('"','\"')
-        cursor.execute("SELECT COUNT(*) FROM quickCommands WHERE serverId = %s AND command = %s;", (ctx.guild.id, commandName))
-        currentAmount = cursor.fetchone()
-        if currentAmount[0] >=250:
+        cursor.execute("SELECT COUNT(*) FROM quickCommands WHERE serverId = %s", (ctx.guild.id))
+        commandAmount = cursor.fetchone()
+        if commandAmount[0] >=250:
             await ctx.reply("You have too many quick commands!")
             return
+        cursor.execute("SELECT COUNT(*) FROM quickCommands WHERE serverId = %s AND command = %s;", (ctx.guild.id, commandName))
+        currentAmount = cursor.fetchone()
         if currentAmount[0] != 0:
             cursor.execute("UPDATE quickCommands SET output = %s WHERE serverId = %s AND command = %s",(message, ctx.guild.id, commandName))
         else:
