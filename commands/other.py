@@ -60,7 +60,8 @@ class other(commands.Cog):
                 comList = " "
                 for com in coga.get_commands():
                     comList += com + ", "
+                    await ctx.send(comList)
                 hEmbed.add_field(name=coga.qualified_name, value=comList[0:-2], inline=True)
 
-        await ctx.reply(embed=hEmbed)
+        # await ctx.reply(embed=hEmbed)
                 
