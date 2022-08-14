@@ -27,7 +27,7 @@ bot = botCommands.Bot(command_prefix=command_prefix,
                    )
 db = None
 if not "DEVMODE" in dotenv_values():
-    db = mysql.connector.connect(host=dotenv_values()['DBHOST'], user=dotenv_values()['DBUSERNAME'], password=dotenv_values()['DBPASSWORD'], database=dotenv_values()['DB'], use_pure=True)
+    db = mysql.connector.connect(host=dotenv_values()['DBHOST'], user=dotenv_values()['DBUSERNAME'], password=dotenv_values()['DBPASSWORD'], database=dotenv_values()['DB'], use_pure=True,auth_plugin='mysql_native_password')
 
 
 setattr(bot,"db", db)
