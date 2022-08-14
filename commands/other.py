@@ -33,8 +33,15 @@ class other(commands.Cog):
 
     @commands.command()
     async def help(self, ctx):
-        em = await self.createHelpEmbed()
-        await ctx.send(embed=em)
+        hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!", color=0xff00bb)
+        for fileC in os.listdir('./commands'):
+            if fileC.endswith('.py'):
+                coga = self.bot.get_cog(fileC[0:-3])
+                comList = " "
+                for com in coga.get_commands():
+                    comList += str(com) + ", "
+                hEmbed.add_field(name=coga.qualified_name.capitalize(), value=comList[0:-2], inline=True)
+        await ctx.send(embed=hEmbed)
 
     @commands.command()
     async def source(self, ctx):
@@ -50,15 +57,3 @@ class other(commands.Cog):
             embed.add_field(name="`"+commitsHashes[commit]+"`", value="`"+commits[commit]+"`", inline=False)
 
         await ctx.send(embed=embed)
-
-    async def createHelpEmbed(self, ctx):
-        hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!", color=0xff00bb)
-        for fileC in os.listdir('./commands'):
-            if fileC.endswith('.py'):
-                coga = self.bot.get_cog(fileC[0:-3])
-                comList = " "
-                for com in coga.get_commands():
-                    comList += str(com) + ", "
-                hEmbed.add_field(name=coga.qualified_name.capitalize(), value=comList[0:-2], inline=True)
-        return hEmbed
-                
