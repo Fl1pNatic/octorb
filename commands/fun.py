@@ -97,12 +97,15 @@ class fun(commands.Cog):
         embed = discord.Embed(
             title="Quick commands list.",
             color=0xff00bb,
-            description="Use like any other command!"
+            description="Use like any other command! Use sq!createquickcommand to create and sq!deletequickcommand to delete."
         )
         commands = cursor.fetchall()
+        cL = ""
+        for command in commands:
+            cL + str(command) + " "
         # for command in commands:
 
-        embed.add_field(name="List", value=commands, inline=True)
+        embed.add_field(name="List", value=cL, inline=True)
         await ctx.reply(embed=embed)
 
     @commands.Cog.listener()

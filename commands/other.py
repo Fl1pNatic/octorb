@@ -39,10 +39,6 @@ class other(commands.Cog):
         await ctx.send("This bot is **open-source** which means that anyone can contribute to it.\n\nYou can find the source code here - <https://github.com/Fl1pNatic/squidcraftbot>")
 
     @commands.command()
-    async def minecraft(self, ctx):
-        await ctx.send("You can join the server using this IP: 132.145.106.236\n\nNo cracked accounts. Minecraft 1.19")
-
-    @commands.command()
     async def changelog(self, ctx):
         repo: git.Git = git.Git(os.path.dirname(__file__))
         commits = repo.log('--pretty=%s').split("\n")[:10]
