@@ -29,7 +29,6 @@ help_embed.add_field(name="Other",
 class other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        # self.createHelpEmbed(self)
 
     @commands.command()
     async def help(self, ctx):
@@ -39,7 +38,7 @@ class other(commands.Cog):
                 coga = self.bot.get_cog(fileC[0:-3])
                 comList = " "
                 for com in coga.get_commands():
-                    comList += str(com) + ", "
+                    comList += str(com).capitalize() + ", "
                 hEmbed.add_field(name=coga.qualified_name.capitalize(), value=comList[0:-2], inline=True)
         await ctx.send(embed=hEmbed)
 
