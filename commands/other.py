@@ -2,30 +2,6 @@ import discord
 from discord.ext import commands
 import git, os
 
-help_embed = discord.Embed(title="Help",
-                            description="What each command does",
-                            color=0xff00bb)
-
-help_embed.add_field(name="Fun",
-    value="ask | gallery | coinflip | rng1000 | yo | quickcommands",
-    inline=False)
-
-help_embed.add_field(name="Moderation",
- value="say | pin | delete | kick | ban",
- inline=False)
-
-help_embed.add_field(name="Math",
- value="math | rng1000 | coinflip",
- inline=False)
-
-help_embed.add_field(name="XP",
- value="xp | xptop | givexp",
- inline=False)
-
-help_embed.add_field(name="Other",
- value="help | source ",
- inline=False)
-
 class other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
