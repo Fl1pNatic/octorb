@@ -15,8 +15,6 @@ from commands.xp import xp
 sys.path.append(".")
 
 
-
-
 load_dotenv()
 TOKEN = dotenv_values()["TOKEN"]
 
@@ -63,13 +61,6 @@ async def getuser(userid, guildid):
     guild = bot.get_guild(guildid)
     user = await guild.fetch_member(userid)
     return user
-
-@bot.event
-async def on_member_join(member: discord.Member):
-    guild = bot.get_guild(member.guild.id)
-    role = discord.utils.get(guild.roles, name='Member')
-    user = await getuser(member.id, member.guild.id)
-    await user.add_roles(role)
 
 
 async def loadModule(module, ctx):
