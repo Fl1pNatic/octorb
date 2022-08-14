@@ -60,11 +60,11 @@ class other(commands.Cog):
                 comList = " "
                 try:
                     for com in coga.get_commands():
-                        comList += com + ", "
+                        comList += str(com) + ", "
                         await ctx.send(comList)
                 except Exception as e:
                     await ctx.send(e)
                 hEmbed.add_field(name=coga.qualified_name, value=comList[0:-2], inline=True)
 
-        # await ctx.reply(embed=hEmbed)
+        await ctx.reply(embed=hEmbed)
                 
