@@ -48,7 +48,7 @@ class fun(commands.Cog):
 
     @commands.command()
     async def owoify(self, ctx, *, phrase):
-        await ctx.reply(owoify.owoify(phrase))
+        await ctx.reply(owoify(phrase))
 
     @commands.command()
     async def gallery(self, ctx, imageId: int):
