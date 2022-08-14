@@ -33,7 +33,7 @@ class other(commands.Cog):
 
     @commands.command()
     async def help(self, ctx):
-        await ctx.send(embed=help_embed)
+        await ctx.send(embed=await self.createHelpEmbed())
 
     @commands.command()
     async def source(self, ctx):
@@ -50,21 +50,14 @@ class other(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command()
     async def createHelpEmbed(self, ctx):
         hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!")
         for fileC in os.listdir('./commands'):
             if fileC.endswith('.py'):
                 coga = self.bot.get_cog(fileC[0:-3])
-                # await ctx.send(coga.qualified_name)
                 comList = " "
-                try:
-                    for com in coga.get_commands():
-                        comList += str(com) + ", "
-                        await ctx.send(comList)
-                except Exception as e:
-                    await ctx.send(e)
-                hEmbed.add_field(name=coga.qualified_name, value=comList[0:-2], inline=True)
-
-        await ctx.reply(embed=hEmbed)
+                for com in coga.get_commands():
+                    comList += str(com) + ", "
+                hEmbed.add_field(name=coga.qualified_name.capitalize(), value=comList[0:-2], inline=True)
+        return hEmbed
                 
