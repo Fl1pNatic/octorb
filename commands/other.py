@@ -52,6 +52,6 @@ class other(commands.Cog):
 
     @commands.command()
     async def createHelpEmbed(self, ctx):
-        await ctx.send(self.bot.cogs)
+        await ctx.send(self.bot.cogs.get_commands())
 
                 
