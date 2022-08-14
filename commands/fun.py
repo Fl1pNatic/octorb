@@ -62,11 +62,13 @@ class fun(commands.Cog):
         await ctx.reply("Image №" + galArg + ": " + imL[int(galArg)])
     
     @commands.command()
-    async def avatar(self, ctx, user: typing.Optional[discord.Member]):
+    async def avatar(self, ctx, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
         if user is not None:
             ctx.message.author: discord.Member = user
-
-        await ctx.reply(user.display_name + "'s Avatar: \n" + user.display_avatar.url)
+        if default != True:
+           await ctx.reply(str(ctx.message.author.nick) + "'s Avatar: \n" + ctx.message.author.display_avatar.url)
+        else:
+           await ctx.reply(str(ctx.message.author.name) + "'s Avatar: \n" + ctx.message.author.avatar.url)
 
     @commands.group()
     async def quickcommand(self, ctx):
