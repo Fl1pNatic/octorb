@@ -2,7 +2,6 @@ from email import message
 from math import log
 from concurrent.futures import process
 import random
-from readline import replace_history_item
 import discord
 from discord.ext import commands
 import asyncio
@@ -102,7 +101,7 @@ class xp(commands.Cog):
             
         try:
             cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s", (ctx.message.guild.id, ctx.message.author.id))
-            embed = discord.Embed(title="XP", color=0xff00bb)
+            embed = discord.Embed(title="XP", color=0xda7dff)
             embed.add_field(name=f"{ctx.message.author.display_name}", value=f"`XP: {cursor.fetchone()[0]}`")
             embed.set_thumbnail(url=str(ctx.message.author.avatar.url))
             await ctx.reply(embed=embed)
@@ -121,7 +120,7 @@ class xp(commands.Cog):
             return
         cursor:mysql.connector.connection.MySQLCursor = self.db.cursor()
         cursor.execute("SELECT memberXp, memberId FROM xp WHERE serverId = %s ORDER BY memberXp DESC", [str(ctx.message.guild.id)])
-        embed = discord.Embed(title="XP Leaderboards", color=0xff00bb)
+        embed = discord.Embed(title="XP Leaderboards", color=0xda7dff)
         data = cursor.fetchall()
         for i in range(min(len(data), 5)):
             embed.add_field(name=f"{i+1}.", value=f"<@{data[i][1]}>: `{data[i][0]}`", inline=False)

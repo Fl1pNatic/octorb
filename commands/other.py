@@ -8,15 +8,21 @@ class other(commands.Cog):
 
     @commands.command()
     async def help(self, ctx):
-        hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!", color=0xff00bb)
+        hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!", color=0xda7dff)
 
         for cogName, cog in self.bot.cogs.items():
             hEmbed.add_field(name=cogName.capitalize(), value=", ".join([command.name for command in cog.get_commands()]))
         await ctx.send(embed=hEmbed)
 
     @commands.command()
-    async def source(self, ctx):
-        await ctx.send("This bot is **open-source** which means that anyone can contribute to it.\n\nYou can find the source code here - <https://github.com/Fl1pNatic/squidcraftbot>")
+    async def about(self, ctx):
+        aEmbed = discord.Embed(title="About Octorb", description="Some information about the bot", color=0xda7dff)
+        aEmbed.add_field(name="History", value="""The bot was originally made for a Minecraft SMP Discord server.
+        It was started on 8th of August 2022 and renamed to Octorb on 14th of August 2022""", inline=False)
+        aEmbed.add_field(name="Source", value="""This bot is **open-source** which means that anyone can contribute to it.
+        
+        You can find the source code here - <https://github.com/Fl1pNatic/octorb>""", inline=False)
+        await ctx.send(embed=aEmbed)
 
     @commands.command()
     async def changelog(self, ctx):
