@@ -53,9 +53,9 @@ class other(commands.Cog):
     @commands.command()
     async def createHelpEmbed(self, ctx):
         hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!")
-        for cog in self.bot.cogs.Cog:
+        cog = self.bot.get_cog("Fun")
             # hEmbed.add_field(name=cog.qualified_name, value=cog.get_commands().name, inline=True)
-            await ctx.reply(cog.get_commands())
+        await ctx.reply(cog.qualified_name)
 
         # await ctx.reply(embed=hEmbed)
                 
