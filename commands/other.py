@@ -58,7 +58,7 @@ class other(commands.Cog):
 
             if fileC.endswith('.py'):
                 coga = self.bot.get_cog(fileC[0:-3])
-                await ctx.send(coga)
+                await ctx.send(coga.qualified_name)
               #   co = await self.bot.get_cog(str(fileC[0:-3]))
                 # await ctx.reply(co.qualified_name)
             # hEmbed.add_field(name=cog.qualified_name, value=cog.get_commands().name, inline=True)
