@@ -33,7 +33,8 @@ class other(commands.Cog):
 
     @commands.command()
     async def help(self, ctx):
-        await ctx.send(embed=await self.createHelpEmbed())
+        em = await self.createHelpEmbed()
+        await ctx.send(embed=em)
 
     @commands.command()
     async def source(self, ctx):
@@ -51,7 +52,7 @@ class other(commands.Cog):
         await ctx.send(embed=embed)
 
     async def createHelpEmbed(self, ctx):
-        hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!")
+        hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!", color=0xff00bb)
         for fileC in os.listdir('./commands'):
             if fileC.endswith('.py'):
                 coga = self.bot.get_cog(fileC[0:-3])
