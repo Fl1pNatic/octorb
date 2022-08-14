@@ -3,19 +3,15 @@ from discord.ext import commands
 import git, os
 
 class other(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command()
     async def help(self, ctx):
         hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!", color=0xff00bb)
-        for fileC in os.listdir('./commands'):
-            if fileC.endswith('.py'):
-                coga = self.bot.get_cog(fileC[0:-3])
-                comList = " "
-                for com in coga.get_commands():
-                    comList += str(com) + ", "
-                hEmbed.add_field(name=coga.qualified_name.capitalize(), value=comList[0:-2], inline=True)
+
+        for cogName, cog in self.bot.cogs.items():
+            hEmbed.add_field(name=cogName.capitalize(), value=", ".join([command.name for command in cog.get_commands()]))
         await ctx.send(embed=hEmbed)
 
     @commands.command()
