@@ -68,9 +68,14 @@ class fun(commands.Cog):
 
         await ctx.reply(user.display_name + "'s Avatar: \n" + user.display_avatar.url)
 
-    @commands.command()
+    @commands.group()
+    async def quickcommand(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send("Use create, delete, or list!")
+
+    @quickcommand.command()
     @commands.has_guild_permissions(manage_messages=True)
-    async def createquickcommand(self, ctx, commandName: str, *, message: str):
+    async def create(self, ctx, commandName: str, *, message: str):
         cursor = self.bot.db.cursor()
         commandName = commandName.replace("'","\'").replace('"','\"')
         message = message.replace("'","\'").replace('"','\"')
@@ -83,9 +88,9 @@ class fun(commands.Cog):
         self.bot.db.commit()
         await ctx.reply("Created quick command.")
 
-    @commands.command()
+    @quickcommand.command()
     @commands.has_guild_permissions(manage_messages=True)
-    async def deletequickcommand(self, ctx, commandName: str):
+    async def delete(self, ctx, commandName: str):
         cursor = self.bot.db.cursor()
         commandName = commandName.replace("'","\'").replace('"','\"')
         cursor.execute("DELETE FROM quickCommands WHERE serverId = %s AND command = %s;", (ctx.guild.id, commandName))
@@ -95,14 +100,14 @@ class fun(commands.Cog):
             return
         await ctx.reply("Deleted quick command.")
 
-    @commands.command()
-    async def quickcommands(self, ctx):
+    @quickcommand.command()
+    async def list(self, ctx):
         cursor = self.bot.db.cursor()
         cursor.execute("SELECT command FROM quickCommands WHERE serverId = %s", (ctx.guild.id,))
         embed = discord.Embed(
             title="Quick commands list.",
             color=0xff00bb,
-            description="Use like any other command! Use sq!createquickcommand to create and sq!deletequickcommand to delete."
+            description="Use like any other command! Use `sq!quickcommand create` to create and `sq!quickcommand delete` to delete."
         )
         commands = cursor.fetchall()
         cL = ""
