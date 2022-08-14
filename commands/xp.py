@@ -1,6 +1,6 @@
 from math import log
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import asyncio
 import typing
 import mysql.connector
@@ -14,7 +14,7 @@ class xp(commands.Cog):
         self.db:mysql.connector.MySQLConnection = bot.db
 
     async def cog_load(self):
-        await self.processXP()
+        self.processXP.start()
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -31,11 +31,10 @@ class xp(commands.Cog):
             return
         self.messageCounts[message.guild.id][message.author.id] += 1
 
-
+    @tasks.loop(minutes=1)
     async def processXP(self):
-        while True:
-            await self.calcXP()
-            await asyncio.sleep(60)
+        await self.calcXP()
+        await asyncio.sleep(60)
 
     async def calcXP(self):
         xpStores = []

@@ -35,13 +35,13 @@ setattr(bot,"db", db)
 
 @bot.event
 async def on_ready():
-    print(f"It's {bot.user}in' time")
     await gitupdate()
     await bot.add_cog(fun(bot))
+    await bot.add_cog(xp(bot))
     await bot.add_cog(other(bot))
     await bot.add_cog(moderation(bot))
     await bot.add_cog(math(bot))
-    await bot.add_cog(xp(bot))
+    print(f"It's {bot.user}in' time")
 
 @bot.event
 async def on_disconnect():
