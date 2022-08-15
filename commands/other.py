@@ -27,7 +27,7 @@ class other(commands.Cog):
 
         You can find the source code here - <https://github.com/Fl1pNatic/octorb>""", inline=False)
 
-        aEmbed.add_field(name="Statistics", value=f"""Server count: {len(self.bot.guilds-10)}""")
+        aEmbed.add_field(name="Statistics", value=f"""Server count: {len(self.bot.guilds)-10}""")
 
         aEmbed.add_field(name="Technical", value=f"""discord.py version: {discord.__version__}
        """)
