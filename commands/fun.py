@@ -58,7 +58,7 @@ class fun(commands.Cog):
         if ctx.invoked_subcommand is not None:
             return
         if imageNum is None:
-             await ctx.send("Please use gallery {image id}, gallery add {image}, or gallery remove {image id}.")
+             await ctx.send("Please use gallery {image id}, gallery add {image}, gallery count, or gallery delete {image id}.")
              return
 
         cursor = self.bot.db.cursor()
@@ -81,7 +81,7 @@ class fun(commands.Cog):
         cursor = self.bot.db.cursor()
         cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = %s AND NOT picUrl = '0'", ctx.guild.id)
         count = cursor.fetchone()[0]
-        await ctx.send(f"There are {count} images.")
+        await ctx.send(f"There are {count} image(s).")
 
     @gallery.command()
     async def add(self, ctx):
@@ -104,8 +104,7 @@ class fun(commands.Cog):
             if len(set0) < 1:
                 await ctx.send("Max images reached for this guild.")
                 return
-            print(set0)
-            replaceDeleted = set0[0][1]
+            replaceDeleted = set0[0][0]
         imageId = count
         if replaceDeleted is not False:
             imageId = replaceDeleted
