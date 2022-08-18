@@ -133,7 +133,7 @@ class fun(commands.Cog):
         if ctx.message.author.nick == None:
             ctx.message.author.nick: str = ctx.message.author.name
         if default != True:
-           await ctx.reply(str(ctx.message.author.nick) + "'s Avatar: \n" + ctx.message.author.display_avatar.url)
+           await ctx.reply('`'str(ctx.message.author.nick) + "`'s Avatar: \n" + ctx.message.author.display_avatar.url)
         else:
            await ctx.reply('`'+str(ctx.message.author.name) + "`'s Avatar: \n" + ctx.message.author.avatar.url)
 
