@@ -4,6 +4,9 @@ import discord
 from random import choice
 import typing
 from owoify import owoify
+
+imageLimit = 50
+
 answer_list = [
     "you sharted", "Maybe not.", "Probably.",
     "Maybe you should get a life instead of being on discord.",
@@ -50,22 +53,77 @@ class fun(commands.Cog):
     async def owoify(self, ctx, *, phrase):
         await ctx.reply(owoify(phrase))
 
-    @commands.command()
-    async def gallery(self, ctx, imageId: int):
-        galArg = imageId
+    @commands.group()
+    async def gallery(self, ctx: commands.Context, imageNum: typing.Optional[int]):
+        if imageNum is None:
+             await ctx.send("Please use gallery {image id}, gallery add {image}, or gallery remove {image id}.")
+             return
 
-        if isinstance(int(galArg), int) == False:
-            await ctx.reply("Enter a valid **numerical** ID (ID's start from 0)")
+        cursor = self.bot.db.cursor()
+        cursor.execute("SELECT picUrl FROM gallery WHERE imageId = %s AND serverId = %s", (imageNum, ctx.guild.id))
+        result = cursor.fetchall()
+        if len(result) == 0:
+            await ctx.send("No image found with that id.")
             return
-        
-        imL = open("images.txt", "r").readlines()
-        
-        if int(galArg) > len(imL) - 1 or int(galArg) < 0:
-            await ctx.reply("Not a valid ID")
+        result = result[0]
+        if result[0] == "0":
+            await ctx.send("It appears this image has been deleted.")
             return
-
-        await ctx.reply("Image №" + galArg + ": " + imL[int(galArg)])
+        await ctx.send(f"Image: {result[0]}")
     
+
+    @gallery.command()
+    async def count(self, ctx):
+        if self.bot.db is None:
+            await ctx.send("There are 69 images.")
+        cursor = self.bot.db.cursor()
+        cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = %s AND NOT picUrl = '0'", ctx.guild.id)
+        count = cursor.fetchone()[0]
+        await ctx.send(f"There are {count} images.")
+
+    @gallery.command()
+    async def add(self, ctx):
+        if len(ctx.message.attachments) != 1:
+            await ctx.send("Please attach one image file.")
+            return
+        if ctx.message.attachments[0].content_type.startswith("image/"):
+            await ctx.send("File does not appear to be an image.")
+            return
+        cursor = self.bot.db.cursor()
+        cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = %s", (ctx.guild.id,))
+        count = cursor.fetchone()[0]
+        cursor.close()
+        replaceDeleted = False
+        if count >= imageLimit:
+            cursor = self.bot.db.cursor()
+            cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = %s AND picUrl = '0'", (ctx.guild.id,))
+            set0 = cursor.fetchall()
+            cursor.close()
+            if len(set0) < 1:
+                await ctx.send("Max images reached for this guild.")
+                return
+            replaceDeleted = set0[0][1]
+        imageId = count
+        if replaceDeleted is not False:
+            imageId = replaceDeleted
+
+        cursor = self.bot.db.cursor()
+        if replaceDeleted is False:
+            cursor.execute("INSERT INTO gallery VALUES (%s, %s, %s)",(ctx.guild.id, count+1, ctx.message.attachments[0].url))
+            await ctx.send(f"Added image with id {count + 1}")
+            return
+        cursor.execute("UPDATE gallery SET picUrl = %s WHERE serverId = %s AND id = %s", (ctx.message.attachments[0].url, ctx.guild.id, replaceDeleted))
+        await ctx.send(f"Added image with id {replaceDeleted}")
+
+            
+            
+
+    @gallery.command()
+    async def delete(self, ctx, imageId: int):
+        cursor = self.bot.db.cursor()
+        cursor.execute("UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, imageId))
+        await ctx.send("Deleted image from gallery.")
+
     @commands.command()
     async def avatar(self, ctx, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
         if user is not None:
