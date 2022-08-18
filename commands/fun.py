@@ -60,7 +60,7 @@ class fun(commands.Cog):
              return
 
         cursor = self.bot.db.cursor()
-        cursor.execute("SELECT picUrl FROM gallery WHERE picId = %s AND serverId = %s", (imageNum, ctx.guild.id))
+        cursor.execute("SELECT picUrl FROM gallery WHERE id = %s AND serverId = %s", (imageNum, ctx.guild.id))
         result = cursor.fetchall()
         if len(result) == 0:
             await ctx.send("No image found with that id.")
