@@ -142,7 +142,7 @@ class fun(commands.Cog):
         us = await self.bot.fetch_user(ctx.message.author.id)
         mem = ctx.message.author
 
-        boostText = '`Never`' if len(str(mem.premium_since)[0:-9]) == 0 else f'`str(mem.premium_since)[0:-9]`'
+        boostText = '`Never`' if len(str(mem.premium_since)[0:-9]) == 0 else f'`{str(mem.premium_since)[0:-9]}`'
 
         uEmbed = discord.Embed(title="Info about: " + str(us), description="Through the power of Discord's API, here is some info about this user.", color=us.accent_color)
         uEmbed.set_thumbnail(url=us.avatar.url)
