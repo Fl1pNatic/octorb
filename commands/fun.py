@@ -55,6 +55,8 @@ class fun(commands.Cog):
 
     @commands.group()
     async def gallery(self, ctx: commands.Context, imageNum: typing.Optional[int]):
+        if ctx.invoked_subcommand is not None:
+            return
         if imageNum is None:
              await ctx.send("Please use gallery {image id}, gallery add {image}, or gallery remove {image id}.")
              return
@@ -87,6 +89,7 @@ class fun(commands.Cog):
             await ctx.send("Please attach one image file.")
             return
         if ctx.message.attachments[0].content_type.startswith("image/"):
+            print(ctx.message.attachments[0].content_type)
             await ctx.send("File does not appear to be an image.")
             return
         cursor = self.bot.db.cursor()
