@@ -5,7 +5,7 @@ from random import choice
 import typing
 from owoify import owoify
 
-imageLimit = 2
+imageLimit = 100
 
 answer_list = [
     "you sharted", "Maybe not.", "Probably.",
