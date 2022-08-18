@@ -88,8 +88,7 @@ class fun(commands.Cog):
         if len(ctx.message.attachments) != 1:
             await ctx.send("Please attach one image file.")
             return
-        if ctx.message.attachments[0].content_type.startswith("image/"):
-            print(ctx.message.attachments[0].content_type)
+        if not ctx.message.attachments[0].content_type.startswith("image/"):
             await ctx.send("File does not appear to be an image.")
             return
         cursor = self.bot.db.cursor()
