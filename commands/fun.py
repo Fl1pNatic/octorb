@@ -51,7 +51,7 @@ class fun(commands.Cog):
 
     @commands.command(hidden=True)
     async def owoify(self, ctx, *, phrase):
-        embed = discord.embed(name="OwOified")
+        embed = discord.Embed(name="OwOified")
         embed.set_author(ctx.author.name)
         embed.description = owoify(phrase)
         await ctx.send(embed=embed)
