@@ -196,7 +196,7 @@ class fun(commands.Cog):
         embed = discord.Embed(
             title="Quick commands list.",
             color=0xff00bb,
-            description="Use like any other command! Use `sq!quickcommand create` to create and `sq!quickcommand delete` to delete."
+            description="Use like any other command! Use `oc!quickcommand create` to create and `oc!quickcommand delete` to delete."
         )
         commands = cursor.fetchall()
         cL = ""
