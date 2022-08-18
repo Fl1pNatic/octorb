@@ -135,7 +135,7 @@ class fun(commands.Cog):
         if default != True:
            await ctx.reply(str(ctx.message.author.nick) + "'s Avatar: \n" + ctx.message.author.display_avatar.url)
         else:
-           await ctx.reply(str(ctx.message.author.name) + "'s Avatar: \n" + ctx.message.author.avatar.url)
+           await ctx.reply('`'+str(ctx.message.author.name) + "`'s Avatar: \n" + ctx.message.author.avatar.url)
 
     @commands.command()
     async def userinfo(self, ctx, user: typing.Optional[discord.Member]):
