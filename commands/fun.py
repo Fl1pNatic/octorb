@@ -104,7 +104,7 @@ class fun(commands.Cog):
             if len(set0) < 1:
                 await ctx.send("Max images reached for this guild.")
                 return
-            print(replaceDeleted)
+            print(set0)
             replaceDeleted = set0[0][1]
         imageId = count
         if replaceDeleted is not False:
