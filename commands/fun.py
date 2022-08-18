@@ -51,7 +51,10 @@ class fun(commands.Cog):
 
     @commands.command(hidden=True)
     async def owoify(self, ctx, *, phrase):
-        await ctx.reply(owoify(phrase))
+        embed = discord.embed(name="OwOified")
+        embed.set_author(ctx.author.name)
+        embed.description = owoify(phrase)
+        await ctx.send(embed=embed)
 
     @commands.group()
     async def gallery(self, ctx: commands.Context, imageNum: typing.Optional[int]):
@@ -196,7 +199,7 @@ class fun(commands.Cog):
         embed = discord.Embed(
             title="Quick commands list.",
             color=0xff00bb,
-            description="Use like any other command! Use `oc!quickcommand create` to create and `oc!quickcommand delete` to delete."
+            description="Use like any other command! Use `sq!quickcommand create` to create and `sq!quickcommand delete` to delete."
         )
         commands = cursor.fetchall()
         cL = ""
