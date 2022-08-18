@@ -210,7 +210,7 @@ class fun(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if self.bot.db is None: return
-        if not isinstance(error, commands.errors.CommandNotFound): return
+        if not isinstance(error, commands.errors.CommandNotFound): raise(error)
         command = str(error)[9:-14]
         cursor = self.bot.db.cursor()
         command = command.replace("'","\'").replace('"','\"')
