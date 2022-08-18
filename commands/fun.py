@@ -98,18 +98,20 @@ class fun(commands.Cog):
         replaceDeleted = False
         if count >= imageLimit:
             cursor = self.bot.db.cursor()
-            cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = %s AND picUrl = '0'", (ctx.guild.id,))
+            cursor.execute("SELECT id FROM gallery WHERE serverId = %s AND picUrl = '0'", (ctx.guild.id,))
             set0 = cursor.fetchall()
             cursor.close()
             if len(set0) < 1:
                 await ctx.send("Max images reached for this guild.")
                 return
+            print(set0)
             replaceDeleted = set0[0][0]
         imageId = count
         if replaceDeleted is not False:
             imageId = replaceDeleted
 
         cursor = self.bot.db.cursor()
+        print(replaceDeleted)
         if replaceDeleted is False:
             cursor.execute("INSERT INTO gallery VALUES (%s, %s, %s)",(ctx.guild.id, count+1, ctx.message.attachments[0].url))
             await ctx.send(f"Added image with id {count + 1}")
