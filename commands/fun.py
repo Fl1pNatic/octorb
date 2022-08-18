@@ -117,11 +117,8 @@ class fun(commands.Cog):
         cursor.execute("UPDATE gallery SET picUrl = %s WHERE serverId = %s AND id = %s", (ctx.message.attachments[0].url, ctx.guild.id, replaceDeleted))
         await ctx.send(f"Added image with id {replaceDeleted}")
 
-            
-            
-
-    @gallery.command()
-    async def delete(self, ctx, imageId: int):
+    @gallery.command(name="delete")
+    async def _delete(self, ctx, imageId: int):
         cursor = self.bot.db.cursor()
         cursor.execute("UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, imageId))
         await ctx.send("Deleted image from gallery.")
