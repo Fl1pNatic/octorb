@@ -40,7 +40,7 @@ async def on_ready():
     await bot.add_cog(xp(bot))
     await bot.add_cog(other(bot))
     await bot.add_cog(moderation(bot))
-    await bot.add_cog(math(bot))
+    # await bot.add_cog(math(bot)) # too annoying
     print(f"It's {bot.user}in' time")
 
 @bot.event
