@@ -132,12 +132,16 @@ class fun(commands.Cog):
     async def avatar(self, ctx, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
         if user is not None:
             ctx.message.author: discord.Member = user
+        avEmbed = discord.Embed(color=0xda7dff)
         if ctx.message.author.nick == None:
             ctx.message.author.nick: str = ctx.message.author.name
         if default != True:
-           await ctx.reply('`'+str(ctx.message.author.nick) + "'s Avatar:` \n" + ctx.message.author.display_avatar.url)
+            avEmbed.title = ctx.message.author.nick + "'s avatar"
+            avEmbed.set_image(url=ctx.message.author.display_avatar.url)
         else:
-           await ctx.reply('`'+str(ctx.message.author.name) + "'s Avatar:` \n" + ctx.message.author.avatar.url)
+            avEmbed.title = ctx.message.author.name + "'s default avatar"
+            avEmbed.set_image(url=ctx.message.author.avatar.url)
+        await ctx.reply(embed=avEmbed)
 
     @commands.command()
     async def userinfo(self, ctx, user: typing.Optional[discord.Member]):
