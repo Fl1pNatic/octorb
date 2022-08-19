@@ -60,7 +60,7 @@ class fun(commands.Cog):
         if ctx.invoked_subcommand is not None:
             return
         if imageNum is None:
-             await ctx.send("Please use gallery {image id}, gallery add {image}, gallery count, or gallery delete {image id}.")
+             await ctx.send("Please use gallery [image id], gallery add [image], gallery count, or gallery delete [image id].")
              return
 
         cursor = self.bot.db.cursor()
