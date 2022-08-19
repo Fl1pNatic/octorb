@@ -134,7 +134,7 @@ async def on_command_error(ctx, error):
         case permissionErrors.NonDeveloperError:
             await ctx.send("This command is limited to Octorb Developers.")
         case botCommands.errors.MissingRequiredArgument:
-            await ctx.send(f"Missing argument: {error.param.name}" )
+            await ctx.send(f"Missing argument: {error.param.name.capitalize()}" )
         case botCommands.errors.CommandNotFound:
             pass
         case botCommands.errors.CommandInvokeError:
