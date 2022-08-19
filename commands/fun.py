@@ -51,7 +51,7 @@ class fun(commands.Cog):
 
     @commands.command(hidden=True)
     async def owoify(self, ctx, *, phrase):
-        embed = discord.Embed(title="OwOified")
+        embed = discord.Embed(title="OwOified", color=0xda7dff)
         embed.set_author(name=ctx.author.name)
         embed.description = owoify(phrase)
         await ctx.send(embed=embed)
@@ -87,6 +87,7 @@ class fun(commands.Cog):
         await ctx.send(f"There are {count} image(s).")
 
     @gallery.command()
+    @commands.has_permissions(manage_emojis_and_stickers=True)
     async def add(self, ctx):
         if len(ctx.message.attachments) != 1:
             await ctx.send("Please attach one image file.")
@@ -121,6 +122,7 @@ class fun(commands.Cog):
         await ctx.send(f"Added image with id {replaceDeleted}")
 
     @gallery.command(name="delete")
+    @commands.has_permissions(manage_emojis_and_stickers=True)
     async def _delete(self, ctx, imageId: int):
         cursor = self.bot.db.cursor()
         cursor.execute("UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, imageId))
@@ -133,9 +135,9 @@ class fun(commands.Cog):
         if ctx.message.author.nick == None:
             ctx.message.author.nick: str = ctx.message.author.name
         if default != True:
-           await ctx.reply('`'+str(ctx.message.author.nick) + "`'s Avatar: \n" + ctx.message.author.display_avatar.url)
+           await ctx.reply('`'+str(ctx.message.author.nick) + "'s Avatar:` \n" + ctx.message.author.display_avatar.url)
         else:
-           await ctx.reply('`'+str(ctx.message.author.name) + "`'s Avatar: \n" + ctx.message.author.avatar.url)
+           await ctx.reply('`'+str(ctx.message.author.name) + "'s Avatar:` \n" + ctx.message.author.avatar.url)
 
     @commands.command()
     async def userinfo(self, ctx, user: typing.Optional[discord.Member]):
