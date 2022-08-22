@@ -33,16 +33,20 @@ class moderation(commands.Cog):
     @commands.command()
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
-        await member.send(f"You were kicked from Will You Craft Server, {f'reason: {reason}' if reason is not None else 'no reason was given.'}")
-        await member.kick(reason=reason if reason is not None else 'no reason was given.')
-        await ctx.reply(f"Member kicked: {f'reason: {reason}' if reason is not None else 'no reason was given.'}")
+        embed = discord.Embed(title=f"Kicked {member.name + member.discriminator}", color=0xda7dff)
+        embed.description = f"Reason: {reason}"
+        await member.send(f"You were kicked from {ctx.guild.name}, {f'Reason: {reason}' if reason is not None else 'No reason was given.'}")
+        await ctx.reply(embed=embed)
+        await member.kick(reason=reason if reason is not None else 'No reason was given.')
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
-        await member.send(f"You were banned from Will You Craft Server, {f'reason: {reason}' if reason is not None else 'no reason was given.'}")
-        await member.ban(reason=reason if reason is not None else 'no reason was given.')
-        await ctx.reply(f"Member banned: {f'reason: {reason}' if reason is not None else 'no reason was given.'}")       
+        embed = discord.Embed(title=f"Banned {member.name + member.discriminator}", color=0xda7dff)
+        embed.description = f"Reason: {reason}"
+        await member.send(f"You were banned from {ctx.guild.name}, {f'Reason: {reason}' if reason is not None else 'No reason was given.'}")
+        await ctx.reply(embed=embed)
+        await member.ban(reason=reason if reason is not None else 'No reason was given.')
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
