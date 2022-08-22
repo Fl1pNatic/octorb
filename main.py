@@ -40,7 +40,7 @@ async def on_ready():
     await bot.add_cog(xp(bot))
     await bot.add_cog(other(bot))
     await bot.add_cog(moderation(bot))
-    # await bot.add_cog(math(bot)) # too annoying
+    await bot.add_cog(math(bot)) # too annoying
     print(f"It's {bot.user}in' time")
 
 @bot.event
@@ -140,7 +140,7 @@ async def on_command_error(ctx, error):
         case botCommands.errors.CommandInvokeError:
             if isinstance(error.original, discord.errors.HTTPException):
                 if error.original.code == 50035:
-                    await ctx.send("it's too big daddy, it won't fit")
+                    await ctx.send("it's too big daddy, it won't fit~")
         case _: raise(error)
 
 @bot.check
