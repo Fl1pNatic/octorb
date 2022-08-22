@@ -3,6 +3,7 @@ from discord.ext import commands
 import random
 from py_expression_eval import Parser
 from PermissionsChecks import permissionErrors, permissionChecks, devCheck
+# from .. import PermissionsChecks
 
 class math(commands.Cog):
     def __init__(self, bot):
@@ -28,23 +29,12 @@ class math(commands.Cog):
         result = random.randrange(min, max)     
         await ctx.reply(result)
 
-    @commands.command()
-    @permissionChecks.developer()
+    # @commands.command()
+    # @permissionChecks.developer()
     async def math(self, ctx, *, equation: str):
         mathPars = Parser()
         try:
             await ctx.reply(mathPars.parse(equation).evaluate({}))
         except:
             await ctx.reply("'"+equation+"' is not a valid expression")
-            return              
-
-    @bot.event
-    async def on_command_error(ctx, error):
-        match type(error):
-            case permissionErrors.NonDeveloperError:
-                await ctx.send("This command is limited to Octorb Developers.")
-            case botCommands.errors.CommandInvokeError:
-                if isinstance(error.original, discord.errors.HTTPException):
-                    if error.original.code == 50035:
-                        await ctx.send("it's too big daddy, it won't fit~")
-            case _: raise(error)                
+            return                       
