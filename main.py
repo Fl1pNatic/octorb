@@ -12,6 +12,7 @@ from commands.math import math
 from commands.moderation import moderation
 from commands.other import other
 from commands.xp import xp
+from commands.dynamic import dynamic
 sys.path.append(".")
 
 
@@ -41,6 +42,7 @@ async def on_ready():
     await bot.add_cog(other(bot))
     await bot.add_cog(moderation(bot))
     await bot.add_cog(math(bot)) # too annoying
+    await bot.add_cog(dynamic(bot))
     print(f"It's {bot.user}in' time")
 
 @bot.event
