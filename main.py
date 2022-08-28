@@ -134,15 +134,17 @@ async def update(ctx:botCommands.Context):
 async def on_command_error(ctx, error):
     match type(error):
         case permissionErrors.NonDeveloperError:
-            await ctx.send("This command is limited to Octorb Developers.")
+            await ctx.reply("This command is limited to Octorb Developers.")
         case botCommands.errors.MissingRequiredArgument:
-            await ctx.send(f"Missing argument: {error.param.name.capitalize()}" )
+            await ctx.reply(f"Missing argument: {error.param.name.capitalize()}" )
         case botCommands.errors.CommandNotFound:
             pass
         case botCommands.errors.CommandInvokeError:
             if isinstance(error.original, discord.errors.HTTPException):
                 if error.original.code == 50035:
-                    await ctx.send("it's too big daddy, it won't fit~")
+                    await ctx.reply("it's too big daddy, it won't fit~")
+        case botCommands.errors.MissingPermissions:
+            await ctx.reply(f"You are missing the following permissions needed to use this command: {*error.missing_permissions,}")
         case _: raise(error)
 
 @bot.check
