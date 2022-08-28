@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import random
 from py_expression_eval import Parser
+import typing
 from PermissionsChecks import permissionErrors, permissionChecks, devCheck
 # from .. import PermissionsChecks
 
@@ -15,17 +16,22 @@ class math(commands.Cog):
         await ctx.reply("Heads" if result == 1 else "Tails")
 
     @commands.command()
-    async def rng1000(self, ctx, min: int, max: int):
-        if int(min) < -1000 or int(min) > 1000:
-            await ctx.reply("Minimum number is too low or high")
+    async def rng(self, ctx, min: typing.Optional[int], max: typing.Optional[int]):
+        if max is None:
+            if min is None:
+                max = 10
+                min = 0
+            else:
+                max = min
+                min = 0
+
+        if max == min: 
+            await ctx.reply(min)
             return
-        if max < -1000 or max > 1000:
-            await ctx.reply("Maximum number is too low or high")    
-            return
-        if max < min:
-            await ctx.reply("Maximum number MUST be higher than minimum")
-            return
-        
+
+        if max < min: max, min = (min, max)
+
+
         result = random.randrange(min, max)     
         await ctx.reply(result)
 
