@@ -67,27 +67,27 @@ async def getuser(userid, guildid):
 
 async def loadModule(module, ctx):
     if module in bot.cogs:
-        await ctx.send("You can't load a module that's already loaded ffs.")
+        await ctx.reply("You can't load a module that's already loaded ffs.")
         return
     try:
         importlib.import_module("commands."+module)
     except(ImportError) as error:
-        await ctx.send("Error loading module. "+error.msg)
+        await ctx.reply("Error loading module. "+error.msg)
         return
     try:
         await bot.add_cog(sys.modules[f"commands.{module}"].__getattribute__(f"{module}")(bot))
     except(AttributeError) as error:
-        await ctx.send("Error loading module. "+error.name)
+        await ctx.reply("Error loading module. "+error.name)
         return
-    await ctx.send("Loaded module.")
+    await ctx.reply("Loaded module.")
 
 async def unloadModule(module, ctx):
     if not module in bot.cogs:
-        await ctx.send("Module not loaded.")
+        await ctx.reply("Module not loaded.")
         return
     await bot.remove_cog(module)
     del sys.modules["commands."+module]
-    await ctx.send("Module unloaded.")
+    await ctx.reply("Module unloaded.")
 
 async def gitupdate():
     repo: git.Repo = git.Repo(os.path.dirname(__file__))
@@ -99,7 +99,7 @@ async def gitupdate():
 @permissionChecks.developer()
 async def loadmodule(ctx:botCommands.Context, *args):
     if len(args) == 0:
-        await ctx.send("You must specify a module to load, idio.")
+        await ctx.reply("You must specify a module to load, idio.")
         return
     module = args[0]
     await loadModule(module, ctx)
@@ -109,7 +109,7 @@ async def loadmodule(ctx:botCommands.Context, *args):
 @permissionChecks.developer()
 async def unloadmodule(ctx:botCommands.Context, *args):
     if len(args) == 0:
-        await ctx.send("You must specify a module to unload, idit.")
+        await ctx.reply("You must specify a module to unload, idit.")
         return
     module = args[0]
     await unloadModule(module, ctx)
@@ -118,7 +118,7 @@ async def unloadmodule(ctx:botCommands.Context, *args):
 @permissionChecks.developer()
 async def reloadmodule(ctx:botCommands.Context, *args):
     if len(args) == 0:
-        await ctx.send("You must specify a module to reload, idot.")
+        await ctx.reply("You must specify a module to reload, idot.")
         return
     module = args[0]
     await unloadModule(module, ctx)

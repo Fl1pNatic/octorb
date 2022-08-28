@@ -119,7 +119,7 @@ class xp(commands.Cog):
         for i in range(min(len(data), 5)):
             embed.add_field(name=f"{i+1}.", value=f"<@{data[i][1]}>: `{data[i][0]}`", inline=False)
         
-        await ctx.send(embed = embed)
+        await ctx.reply(embed = embed)
         
     @commands.command()
     @permissionChecks.developer()

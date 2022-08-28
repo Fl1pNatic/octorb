@@ -54,46 +54,46 @@ class fun(commands.Cog):
         embed = discord.Embed(title="OwOified", color=0xda7dff)
         embed.set_author(name=ctx.message.author)
         embed.description = owoify(phrase)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.group()
     async def gallery(self, ctx: commands.Context, imageNum: typing.Optional[int]):
         if ctx.invoked_subcommand is not None:
             return
         if imageNum is None:
-             await ctx.send("Please use gallery [image id], gallery add [image], gallery count, or gallery delete [image id].")
+             await ctx.reply("Please use gallery [image id], gallery add [image], gallery count, or gallery delete [image id].")
              return
 
         cursor = self.bot.db.cursor()
         cursor.execute("SELECT picUrl FROM gallery WHERE id = %s AND serverId = %s", (imageNum, ctx.guild.id))
         result = cursor.fetchall()
         if len(result) == 0:
-            await ctx.send("No image found with that id.")
+            await ctx.reply("No image found with that id.")
             return
         result = result[0]
         if result[0] == "0":
-            await ctx.send("It appears this image has been deleted.")
+            await ctx.reply("It appears this image has been deleted.")
             return
-        await ctx.send(f"Image: {result[0]}")
+        await ctx.reply(f"Image: {result[0]}")
     
 
     @gallery.command()
     async def count(self, ctx):
         if self.bot.db is None:
-            await ctx.send("There are 69 images.")
+            await ctx.reply("There are 69 images.")
         cursor = self.bot.db.cursor()
         cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = %s AND NOT picUrl = '0'", ctx.guild.id)
         count = cursor.fetchone()[0]
-        await ctx.send(f"There are {count} image(s).")
+        await ctx.reply(f"There are {count} image(s).")
 
     @gallery.command()
     @commands.has_permissions(manage_emojis_and_stickers=True)
     async def add(self, ctx):
         if len(ctx.message.attachments) != 1:
-            await ctx.send("Please attach one image file.")
+            await ctx.reply("Please attach one image file.")
             return
         if not ctx.message.attachments[0].content_type.startswith("image/"):
-            await ctx.send("File does not appear to be an image.")
+            await ctx.reply("File does not appear to be an image.")
             return
         cursor = self.bot.db.cursor()
         cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = %s", (ctx.guild.id,))
@@ -106,7 +106,7 @@ class fun(commands.Cog):
             set0 = cursor.fetchall()
             cursor.close()
             if len(set0) < 1:
-                await ctx.send("Max images reached for this guild.")
+                await ctx.reply("Max images reached for this guild.")
                 return
             replaceDeleted = set0[0][0]
         imageId = count
@@ -116,17 +116,17 @@ class fun(commands.Cog):
         cursor = self.bot.db.cursor()
         if replaceDeleted is False:
             cursor.execute("INSERT INTO gallery VALUES (%s, %s, %s)",(ctx.guild.id, count+1, ctx.message.attachments[0].url))
-            await ctx.send(f"Added image with id {count + 1}")
+            await ctx.reply(f"Added image with id {count + 1}")
             return
         cursor.execute("UPDATE gallery SET picUrl = %s WHERE serverId = %s AND id = %s", (ctx.message.attachments[0].url, ctx.guild.id, replaceDeleted))
-        await ctx.send(f"Added image with id {replaceDeleted}")
+        await ctx.reply(f"Added image with id {replaceDeleted}")
 
     @gallery.command(name="delete")
     @commands.has_permissions(manage_emojis_and_stickers=True)
     async def _delete(self, ctx, imageId: int):
         cursor = self.bot.db.cursor()
         cursor.execute("UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, imageId))
-        await ctx.send("Deleted image from gallery.")
+        await ctx.reply("Deleted image from gallery.")
 
     @commands.command()
     async def avatar(self, ctx, user: typing.Optional[discord.Member], default: typing.Optional[bool]):

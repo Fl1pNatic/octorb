@@ -16,7 +16,7 @@ class other(commands.Cog):
         cogs.sort(key=lambda cog:cog.qualified_name)
         for cog in cogs:
             hEmbed.add_field(name=cog.qualified_name.capitalize(), value=", ".join([command.name for command in cog.get_commands() if command.hidden is False ]))
-        await ctx.send(embed=hEmbed)
+        await ctx.reply(embed=hEmbed)
 
     @commands.command()
     async def about(self, ctx):
@@ -33,7 +33,7 @@ class other(commands.Cog):
 
         aEmbed.add_field(name="Technical", value=f"""discord.py version: {discord.__version__}
        """)
-        await ctx.send(embed=aEmbed)
+        await ctx.reply(embed=aEmbed)
 
     @commands.command()
     async def changelog(self, ctx):
@@ -44,4 +44,4 @@ class other(commands.Cog):
         for commit in range(len(commits)):
             embed.add_field(name="`"+commitsHashes[commit]+"`", value="`"+commits[commit]+"`", inline=False)
 
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)

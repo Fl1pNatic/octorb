@@ -7,7 +7,7 @@ class dynamic(commands.Cog):
     @commands.group()
     async def quickcommand(self, ctx):
         if ctx.invoked_subcommand is None:
-            await ctx.send("Use create, delete, or list!")
+            await ctx.reply("Use create, delete, or list!")
 
     @quickcommand.command()
     @commands.has_guild_permissions(manage_messages=True)
@@ -66,4 +66,4 @@ class dynamic(commands.Cog):
         if len(returns) == 0:
             return
         
-        await ctx.send(returns[0][0])
+        await ctx.reply(returns[0][0])

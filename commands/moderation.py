@@ -19,10 +19,10 @@ class moderation(commands.Cog):
     async def pin(self, ctx, messageId: discord.Message):
         if messageId.pinned:
             await messageId.unpin()
-            await ctx.send("Unpinned message.")
+            await ctx.reply("Unpinned message.")
             return
         await messageId.pin()
-        await ctx.send("Pinned message.")
+        await ctx.reply("Pinned message.")
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
