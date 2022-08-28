@@ -144,7 +144,8 @@ async def on_command_error(ctx, error):
                 if error.original.code == 50035:
                     await ctx.reply("it's too big daddy, it won't fit~")
         case botCommands.errors.MissingPermissions:
-            await ctx.reply(f"You are missing the following permissions needed to use this command: {*error.missing_permissions,}")
+            perms = error.missing_permissions
+            await ctx.reply(f"You are missing the following permissions needed to use this command: {*perms,}")
         case _: raise(error)
 
 @bot.check
