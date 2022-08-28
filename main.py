@@ -145,7 +145,7 @@ async def on_command_error(ctx, error):
                     await ctx.reply("it's too big daddy, it won't fit~")
         case botCommands.errors.MissingPermissions:
             perms = error.missing_permissions
-            await ctx.reply(f"You are missing the following permissions needed to use this command: {*perms,}")
+            await ctx.reply(f"You are missing the following permissions needed to use this command: {' '.join(str(x) for x in perms)}")
         case _: raise(error)
 
 @bot.check
