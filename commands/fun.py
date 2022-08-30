@@ -61,7 +61,7 @@ class fun(commands.Cog):
         if ctx.invoked_subcommand is not None:
             return
         if imageNum is None:
-             await ctx.reply("Please use gallery [image id], gallery add [image], gallery count, or gallery delete [image id].")
+             await ctx.reply("Please use gallery [media id], gallery add [media], gallery count, or gallery delete [media id].")
              return
 
         cursor = self.bot.db.cursor()
@@ -72,7 +72,7 @@ class fun(commands.Cog):
             return
         result = result[0]
         if result[0] == "0":
-            await ctx.reply("It appears this image has been deleted.")
+            await ctx.reply("It appears this content has been deleted.")
             return
         await ctx.reply(f"Image: {result[0]}")
     
@@ -84,17 +84,18 @@ class fun(commands.Cog):
         cursor = self.bot.db.cursor()
         cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = %s AND NOT picUrl = '0'", ctx.guild.id)
         count = cursor.fetchone()[0]
-        await ctx.reply(f"There are {count} image(s).")
+        await ctx.reply(f"There are {count} stored..")
 
     @gallery.command()
     @commands.has_permissions(manage_emojis_and_stickers=True)
     async def add(self, ctx):
         if len(ctx.message.attachments) != 1:
-            await ctx.reply("Please attach one image file.")
+            await ctx.reply("Please attach one image/video file.")
             return
         if not ctx.message.attachments[0].content_type.startswith("image/"):
-            await ctx.reply("File does not appear to be an image.")
-            return
+            if not ctx.message.attachments[0].content_type.startswith("video/"):
+                await ctx.reply("File does not appear to be an image/video.")
+                return
         cursor = self.bot.db.cursor()
         cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = %s", (ctx.guild.id,))
         count = cursor.fetchone()[0]
@@ -106,7 +107,7 @@ class fun(commands.Cog):
             set0 = cursor.fetchall()
             cursor.close()
             if len(set0) < 1:
-                await ctx.reply("Max images reached for this guild.")
+                await ctx.reply("Max content amount reached for this guild.")
                 return
             replaceDeleted = set0[0][0]
         imageId = count
@@ -116,17 +117,17 @@ class fun(commands.Cog):
         cursor = self.bot.db.cursor()
         if replaceDeleted is False:
             cursor.execute("INSERT INTO gallery VALUES (%s, %s, %s)",(ctx.guild.id, count+1, ctx.message.attachments[0].url))
-            await ctx.reply(f"Added image with id {count + 1}")
+            await ctx.reply(f"Added media with id {count + 1}")
             return
         cursor.execute("UPDATE gallery SET picUrl = %s WHERE serverId = %s AND id = %s", (ctx.message.attachments[0].url, ctx.guild.id, replaceDeleted))
-        await ctx.reply(f"Added image with id {replaceDeleted}")
+        await ctx.reply(f"Added media with id {replaceDeleted}")
 
     @gallery.command(name="delete")
     @commands.has_permissions(manage_emojis_and_stickers=True)
     async def _delete(self, ctx, imageId: int):
         cursor = self.bot.db.cursor()
         cursor.execute("UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, imageId))
-        await ctx.reply("Deleted image from gallery.")
+        await ctx.reply("Deleted content from gallery.")
 
     @commands.command()
     async def avatar(self, ctx, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
