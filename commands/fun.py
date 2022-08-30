@@ -84,7 +84,7 @@ class fun(commands.Cog):
         cursor = self.bot.db.cursor()
         cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = %s AND NOT picUrl = '0'", ctx.guild.id)
         count = cursor.fetchone()[0]
-        await ctx.reply(f"There are {count} stored..")
+        await ctx.reply(f"There are {count} stored.")
 
     @gallery.command()
     @commands.has_permissions(manage_emojis_and_stickers=True)
