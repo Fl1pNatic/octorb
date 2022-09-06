@@ -97,7 +97,7 @@ class xp(commands.Cog):
             cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s", (ctx.message.guild.id, ctx.message.author.id))
             embed = discord.Embed(title="XP", color=0xda7dff)
             embed.add_field(name=f"{ctx.message.author.display_name}", value=f"`XP: {cursor.fetchone()[0]}`")
-            embed.set_thumbnail(url=str(ctx.message.author.avatar.url))
+            embed.set_thumbnail(url=str(ctx.message.author.display_avatar.url))
             await ctx.reply(embed=embed)
             return
         except(Exception) as e:
