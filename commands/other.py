@@ -23,8 +23,10 @@ class other(commands.Cog):
     @commands.command(hidden=True)
     @permissionChecks.developer()
     async def eval(self, ctx, *, command):
-        await ctx.reply(await eval(command))
-
+        try:
+            await ctx.reply(await eval(command))
+        except Exception as ex:
+            await ctx.reply(ex)
     @commands.command()
     async def about(self, ctx):
         aEmbed = discord.Embed(title="About Octorb", description="Some information about the bot", color=0xda7dff)
