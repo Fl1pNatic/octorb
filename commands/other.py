@@ -20,7 +20,7 @@ class other(commands.Cog):
             hEmbed.add_field(name=cog.qualified_name.capitalize(), value=", ".join([command.name for command in cog.get_commands() if command.hidden is False ]))
         await ctx.reply(embed=hEmbed)
 
-    @commands.command(hidden=true)
+    @commands.command(hidden=True)
     @permissionChecks.developer()
     async def eval(self, ctx, command:str):
         await ctx.reply(eval(str))
