@@ -22,8 +22,8 @@ class other(commands.Cog):
 
     @commands.command(hidden=True)
     @permissionChecks.developer()
-    async def eval(self, ctx, command:str):
-        await ctx.reply(eval(str))
+    async def eval(self, ctx, *, command):
+        await ctx.reply(eval(command))
 
     @commands.command()
     async def about(self, ctx):
