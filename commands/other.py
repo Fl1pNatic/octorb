@@ -31,7 +31,7 @@ class other(commands.Cog):
     @permissionChecks.developer()
     async def exec(self, ctx, *, command):
         try:
-            await exec(command)
+            exec(command)
             await ctx.reply("Execution complete.")
         except Exception as ex:
             await ctx.reply(ex)
