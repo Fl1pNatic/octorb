@@ -34,8 +34,10 @@ class other(commands.Cog):
         It was started on 8th of August 2022 and renamed to Octorb on 14th of August 2022""", inline=False)
         aEmbed.add_field(name="Source", value="""This bot is **open-source** which means that anyone can contribute to it.
 
-        You can find the source code here - <https://github.com/Fl1pNatic/octorb>
+        You can find the source code here - <https://github.com/x8c8r/octorb>
         And the trello board here - <https://trello.com/b/lJZJeVpl/octorb>
+
+        Along with that, you can join the official support and feedback server here - <https://discord.gg/wEweHdyvy6>
         """, inline=False)
 
         aEmbed.add_field(name="Statistics", value=f"""Server count: {len(self.bot.guilds)-10}""")
