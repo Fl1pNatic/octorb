@@ -1,6 +1,9 @@
 import discord
 from discord.ext import commands
 import random
+import typing
+import time
+import datetime
 
 error_messages = ["No perms?", "You got no perms", "haha **no** (permissions)", "You don't have permissions to do this", "h-hiii you cant execute this command uwu"]
 
@@ -58,7 +61,24 @@ class moderation(commands.Cog):
             await ctx.reply(f"Member pardoned.")   
         else:
             await ctx.reply("User does not appear to be banned.")
-    
+
+
+    @commands.command()
+    @commands.has_permissions(manage_messages=True)
+    async def purge(self, ctx: commands.context, max: typing.Optional[int], fromUser: typing.Optional[discord.Member]):
+        print("Purge")
+        if max is None or max > 100:
+            max = 100
+        def purgeUserCheck(message):
+            if message.author == fromUser: return True
+            return False
+        if fromUser is not None:
+            messageCount = len(await  ctx.channel.purge(limit=max, bulk=True, check=purgeUserCheck, after=datetime.datetime.fromtimestamp(int(time.time()-1209600))))
+            await ctx.send(f"Purged {messageCount} messages.")
+            return
+        messageCount = len(await  ctx.channel.purge(limit=max, bulk=True, after=datetime.datetime.fromtimestamp(int(time.time()-1209600))))
+        await ctx.send(f"Purged {messageCount} messages.")
+
     @pardon.error
     async def pardon_error(self, ctx, error):
         if isinstance(error, commands.errors.CommandInvokeError):
