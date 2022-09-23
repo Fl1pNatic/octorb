@@ -72,7 +72,6 @@ class moderation(commands.Cog):
     @commands.command()
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx: commands.context, max: typing.Optional[int], fromUser: typing.Optional[discord.Member]):
-        print("Purge")
         if max is None or max > 100:
             max = 100
         def purgeUserCheck(message):
@@ -84,6 +83,13 @@ class moderation(commands.Cog):
             return
         messageCount = len(await  ctx.channel.purge(oldest_first=False, limit=max, bulk=True, after=datetime.datetime.fromtimestamp(int(time.time()-1209600))))
         await ctx.send(f"Purged {messageCount} messages.")
+
+    @commands.command()
+    @commands.has_permissions(manage_channels=True)
+    async def clear(self, ctx):
+        newChannel = await ctx.channel.clone()
+        await ctx.channel.delete()
+        await newChannel.send("Channel cleared.")
 
     @pardon.error
     async def pardon_error(self, ctx, error):
