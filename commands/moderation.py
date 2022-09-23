@@ -38,7 +38,10 @@ class moderation(commands.Cog):
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         embed = discord.Embed(title=f"Kicked {member.name + member.discriminator}", color=0xda7dff)
         embed.description = f"Reason: {reason}"
-        await member.send(f"You were kicked from {ctx.guild.name}, {f'Reason: {reason}' if reason is not None else 'No reason was given.'}")
+        try:
+            await member.send(f"You were kicked from {ctx.guild.name}, {f'Reason: {reason}' if reason is not None else 'No reason was given.'}")
+        except:
+            await ctx.reply("Unable to message user.")
         await ctx.reply(embed=embed)
         await member.kick(reason=reason if reason is not None else 'No reason was given.')
 
@@ -47,7 +50,10 @@ class moderation(commands.Cog):
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         embed = discord.Embed(title=f"Banned {member.name + member.discriminator}", color=0xda7dff)
         embed.description = f"Reason: {reason}"
-        await member.send(f"You were banned from {ctx.guild.name}, {f'Reason: {reason}' if reason is not None else 'No reason was given.'}")
+        try:
+            await member.send(f"You were banned from {ctx.guild.name}, {f'Reason: {reason}' if reason is not None else 'No reason was given.'}")
+        except:
+            await ctx.reply("Unable to message user.")
         await ctx.reply(embed=embed)
         await member.ban(reason=reason if reason is not None else 'No reason was given.')
 
@@ -73,10 +79,10 @@ class moderation(commands.Cog):
             if message.author == fromUser: return True
             return False
         if fromUser is not None:
-            messageCount = len(await  ctx.channel.purge(limit=max, bulk=True, check=purgeUserCheck, after=datetime.datetime.fromtimestamp(int(time.time()-1209600))))
+            messageCount = len(await  ctx.channel.purge(oldest_first=False, limit=max, bulk=True, check=purgeUserCheck, after=datetime.datetime.fromtimestamp(int(time.time()-1209600))))
             await ctx.send(f"Purged {messageCount} messages.")
             return
-        messageCount = len(await  ctx.channel.purge(limit=max, bulk=True, after=datetime.datetime.fromtimestamp(int(time.time()-1209600))))
+        messageCount = len(await  ctx.channel.purge(oldest_first=False, limit=max, bulk=True, after=datetime.datetime.fromtimestamp(int(time.time()-1209600))))
         await ctx.send(f"Purged {messageCount} messages.")
 
     @pardon.error
