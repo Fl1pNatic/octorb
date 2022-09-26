@@ -10,13 +10,13 @@ class math(commands.Cog):
     def __init__(self, bot):
         self.bot = bot    
 
-    @commands.command()
-    async def coinflip(self, ctx):
+    @commands.hybrid_command()
+    async def coinflip(self, ctx:commands.Context):
         result = random.choice(tuple([0, 1]))
         await ctx.reply("Heads" if result == 1 else "Tails")
 
-    @commands.command()
-    async def rng(self, ctx, min: typing.Optional[int], max: typing.Optional[int]):
+    @commands.hybrid_command()
+    async def rng(self, ctx:commands.Context, min: typing.Optional[int], max: typing.Optional[int]):
         if max is None:
             if min is None:
                 max = 10
@@ -37,7 +37,7 @@ class math(commands.Cog):
 
     # @commands.command()
     # @permissionChecks.developer()
-    async def math(self, ctx, *, equation: str):
+    async def math(self, ctx:commands.Context, *, equation: str):
         mathPars = Parser()
         try:
             await ctx.reply(mathPars.parse(equation).evaluate({}))

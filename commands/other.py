@@ -9,8 +9,8 @@ class other(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command()
-    async def help(self, ctx):
+    @commands.hybrid_command()
+    async def help(self, ctx:commands.Context):
         hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!", color=0xda7dff)
 
         cogs = self.bot.cogs
@@ -20,23 +20,23 @@ class other(commands.Cog):
             hEmbed.add_field(name=cog.qualified_name.capitalize(), value=", ".join([command.name for command in cog.get_commands() if command.hidden is False ]))
         await ctx.reply(embed=hEmbed)
 
-    @commands.command(hidden=True)
+    @commands.hybrid_command(hidden=True)
     @permissionChecks.developer()
-    async def eval(self, ctx, *, command):
+    async def eval(self, ctx:commands.Context, *, command: str):
         try:
             await ctx.reply(await eval(command))
         except Exception as ex:
             await ctx.reply(ex)
-    @commands.command(hidden=True)
+    @commands.hybrid_command(hidden=True)
     @permissionChecks.developer()
-    async def exec(self, ctx, *, command):
+    async def exec(self, ctx:commands.Context, *, command: str):
         try:
             exec(command)
             await ctx.reply("Execution complete.")
         except Exception as ex:
             await ctx.reply(ex)
-    @commands.command()
-    async def about(self, ctx):
+    @commands.hybrid_command()
+    async def about(self, ctx:commands.Context):
         aEmbed = discord.Embed(title="About Octorb", description="Some information about the bot", color=0xda7dff)
         aEmbed.add_field(name="History", value="""The bot was originally made for a Minecraft SMP Discord server.
         It was started on 8th of August 2022 and renamed to Octorb on 14th of August 2022""", inline=False)
@@ -54,8 +54,8 @@ class other(commands.Cog):
        """)
         await ctx.reply(embed=aEmbed)
 
-    @commands.command()
-    async def changelog(self, ctx):
+    @commands.hybrid_command()
+    async def changelog(self, ctx:commands.Context):
         repo: git.Git = git.Git(os.path.dirname(__file__))
         commits = repo.log('--pretty=%s').split("\n")[:10]
         commitsHashes = repo.log('--pretty=%h').split("\n")[:10]

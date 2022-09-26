@@ -13,6 +13,8 @@ from commands.moderation import moderation
 from commands.other import other
 from commands.xp import xp
 from commands.dynamic import dynamic
+import typing
+
 sys.path.append(".")
 
 
@@ -95,40 +97,50 @@ async def gitupdate():
         remote.pull()
 
 
-@bot.command()
+@bot.hybrid_command()
 @permissionChecks.developer()
-async def loadmodule(ctx:botCommands.Context, *args):
-    if len(args) == 0:
-        await ctx.reply("You must specify a module to load, idio.")
-        return
-    module = args[0]
-    await loadModule(module, ctx)
+async def loadmodule(ctx:botCommands.Context, module_name:str):
+    await loadModule(module_name, ctx)
 
 
-@bot.command()
+@bot.hybrid_command()
 @permissionChecks.developer()
-async def unloadmodule(ctx:botCommands.Context, *args):
-    if len(args) == 0:
-        await ctx.reply("You must specify a module to unload, idit.")
-        return
-    module = args[0]
-    await unloadModule(module, ctx)
+async def unloadmodule(ctx:botCommands.Context, module_name:str):
+    await unloadModule(module_name, ctx)
 
-@bot.command()
+@bot.hybrid_command()
 @permissionChecks.developer()
-async def reloadmodule(ctx:botCommands.Context, *args):
-    if len(args) == 0:
-        await ctx.reply("You must specify a module to reload, idot.")
-        return
-    module = args[0]
-    await unloadModule(module, ctx)
-    await loadModule(module, ctx)
+async def reloadmodule(ctx:botCommands.Context, module_name:str):
+    await unloadModule(module_name, ctx)
+    await loadModule(module_name, ctx)
 
-@bot.command()
+@bot.hybrid_command()
 @permissionChecks.developer()
 async def update(ctx:botCommands.Context):
     await gitupdate()
     await ctx.reply("Pulled Changes")
+
+@bot.command()
+@botCommands.guild_only()
+@permissionChecks.developer()
+async def sync(
+  ctx: botCommands.Context, spec: typing.Optional[typing.Literal["~", "*", "^"]] = None) -> None:
+    if spec == "~":
+        synced = await ctx.bot.tree.sync(guild=ctx.guild)
+    elif spec == "*":
+        ctx.bot.tree.copy_global_to(guild=ctx.guild)
+        synced = await ctx.bot.tree.sync(guild=ctx.guild)
+    elif spec == "^":
+        ctx.bot.tree.clear_commands(guild=ctx.guild)
+        await ctx.bot.tree.sync(guild=ctx.guild)
+        synced = []
+    else:
+        synced = await ctx.bot.tree.sync()
+    print(f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}")
+    await ctx.send(
+        f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
+    )
+    return
     
 @bot.event
 async def on_command_error(ctx, error):
@@ -141,8 +153,10 @@ async def on_command_error(ctx, error):
             pass
         case botCommands.errors.CommandInvokeError:
             if isinstance(error.original, discord.errors.HTTPException):
+                print(error.original.code)
                 if error.original.code == 50035:
                     await ctx.reply("it's too big daddy, it won't fit~")
+                    print(error.original.text)
                     return
                 raise(error)
         case botCommands.errors.MissingPermissions:

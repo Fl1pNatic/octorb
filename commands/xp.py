@@ -83,7 +83,7 @@ class xp(commands.Cog):
 
         self.db.commit()
         
-    @commands.command()
+    @commands.hybrid_command()
     async def xp(self, ctx: commands.Context, user: typing.Optional[discord.Member]):
         if self.db == None:
             await ctx.reply("You have 69 XP")
@@ -107,8 +107,8 @@ class xp(commands.Cog):
 
 
         
-    @commands.command()
-    async def xptop(self, ctx):
+    @commands.hybrid_command()
+    async def xptop(self, ctx:commands.Context):
         if self.db == None:
             await ctx.reply("Squidward")
             return
@@ -121,9 +121,9 @@ class xp(commands.Cog):
         
         await ctx.reply(embed = embed)
         
-    @commands.command()
+    @commands.hybrid_command()
     @permissionChecks.developer()
-    async def givexp(self, ctx, member: discord.member, xp: int):
+    async def givexp(self, ctx:commands.Context, member: discord.Member, xp: int):
         if self.db is None:
             print("No db?")
             return

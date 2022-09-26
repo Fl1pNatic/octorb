@@ -44,28 +44,28 @@ class fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def ask(self, ctx, *question: any):
+    @commands.hybrid_command()
+    async def ask(self, ctx, question: str):
         a = choice(tuple(answer_list))
         await ctx.reply(a)
 
-    @commands.command(hidden=True)
-    async def owoify(self, ctx, *, phrase):
+    @commands.hybrid_command(hidden=True)
+    async def owoify(self, ctx:commands.Context, *, phrase:str):
         embed = discord.Embed(title="OwOified", color=0xda7dff)
         embed.set_author(name=ctx.message.author)
         embed.description = owoify(phrase)
         await ctx.reply(embed=embed)
 
-    @commands.group()
-    async def gallery(self, ctx: commands.Context, imageNum: typing.Optional[int]):
+    @commands.hybrid_group()
+    async def gallery(self, ctx: commands.Context, image_num: typing.Optional[int]):
         if ctx.invoked_subcommand is not None:
             return
-        if imageNum is None:
+        if image_num is None:
              await ctx.reply("Please use gallery [media id], gallery add [media], gallery count, or gallery delete [media id].")
              return
 
         cursor = self.bot.db.cursor()
-        cursor.execute("SELECT picUrl FROM gallery WHERE id = %s AND serverId = %s", (imageNum, ctx.guild.id))
+        cursor.execute("SELECT picUrl FROM gallery WHERE id = %s AND serverId = %s", (image_num, ctx.guild.id))
         result = cursor.fetchall()
         if len(result) == 0:
             await ctx.reply("No media found with that id.")
@@ -78,7 +78,7 @@ class fun(commands.Cog):
     
 
     @gallery.command()
-    async def count(self, ctx):
+    async def count(self, ctx:commands.Context):
         if self.bot.db is None:
             await ctx.reply("There are 69 images.")
         cursor = self.bot.db.cursor()
@@ -88,7 +88,7 @@ class fun(commands.Cog):
 
     @gallery.command()
     @commands.has_permissions(manage_emojis_and_stickers=True)
-    async def add(self, ctx):
+    async def add(self, ctx:commands.Context):
         if len(ctx.message.attachments) != 1:
             await ctx.reply("Please attach one image/video file.")
             return
@@ -124,13 +124,13 @@ class fun(commands.Cog):
 
     @gallery.command(name="delete")
     @commands.has_permissions(manage_emojis_and_stickers=True)
-    async def _delete(self, ctx, imageId: int):
+    async def _delete(self, ctx:commands.Context, image_id: int):
         cursor = self.bot.db.cursor()
-        cursor.execute("UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, imageId))
+        cursor.execute("UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, image_id))
         await ctx.reply("Deleted content from gallery.")
 
-    @commands.command()
-    async def avatar(self, ctx, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
+    @commands.hybrid_command()
+    async def avatar(self, ctx:commands.Context, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
         if user is not None:
             ctx.message.author: discord.Member = user
         avEmbed = discord.Embed(color=0xda7dff)
@@ -144,8 +144,8 @@ class fun(commands.Cog):
             avEmbed.set_image(url=ctx.message.author.avatar.url)
         await ctx.reply(embed=avEmbed)
 
-    @commands.command()
-    async def userinfo(self, ctx, user: typing.Optional[discord.Member]):
+    @commands.hybrid_command()
+    async def userinfo(self, ctx:commands.Context, user: typing.Optional[discord.Member]):
         if user is not None:
             ctx.message.author: discord.Member = user
 
