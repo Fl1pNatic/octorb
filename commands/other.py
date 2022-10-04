@@ -1,7 +1,9 @@
 from typing import ItemsView, OrderedDict
 import discord
 from discord.ext import commands
+from discord import app_commands
 import git, os
+import typing
 
 from PermissionsChecks import permissionChecks
 
@@ -10,15 +12,30 @@ class other(commands.Cog):
         self.bot = bot
 
     @commands.hybrid_command()
-    async def help(self, ctx:commands.Context):
-        hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!", color=0xda7dff)
-
-        cogs = self.bot.cogs
-        cogs = [cog for cog in cogs.values()]
-        cogs.sort(key=lambda cog:cog.qualified_name)
-        for cog in cogs:
-            hEmbed.add_field(name=cog.qualified_name.capitalize(), value=", ".join([command.name for command in cog.get_commands() if command.hidden is False ]))
-        await ctx.reply(embed=hEmbed)
+    async def help(self, ctx:commands.Context, command_name: typing.Optional[str]):
+        if(command_name is None):
+            hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!", color=0xda7dff)
+            cogs = self.bot.cogs
+            cogs = [cog for cog in cogs.values()]
+            cogs.sort(key=lambda cog:cog.qualified_name)
+            for cog in cogs:
+                hEmbed.add_field(name=cog.qualified_name.capitalize(), value=", ".join([command.name for command in cog.get_commands() if command.hidden is False ]))
+            await ctx.reply(embed=hEmbed)
+            return
+        if(command_name not in ctx.bot.all_commands.keys()):
+            await ctx.send("Command does not exist")
+            return
+        command: commands.Command = ctx.bot.all_commands[command_name]
+        commandEmbed = discord.Embed(title=f"Help for `{command.name.capitalize()}`", description=command.description if len(command.description) > 0 else "Command has no description, please report this in the support server.")
+        if(len(command.clean_params) > 0):
+            params = []
+            print(command.params)
+            for param in command.clean_params.values():
+                print(param.description)
+                params.append(f"`{param.name.capitalize()}` `[{'Optional' if type(param.converter) == typing._UnionGenericAlias else 'Required'}]`:{param.description if not param.description == None else 'Parameter not described, please report this.'}")
+            commandEmbed.add_field(name="Paramaters", value="\n".join(params))
+        await ctx.send(embed=commandEmbed)
+                
 
     @commands.hybrid_command(hidden=True)
     @permissionChecks.developer()
@@ -54,7 +71,7 @@ class other(commands.Cog):
        """)
         await ctx.reply(embed=aEmbed)
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Shows the most recent git commits that are included in the bot.")
     async def changelog(self, ctx:commands.Context):
         repo: git.Git = git.Git(os.path.dirname(__file__))
         commits = repo.log('--pretty=%s').split("\n")[:10]

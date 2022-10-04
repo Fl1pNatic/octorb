@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import app_commands
 import random
 import typing
 import time
@@ -70,10 +71,17 @@ class moderation(commands.Cog):
         else:
             await ctx.reply("User does not appear to be banned.")
 
-
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Purges messages from a channel from the past two weeks.")
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx: commands.context, max: typing.Optional[int], from_user: typing.Optional[discord.Member]):
+        """
+        Parameters
+        ------------
+        max
+            The most messages this will delete
+        from_user
+            The user it will purge from
+        """
         if max is None or max > 100:
             max = 100
         def purgeUserCheck(message):
