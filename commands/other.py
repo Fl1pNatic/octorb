@@ -30,7 +30,7 @@ class other(commands.Cog):
         if(len(command.clean_params) > 0):
             params = []
             for param in command.clean_params.values():
-                params.append(f"`{param.name.capitalize()}` `[{'Optional' if type(param.converter) == typing._UnionGenericAlias else 'Required'}]`:{param.description if not param.description == None else 'Parameter not described, please report this.'}")
+                params.append(f"`{param.name.capitalize()}` `[{'Optional' if type(param.converter) == typing._UnionGenericAlias else 'Required'}]`:{param.description if hasattr(param, 'description') else 'Parameter not described, please report this.'}")
             commandEmbed.add_field(name="Paramaters", value="\n".join(params))
         await ctx.send(embed=commandEmbed)
                 
