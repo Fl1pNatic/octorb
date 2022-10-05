@@ -29,9 +29,7 @@ class other(commands.Cog):
         commandEmbed = discord.Embed(title=f"Help for `{command.name.capitalize()}`", description=command.description if len(command.description) > 0 else "Command has no description, please report this in the support server.")
         if(len(command.clean_params) > 0):
             params = []
-            print(command.params)
             for param in command.clean_params.values():
-                print(param.description)
                 params.append(f"`{param.name.capitalize()}` `[{'Optional' if type(param.converter) == typing._UnionGenericAlias else 'Required'}]`:{param.description if not param.description == None else 'Parameter not described, please report this.'}")
             commandEmbed.add_field(name="Paramaters", value="\n".join(params))
         await ctx.send(embed=commandEmbed)
