@@ -1,7 +1,7 @@
 from typing import ItemsView, OrderedDict
 import discord
 from discord.ext import commands
-from discord import app_commands
+from discord import Button, ButtonStyle, app_commands
 import git, os
 import typing
 
@@ -79,3 +79,14 @@ class other(commands.Cog):
             embed.add_field(name="`"+commitsHashes[commit]+"`", value="`"+commits[commit]+"`", inline=False)
 
         await ctx.reply(embed=embed)
+
+    @commands.command()
+    async def test(self, ctx:commands.Context):
+        view = discord.ui.View()
+        button = Button(
+            style=ButtonStyle.green,
+            custom_id="yes",
+            label="yup"
+        )
+        view.add_item(button)
+        await ctx.send("here is your fucking button if there is one", view=view)
