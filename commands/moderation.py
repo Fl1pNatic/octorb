@@ -12,16 +12,28 @@ class moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Makes the bot say anything you want.")
     @commands.has_permissions(manage_messages=True)
     async def say(self, ctx, *, phrase):
+        """
+        Parameters
+        ------------
+        phrase
+            The thing you want bot to say
+        """
         await ctx.reply("Sent", ephemeral=True)
         await ctx.channel.send(phrase)
         await ctx.message.delete()
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Pins specified message.")
     @commands.has_permissions(manage_messages=True)
     async def pin(self, ctx, message: discord.Message):
+        """
+        Parameters
+        ------------
+        message
+            Message you want to pin (ID)
+        """
         if message.pinned:
             await message.unpin()
             await ctx.reply("Unpinned message.")
@@ -29,16 +41,30 @@ class moderation(commands.Cog):
         await message.pin()
         await ctx.reply("Pinned message.")
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Deletes specified message.")
     @commands.has_permissions(manage_messages=True)
     async def delete(self, ctx, message: discord.Message):
+        """
+        Parameters
+        ------------
+        message
+            Message you want to delete (ID)
+        """
         await message.delete()
         await ctx.reply("Deleted message.",ephemeral=True)
         await ctx.message.delete()
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Kicks specified member.")
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
+        """
+        Parameters
+        ------------
+        member
+            User you want to kick (ID or Ping)
+        reason
+            Reason for kicking (Text)
+        """        
         embed = discord.Embed(title=f"Kicked {member.name + member.discriminator}", color=0xda7dff)
         embed.description = f"Reason: {reason}"
         try:
@@ -48,9 +74,17 @@ class moderation(commands.Cog):
         await ctx.reply(embed=embed)
         await member.kick(reason=reason if reason is not None else 'No reason was given.')
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Bans specified member.")
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
+        """
+        Parameters
+        ------------
+        member
+            User you want to ban (ID or ping)
+        reason
+            Reason for banning (Text)
+        """        
         embed = discord.Embed(title=f"Banned {member.name + member.discriminator}", color=0xda7dff)
         embed.description = f"Reason: {reason}"
         try:
@@ -60,9 +94,15 @@ class moderation(commands.Cog):
         await ctx.reply(embed=embed)
         await member.ban(reason=reason if reason is not None else 'No reason was given.')
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Unbans a specified banned member.")
     @commands.has_permissions(ban_members=True)
     async def pardon(self, ctx:commands.Context, member: int):
+        """
+        Parameters
+        ------------
+        member
+            User you want to unban (ID)
+        """ 
         bans = await ctx.guild.bans()
         banned_users = [user.user.id for user in bans]
         if member in banned_users:
@@ -78,9 +118,9 @@ class moderation(commands.Cog):
         Parameters
         ------------
         max
-            The most messages this will delete
+            The most messages this will delete (Number)
         from_user
-            The user it will purge from
+            The user it will purge from (ID or Ping)
         """
         if max is None or max > 100:
             max = 100
@@ -94,7 +134,7 @@ class moderation(commands.Cog):
         messageCount = len(await  ctx.channel.purge(oldest_first=False, limit=max, bulk=True, after=datetime.datetime.fromtimestamp(int(time.time()-1209600))))
         await ctx.send(f"Purged {messageCount} messages.")
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Clears the channel completely.")
     @commands.has_permissions(manage_channels=True)
     async def clear(self, ctx:commands.Context):
         newChannel = await ctx.channel.clone()
