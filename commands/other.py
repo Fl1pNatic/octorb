@@ -80,13 +80,5 @@ class other(commands.Cog):
 
         await ctx.reply(embed=embed)
 
-    @commands.command()
-    async def test(self, ctx:commands.Context):
-        view = discord.ui.View()
-        button = Button(
-            style=ButtonStyle.green,
-            custom_id="yes",
-            label="yup"
-        )
-        view.add_item(item=button)
-        await ctx.send("here is your fucking button if there is one", view=view)
+
+        
