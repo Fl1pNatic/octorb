@@ -47,7 +47,7 @@ class other(commands.Cog):
             commandEmbed.add_field(name="Paramaters", value="\n".join(params))
         await ctx.send(embed=commandEmbed)
 
-    @commands.hybrid_command(hidden=True)
+    @commands.hybrid_command(hidden=True, description="Eval()s the command.")
     @permissionChecks.developer()
     async def eval(self, ctx: commands.Context, *, command: str):
         """
@@ -61,7 +61,7 @@ class other(commands.Cog):
         except Exception as ex:
             await ctx.reply(ex)
 
-    @commands.hybrid_command(hidden=True)
+    @commands.hybrid_command(hidden=True, description="Exec()s the command.")
     @permissionChecks.developer()
     async def exec(self, ctx: commands.Context, *, command: str):
         """
@@ -76,7 +76,7 @@ class other(commands.Cog):
         except Exception as ex:
             await ctx.reply(ex)
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Some info about the bot.")
     async def about(self, ctx: commands.Context):
         aEmbed = discord.Embed(
             title="About Octorb", description="Some information about the bot", color=0xda7dff)
