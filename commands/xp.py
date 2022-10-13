@@ -122,7 +122,7 @@ class xp(commands.Cog):
         await ctx.reply(embed = embed)
         
     @commands.hybrid_command()
-    @permissionChecks.developer()
+    @commands.has_guild_permissions(manage_messages=True)
     async def givexp(self, ctx:commands.Context, member: discord.Member, xp: int):
         if self.db is None:
             print("No db?")
