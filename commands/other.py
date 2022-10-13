@@ -11,7 +11,7 @@ class other(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.hybrid_command()
+    @commands.hybrid_command("Shows you help for the bot and it's commands.")
     async def help(self, ctx:commands.Context, command_name: typing.Optional[str]):
         if(command_name is None):
             hEmbed = discord.Embed(title="Help", description="Here you can find the list of all commands!", color=0xda7dff)

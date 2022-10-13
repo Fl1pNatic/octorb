@@ -43,19 +43,19 @@ class fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Lets you ask Octorb a question.")
     async def ask(self, ctx, question: str):
         a = choice(tuple(answer_list))
         await ctx.reply(a)
 
-    @commands.hybrid_command(hidden=True)
+    @commands.hybrid_command(hidden=True, description="Owoifwies ywour text, because why nywot.")
     async def owoify(self, ctx:commands.Context, *, phrase:str):
         embed = discord.Embed(title="OwOified", color=0xda7dff)
         embed.set_author(name=ctx.message.author)
         embed.description = owoify(phrase)
         await ctx.reply(embed=embed)
 
-    @commands.hybrid_group()
+    @commands.hybrid_group(description="Gallery commands.")
     async def gallery(self, ctx: commands.Context, image_num: typing.Optional[int]):
         if ctx.invoked_subcommand is not None:
             return
@@ -76,7 +76,7 @@ class fun(commands.Cog):
         await ctx.reply(f"{result[0]}")
     
 
-    @gallery.command()
+    @gallery.command(description="Gets the number of images in the server's gallery.")
     async def count(self, ctx:commands.Context):
         if self.bot.db is None:
             await ctx.reply("There are 69 images.")
@@ -85,7 +85,7 @@ class fun(commands.Cog):
         count = cursor.fetchone()[0]
         await ctx.reply(f"There are {count} stored.")
 
-    @gallery.command()
+    @gallery.command(description="Adds the media to the gallery.")
     @commands.has_permissions(manage_emojis_and_stickers=True)
     async def add(self, ctx:commands.Context):
         if len(ctx.message.attachments) != 1:
@@ -121,14 +121,14 @@ class fun(commands.Cog):
         cursor.execute("UPDATE gallery SET picUrl = %s WHERE serverId = %s AND id = %s", (ctx.message.attachments[0].url, ctx.guild.id, replaceDeleted))
         await ctx.reply(f"Added media with id {replaceDeleted}")
 
-    @gallery.command(name="delete")
+    @gallery.command(name="delete", description="Deletes the image from the gallery.")
     @commands.has_permissions(manage_emojis_and_stickers=True)
     async def _delete(self, ctx:commands.Context, image_id: int):
         cursor = self.bot.db.cursor()
         cursor.execute("UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, image_id))
         await ctx.reply("Deleted content from gallery.")
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Gets the users server or default avatar.")
     async def avatar(self, ctx:commands.Context, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
         if user is not None:
             ctx.message.author: discord.Member = user
@@ -143,7 +143,7 @@ class fun(commands.Cog):
             avEmbed.set_image(url=ctx.message.author.avatar.url)
         await ctx.reply(embed=avEmbed)
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Shows some information about the user.")
     async def userinfo(self, ctx:commands.Context, user: typing.Optional[discord.Member]):
         if user is not None:
             ctx.message.author: discord.Member = user

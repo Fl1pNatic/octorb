@@ -10,12 +10,12 @@ class math(commands.Cog):
     def __init__(self, bot):
         self.bot = bot    
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Heads or tails, what'll it be?")
     async def coinflip(self, ctx:commands.Context):
         result = random.choice(tuple([0, 1]))
         await ctx.reply("Heads" if result == 1 else "Tails")
 
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Gives you a random number.")
     async def rng(self, ctx:commands.Context, min: typing.Optional[int], max: typing.Optional[int]):
         if max is None:
             if min is None:

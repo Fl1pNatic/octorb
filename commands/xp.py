@@ -83,7 +83,7 @@ class xp(commands.Cog):
 
         self.db.commit()
         
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Shows a users xp")
     async def xp(self, ctx: commands.Context, user: typing.Optional[discord.Member]):
         if self.db == None:
             await ctx.reply("You have 69 XP")
@@ -107,7 +107,7 @@ class xp(commands.Cog):
 
 
         
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Shows the xp leaderboard.")
     async def xptop(self, ctx:commands.Context):
         if self.db == None:
             await ctx.reply("Squidward")
@@ -121,7 +121,7 @@ class xp(commands.Cog):
         
         await ctx.reply(embed = embed)
         
-    @commands.hybrid_command()
+    @commands.hybrid_command(description="Gives the specified user xp.")
     @commands.has_guild_permissions(manage_messages=True)
     async def givexp(self, ctx:commands.Context, member: discord.Member, xp: int):
         if self.db is None:

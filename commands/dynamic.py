@@ -4,12 +4,12 @@ import discord
 class dynamic(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    @commands.hybrid_group()
+    @commands.hybrid_group(description="Commands for quick commands.")
     async def quickcommand(self, ctx:commands.Context):
         if ctx.invoked_subcommand is None:
             await ctx.reply("Use create, delete, or list!")
 
-    @quickcommand.command()
+    @quickcommand.command(description="Creates a quick command.")
     @commands.has_guild_permissions(manage_messages=True)
     async def create(self, ctx:commands.Context, command_name: str, *, message: str):
         cursor = self.bot.db.cursor()
@@ -24,7 +24,7 @@ class dynamic(commands.Cog):
         self.bot.db.commit()
         await ctx.reply("Created quick command.")
 
-    @quickcommand.command()
+    @quickcommand.command(description="Deletes a quick command.")
     @commands.has_guild_permissions(manage_messages=True)
     async def delete(self, ctx:commands.Context, command_name: str):
         cursor = self.bot.db.cursor()
@@ -36,7 +36,7 @@ class dynamic(commands.Cog):
             return
         await ctx.reply("Deleted quick command.")
 
-    @quickcommand.command()
+    @quickcommand.command(description="Lists all the server's quickcommands.")
     async def list(self, ctx:commands.Context):
         cursor = self.bot.db.cursor()
         cursor.execute("SELECT command FROM quickCommands WHERE serverId = %s", (ctx.guild.id,))
