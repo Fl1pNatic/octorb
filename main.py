@@ -108,37 +108,61 @@ async def gitupdate():
         remote.pull()
 
 
-@bot.hybrid_command()
+@bot.hybrid_command(description="Loads the given module.")
 @permissionChecks.developer()
 async def loadmodule(ctx: botCommands.Context, module_name: str):
+    """
+    Parameters
+    ------------
+    module_name
+        The name of the module you want to load.
+    """
     await loadModule(module_name, ctx)
 
 
-@bot.hybrid_command()
+@bot.hybrid_command(description="Unloads the given module.")
 @permissionChecks.developer()
 async def unloadmodule(ctx: botCommands.Context, module_name: str):
+    """
+    Parameters
+    ------------
+    module_name
+        The name of the module you want to unload.
+    """
     await unloadModule(module_name, ctx)
 
 
-@bot.hybrid_command()
+@bot.hybrid_command(description="Reloads the given module.")
 @permissionChecks.developer()
 async def reloadmodule(ctx: botCommands.Context, module_name: str):
+    """
+    Parameters
+    ------------
+    module_name
+        The name of the module you want to reload.
+    """
     await unloadModule(module_name, ctx)
     await loadModule(module_name, ctx)
 
 
-@bot.hybrid_command()
+@bot.hybrid_command(description="Update the bot from github.")
 @permissionChecks.developer()
 async def update(ctx: botCommands.Context):
     await gitupdate()
     await ctx.reply("Pulled Changes")
 
 
-@bot.command()
+@bot.command(description="Sync the slash commands.")
 @botCommands.guild_only()
 @permissionChecks.developer()
 async def sync(
         ctx: botCommands.Context, spec: typing.Optional[typing.Literal["~", "*", "^"]] = None) -> None:
+    """
+    Parameters
+    ------------
+    spec
+        Where to sync. None for everywhere, ~ for the current guild, * to copy the global to the current guild, ^ to delete the current guilds.
+    """
     if spec == "~":
         synced = await ctx.bot.tree.sync(guild=ctx.guild)
     elif spec == "*":
