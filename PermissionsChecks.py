@@ -7,14 +7,17 @@ developer_ids = [
     391234130387533825
 ]
 
+
 class permissionErrors:
     class NonDeveloperError(commands.CheckFailure):
         pass
+
 
 def devCheck(ctx: commands.Context):
     if ctx.author.id in developer_ids:
         return True
     raise permissionErrors.NonDeveloperError()
+
 
 class permissionChecks:
     def developer():
@@ -22,4 +25,3 @@ class permissionChecks:
             if devCheck(ctx):
                 return True
         return commands.check(predicate)
-

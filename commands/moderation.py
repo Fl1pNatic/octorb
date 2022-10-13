@@ -1,12 +1,15 @@
-import discord
-from discord.ext import commands
-from discord import app_commands
-import random
-import typing
-import time
 import datetime
+import random
+import time
+import typing
 
-error_messages = ["No perms?", "You got no perms", "haha **no** (permissions)", "You don't have permissions to do this", "h-hiii you cant execute this command uwu"]
+import discord
+from discord import app_commands
+from discord.ext import commands
+
+error_messages = ["No perms?", "You got no perms",
+                  "haha **no** (permissions)", "You don't have permissions to do this", "h-hiii you cant execute this command uwu"]
+
 
 class moderation(commands.Cog):
     def __init__(self, bot):
@@ -51,7 +54,7 @@ class moderation(commands.Cog):
             Message you want to delete (ID)
         """
         await message.delete()
-        await ctx.reply("Deleted message.",ephemeral=True)
+        await ctx.reply("Deleted message.", ephemeral=True)
         await ctx.message.delete()
 
     @commands.hybrid_command(description="Kicks specified member.")
@@ -64,8 +67,9 @@ class moderation(commands.Cog):
             User you want to kick (ID or Ping)
         reason
             Reason for kicking (Text)
-        """        
-        embed = discord.Embed(title=f"Kicked {member.name + member.discriminator}", color=0xda7dff)
+        """
+        embed = discord.Embed(
+            title=f"Kicked {member.name + member.discriminator}", color=0xda7dff)
         embed.description = f"Reason: {reason}"
         try:
             await member.send(f"You were kicked from {ctx.guild.name}, {f'Reason: {reason}' if reason is not None else 'No reason was given.'}")
@@ -84,8 +88,9 @@ class moderation(commands.Cog):
             User you want to ban (ID or ping)
         reason
             Reason for banning (Text)
-        """        
-        embed = discord.Embed(title=f"Banned {member.name + member.discriminator}", color=0xda7dff)
+        """
+        embed = discord.Embed(
+            title=f"Banned {member.name + member.discriminator}", color=0xda7dff)
         embed.description = f"Reason: {reason}"
         try:
             await member.send(f"You were banned from {ctx.guild.name}, {f'Reason: {reason}' if reason is not None else 'No reason was given.'}")
@@ -96,18 +101,18 @@ class moderation(commands.Cog):
 
     @commands.hybrid_command(description="Unbans a specified banned member.")
     @commands.has_permissions(ban_members=True)
-    async def pardon(self, ctx:commands.Context, member: int):
+    async def pardon(self, ctx: commands.Context, member: int):
         """
         Parameters
         ------------
         member
             User you want to unban (ID)
-        """ 
+        """
         bans = await ctx.guild.bans()
         banned_users = [user.user.id for user in bans]
         if member in banned_users:
             await ctx.guild.unban(bans[banned_users.index(member)].user)
-            await ctx.reply(f"Member pardoned.")   
+            await ctx.reply(f"Member pardoned.")
         else:
             await ctx.reply("User does not appear to be banned.")
 
@@ -124,24 +129,26 @@ class moderation(commands.Cog):
         """
         if max is None or max > 100:
             max = 100
+
         def purgeUserCheck(message):
-            if message.author == from_user: return True
+            if message.author == from_user:
+                return True
             return False
         if from_user is not None:
-            messageCount = len(await  ctx.channel.purge(oldest_first=False, limit=max, bulk=True, check=purgeUserCheck, after=datetime.datetime.fromtimestamp(int(time.time()-1209600))))
+            messageCount = len(await ctx.channel.purge(oldest_first=False, limit=max, bulk=True, check=purgeUserCheck, after=datetime.datetime.fromtimestamp(int(time.time()-1209600))))
             await ctx.send(f"Purged {messageCount} messages.")
             return
-        messageCount = len(await  ctx.channel.purge(oldest_first=False, limit=max, bulk=True, after=datetime.datetime.fromtimestamp(int(time.time()-1209600))))
+        messageCount = len(await ctx.channel.purge(oldest_first=False, limit=max, bulk=True, after=datetime.datetime.fromtimestamp(int(time.time()-1209600))))
         await ctx.send(f"Purged {messageCount} messages.")
 
     @commands.hybrid_command(description="Clears the channel completely.")
     @commands.has_permissions(manage_channels=True)
-    async def clear(self, ctx:commands.Context):
+    async def clear(self, ctx: commands.Context):
         newChannel = await ctx.channel.clone()
         await ctx.channel.delete()
         await newChannel.send("Channel cleared.")
 
     @pardon.error
-    async def pardon_error(self, ctx:commands.Context, error: Exception):
+    async def pardon_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.errors.CommandInvokeError):
             await ctx.reply("Error pardoning member.")

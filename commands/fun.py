@@ -1,8 +1,9 @@
-from os import O_WRONLY
-from discord.ext import commands
-import discord
-from random import choice
 import typing
+from os import O_WRONLY
+from random import choice
+
+import discord
+from discord.ext import commands
 from owoify import owoify
 
 imageLimit = 100
@@ -39,6 +40,7 @@ answer_list = [
 
 yo_vars = ["yo", "yoyo", "yoyoyo", "toe"]
 
+
 class fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -49,7 +51,7 @@ class fun(commands.Cog):
         await ctx.reply(a)
 
     @commands.hybrid_command(hidden=True, description="Owoifwies ywour text, because why nywot.")
-    async def owoify(self, ctx:commands.Context, *, phrase:str):
+    async def owoify(self, ctx: commands.Context, *, phrase: str):
         embed = discord.Embed(title="OwOified", color=0xda7dff)
         embed.set_author(name=ctx.message.author)
         embed.description = owoify(phrase)
@@ -60,11 +62,12 @@ class fun(commands.Cog):
         if ctx.invoked_subcommand is not None:
             return
         if image_num is None:
-             await ctx.reply("Please use gallery [media id], gallery add [media], gallery count, or gallery delete [media id].")
-             return
+            await ctx.reply("Please use gallery [media id], gallery add [media], gallery count, or gallery delete [media id].")
+            return
 
         cursor = self.bot.db.cursor()
-        cursor.execute("SELECT picUrl FROM gallery WHERE id = %s AND serverId = %s", (image_num, ctx.guild.id))
+        cursor.execute(
+            "SELECT picUrl FROM gallery WHERE id = %s AND serverId = %s", (image_num, ctx.guild.id))
         result = cursor.fetchall()
         if len(result) == 0:
             await ctx.reply("No media found with that id.")
@@ -74,20 +77,20 @@ class fun(commands.Cog):
             await ctx.reply("It appears this content has been deleted.")
             return
         await ctx.reply(f"{result[0]}")
-    
 
     @gallery.command(description="Gets the number of images in the server's gallery.")
-    async def count(self, ctx:commands.Context):
+    async def count(self, ctx: commands.Context):
         if self.bot.db is None:
             await ctx.reply("There are 69 images.")
         cursor = self.bot.db.cursor()
-        cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = %s AND NOT picUrl = '0'", ctx.guild.id)
+        cursor.execute(
+            "SELECT COUNT(*) FROM gallery WHERE serverId = %s AND NOT picUrl = '0'", ctx.guild.id)
         count = cursor.fetchone()[0]
         await ctx.reply(f"There are {count} stored.")
 
     @gallery.command(description="Adds the media to the gallery.")
     @commands.has_permissions(manage_emojis_and_stickers=True)
-    async def add(self, ctx:commands.Context):
+    async def add(self, ctx: commands.Context):
         if len(ctx.message.attachments) != 1:
             await ctx.reply("Please attach one image/video file.")
             return
@@ -96,13 +99,15 @@ class fun(commands.Cog):
                 await ctx.reply("File does not appear to be an image/video.")
                 return
         cursor = self.bot.db.cursor()
-        cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = %s", (ctx.guild.id,))
+        cursor.execute(
+            "SELECT COUNT(*) FROM gallery WHERE serverId = %s", (ctx.guild.id,))
         count = cursor.fetchone()[0]
         cursor.close()
         replaceDeleted = False
         if count >= imageLimit:
             cursor = self.bot.db.cursor()
-            cursor.execute("SELECT id FROM gallery WHERE serverId = %s AND picUrl = '0'", (ctx.guild.id,))
+            cursor.execute(
+                "SELECT id FROM gallery WHERE serverId = %s AND picUrl = '0'", (ctx.guild.id,))
             set0 = cursor.fetchall()
             cursor.close()
             if len(set0) < 1:
@@ -115,21 +120,24 @@ class fun(commands.Cog):
 
         cursor = self.bot.db.cursor()
         if replaceDeleted is False:
-            cursor.execute("INSERT INTO gallery VALUES (%s, %s, %s)",(ctx.guild.id, count+1, ctx.message.attachments[0].url))
+            cursor.execute("INSERT INTO gallery VALUES (%s, %s, %s)",
+                           (ctx.guild.id, count+1, ctx.message.attachments[0].url))
             await ctx.reply(f"Added media with id {count + 1}")
             return
-        cursor.execute("UPDATE gallery SET picUrl = %s WHERE serverId = %s AND id = %s", (ctx.message.attachments[0].url, ctx.guild.id, replaceDeleted))
+        cursor.execute("UPDATE gallery SET picUrl = %s WHERE serverId = %s AND id = %s",
+                       (ctx.message.attachments[0].url, ctx.guild.id, replaceDeleted))
         await ctx.reply(f"Added media with id {replaceDeleted}")
 
     @gallery.command(name="delete", description="Deletes the image from the gallery.")
     @commands.has_permissions(manage_emojis_and_stickers=True)
-    async def _delete(self, ctx:commands.Context, image_id: int):
+    async def _delete(self, ctx: commands.Context, image_id: int):
         cursor = self.bot.db.cursor()
-        cursor.execute("UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, image_id))
+        cursor.execute(
+            "UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, image_id))
         await ctx.reply("Deleted content from gallery.")
 
     @commands.hybrid_command(description="Gets the users server or default avatar.")
-    async def avatar(self, ctx:commands.Context, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
+    async def avatar(self, ctx: commands.Context, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
         if user is not None:
             ctx.message.author: discord.Member = user
         avEmbed = discord.Embed(color=0xda7dff)
@@ -144,16 +152,18 @@ class fun(commands.Cog):
         await ctx.reply(embed=avEmbed)
 
     @commands.hybrid_command(description="Shows some information about the user.")
-    async def userinfo(self, ctx:commands.Context, user: typing.Optional[discord.Member]):
+    async def userinfo(self, ctx: commands.Context, user: typing.Optional[discord.Member]):
         if user is not None:
             ctx.message.author: discord.Member = user
 
         us = await self.bot.fetch_user(ctx.message.author.id)
         mem = ctx.message.author
 
-        boostText = '`Never`' if len(str(mem.premium_since)[0:-9]) == 0 else f'`{str(mem.premium_since)[0:-9]}`'
+        boostText = '`Never`' if len(str(mem.premium_since)[
+                                     0:-9]) == 0 else f'`{str(mem.premium_since)[0:-9]}`'
 
-        uEmbed = discord.Embed(title="Info about: " + str(us), description="Through the power of Discord's API, here is some info about this user.", color=us.accent_color)
+        uEmbed = discord.Embed(title="Info about: " + str(
+            us), description="Through the power of Discord's API, here is some info about this user.", color=us.accent_color)
         uEmbed.set_thumbnail(url=us.display_avatar.url)
 
         uEmbed.add_field(name="Account info", value=f"""Created at: `{str(us.created_at)[0:-9]}`
