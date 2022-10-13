@@ -14,6 +14,14 @@ class dynamic(commands.Cog):
     @quickcommand.command(description="Creates a quick command.")
     @commands.has_guild_permissions(manage_messages=True)
     async def create(self, ctx: commands.Context, command_name: str, *, message: str):
+        """
+        Parameters
+        ------------
+        command_name
+            The name of the quickcommand to create.
+        message
+            The content of the quickcommand.
+        """
         cursor = self.bot.db.cursor()
         command_name = command_name.replace("'", "\'").replace('"', '\"')
         message = message.replace("'", "\'").replace('"', '\"')
@@ -32,6 +40,12 @@ class dynamic(commands.Cog):
     @quickcommand.command(description="Deletes a quick command.")
     @commands.has_guild_permissions(manage_messages=True)
     async def delete(self, ctx: commands.Context, command_name: str):
+        """
+        Parameters
+        ------------
+        command_name
+            The name of the command to delete.
+        """
         cursor = self.bot.db.cursor()
         command_name = command_name.replace("'", "\'").replace('"', '\"')
         cursor.execute(

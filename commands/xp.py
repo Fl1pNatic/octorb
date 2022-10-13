@@ -90,6 +90,12 @@ class xp(commands.Cog):
 
     @commands.hybrid_command(description="Shows a users xp")
     async def xp(self, ctx: commands.Context, user: typing.Optional[discord.Member]):
+        """
+        Parameters
+        ------------
+        user
+            The user to get the xp of.
+        """
         if self.db == None:
             await ctx.reply("You have 69 XP")
             return
@@ -131,6 +137,14 @@ class xp(commands.Cog):
     @commands.hybrid_command(description="Gives the specified user xp.")
     @commands.has_guild_permissions(manage_messages=True)
     async def givexp(self, ctx: commands.Context, member: discord.Member, xp: int):
+        """
+        Parameters
+        ------------
+        user
+            The user to give xp to.
+        xp
+            The amount of xp to give (can be negative)
+        """
         if self.db is None:
             print("No db?")
             return

@@ -47,11 +47,23 @@ class fun(commands.Cog):
 
     @commands.hybrid_command(description="Lets you ask Octorb a question.")
     async def ask(self, ctx, question: str):
+        """
+        Parameters
+        ------------
+        question
+            The question you're asking.
+        """
         a = choice(tuple(answer_list))
         await ctx.reply(a)
 
     @commands.hybrid_command(hidden=True, description="Owoifwies ywour text, because why nywot.")
     async def owoify(self, ctx: commands.Context, *, phrase: str):
+        """
+        Parameters
+        ------------
+        phrase
+            Teh thing u want Owoifwied :3
+        """
         embed = discord.Embed(title="OwOified", color=0xda7dff)
         embed.set_author(name=ctx.message.author)
         embed.description = owoify(phrase)
@@ -59,6 +71,12 @@ class fun(commands.Cog):
 
     @commands.hybrid_group(description="Gallery commands.")
     async def gallery(self, ctx: commands.Context, image_num: typing.Optional[int]):
+        """
+        Parameters
+        ------------
+        image_num
+            The number of the image you want.
+        """
         if ctx.invoked_subcommand is not None:
             return
         if image_num is None:
@@ -131,6 +149,12 @@ class fun(commands.Cog):
     @gallery.command(name="delete", description="Deletes the image from the gallery.")
     @commands.has_permissions(manage_emojis_and_stickers=True)
     async def _delete(self, ctx: commands.Context, image_id: int):
+        """
+        Parameters
+        ------------
+        image_id
+            The number of the image to delete.
+        """
         cursor = self.bot.db.cursor()
         cursor.execute(
             "UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, image_id))
@@ -138,6 +162,14 @@ class fun(commands.Cog):
 
     @commands.hybrid_command(description="Gets the users server or default avatar.")
     async def avatar(self, ctx: commands.Context, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
+        """
+        Parameters
+        ------------
+        user
+            The user to get the avatar of
+        default
+            Whether to get their account avatar or server avatar.
+        """
         if user is not None:
             ctx.message.author: discord.Member = user
         avEmbed = discord.Embed(color=0xda7dff)
@@ -153,6 +185,12 @@ class fun(commands.Cog):
 
     @commands.hybrid_command(description="Shows some information about the user.")
     async def userinfo(self, ctx: commands.Context, user: typing.Optional[discord.Member]):
+        """
+        Parameters
+        ------------
+        user
+            The user to get info about
+        """
         if user is not None:
             ctx.message.author: discord.Member = user
 

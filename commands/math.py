@@ -19,6 +19,14 @@ class math(commands.Cog):
 
     @commands.hybrid_command(description="Gives you a random number.")
     async def rng(self, ctx: commands.Context, min: typing.Optional[int], max: typing.Optional[int]):
+        """
+        Parameters
+        ------------
+        min
+            The lowest possible number.
+        max
+            The highest possible number.
+        """
         if max is None:
             if min is None:
                 max = 10

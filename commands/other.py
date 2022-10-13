@@ -16,6 +16,12 @@ class other(commands.Cog):
 
     @commands.hybrid_command("Shows you help for the bot and it's commands.")
     async def help(self, ctx: commands.Context, command_name: typing.Optional[str]):
+        """
+        Parameters
+        ------------
+        command_name
+            The name of the command you want help with.
+        """
         if (command_name is None):
             hEmbed = discord.Embed(
                 title="Help", description="Here you can find the list of all commands!", color=0xda7dff)
@@ -44,6 +50,12 @@ class other(commands.Cog):
     @commands.hybrid_command(hidden=True)
     @permissionChecks.developer()
     async def eval(self, ctx: commands.Context, *, command: str):
+        """
+        Parameters
+        ------------
+        command
+            The command to run. Better not be anything bad or imma get you.
+        """
         try:
             await ctx.reply(await eval(command))
         except Exception as ex:
@@ -52,6 +64,12 @@ class other(commands.Cog):
     @commands.hybrid_command(hidden=True)
     @permissionChecks.developer()
     async def exec(self, ctx: commands.Context, *, command: str):
+         """
+        Parameters
+        ------------
+        command
+            The command to run. Better not be anything bad or imma get you.
+        """
         try:
             exec(command)
             await ctx.reply("Execution complete.")
