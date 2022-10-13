@@ -128,3 +128,4 @@ class xp(commands.Cog):
             print("No db?")
             return
         await self.storeXP([{"server":ctx.guild.id, "user":member.id, "xp":xp}])
+        await ctx.reply(f"Gave {xp} xp to {member.display_name}.")
