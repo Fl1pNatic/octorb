@@ -14,7 +14,7 @@ class other(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.hybrid_command("Shows you help for the bot and it's commands.")
+    @commands.hybrid_command(description="Shows you help for the bot and it's commands.")
     async def help(self, ctx: commands.Context, command_name: typing.Optional[str]):
         """
         Parameters
@@ -64,7 +64,7 @@ class other(commands.Cog):
     @commands.hybrid_command(hidden=True)
     @permissionChecks.developer()
     async def exec(self, ctx: commands.Context, *, command: str):
-         """
+        """
         Parameters
         ------------
         command
