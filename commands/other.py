@@ -26,8 +26,8 @@ class other(commands.Cog):
             hEmbed = discord.Embed(
                 title="Help", description="Here you can find the list of all commands!", color=0xda7dff)
             cogs = self.bot.cogs
-            cogs = [cog for cog in cogs.values()] if devCheck() else [
-                cog for cog in cogs.values() if cog.__cog_name__ is not "developer"]
+            cogs = [cog for cog in cogs.values()] if devCheck(ctx) else [
+                cog for cog in cogs.values() if cog.__cog_name__ != "developer"]
             cogs.sort(key=lambda cog: cog.qualified_name)
             for cog in cogs:
                 commandList = [
