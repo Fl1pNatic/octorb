@@ -80,6 +80,8 @@ async def on_command_error(ctx, error):
             await ctx.reply("This command is limited to Octorb Developers.")
         case botCommands.errors.MissingRequiredArgument:
             await ctx.reply(f"Missing argument: {error.param.name.capitalize()}")
+        case botCommands.errors.MissingRequiredAttachment:
+            await ctx.reply(f"Missing attachement.")
         case botCommands.errors.CommandNotFound:
             pass
         case botCommands.errors.CommandInvokeError:

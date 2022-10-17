@@ -5,6 +5,7 @@ import sys
 import typing
 
 import git
+import discord
 from discord.ext import commands
 
 from PermissionsChecks import devCheck, permissionErrors
@@ -145,3 +146,16 @@ class developer(commands.Cog):
             await ctx.reply("Execution complete.")
         except Exception as ex:
             await ctx.reply(ex)
+
+    @commands.hybrid_command(description="Changes Octorb's profile picture to the attached image.")
+    async def setpfp(self, ctx: commands.Context, image: discord.Attachment):
+        if not image.content_type.startswith("image"):
+            await ctx.reply("Attachement must be an image.")
+            return
+        try:
+            picData = await image.read()
+            await ctx.bot.user.edit(avatar=picData)
+            await ctx.reply("Avatar updated!")
+        except Exception as e:
+            await ctx.reply(e)
+            
