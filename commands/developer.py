@@ -39,7 +39,7 @@ async def unloadModule(module, ctx):
 
 
 async def gitupdate():
-    repo: git.Repo = git.Repo(os.path.dirname(__file__ + "\.."))
+    repo: git.Repo = git.Repo(os.path.dirname(__file__ )+ "/..")
     for remote in repo.remotes:
         remote.pull()
 
