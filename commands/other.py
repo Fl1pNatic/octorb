@@ -33,8 +33,10 @@ class other(commands.Cog):
                 commandList = [
                     command for command in cog.get_commands() if command.hidden is False]
                 if len(commandList) > 0:
+                    commandList = [command.name for command in commandList]
+                    commandList.sort()
                     hEmbed.add_field(name=cog.qualified_name.capitalize(), value=", ".join(
-                        [command.name for command in commandList]))
+                        commandList))
             await ctx.reply(embed=hEmbed)
             return
         if (command_name not in ctx.bot.all_commands.keys()):
