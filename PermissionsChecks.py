@@ -16,7 +16,7 @@ class permissionErrors:
 def devCheck(ctx: commands.Context):
     if ctx.author.id in developer_ids:
         return True
-    raise permissionErrors.NonDeveloperError()
+    return False
 
 
 class permissionChecks:

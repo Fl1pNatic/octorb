@@ -5,8 +5,6 @@ import discord
 from discord.ext import commands
 from py_expression_eval import Parser
 
-from PermissionsChecks import devCheck, permissionChecks, permissionErrors
-
 
 class math(commands.Cog):
     def __init__(self, bot):

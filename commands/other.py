@@ -7,7 +7,7 @@ import git
 from discord import Button, ButtonStyle, app_commands
 from discord.ext import commands
 
-from PermissionsChecks import permissionChecks
+from PermissionsChecks import devCheck, permissionChecks
 
 
 class other(commands.Cog):
@@ -26,17 +26,25 @@ class other(commands.Cog):
             hEmbed = discord.Embed(
                 title="Help", description="Here you can find the list of all commands!", color=0xda7dff)
             cogs = self.bot.cogs
-            cogs = [cog for cog in cogs.values()]
+            cogs = [cog for cog in cogs.values()] if devCheck() else [
+                cog for cog in cogs.values() if cog.__cog_name__ is not "developer"]
             cogs.sort(key=lambda cog: cog.qualified_name)
             for cog in cogs:
-                hEmbed.add_field(name=cog.qualified_name.capitalize(), value=", ".join(
-                    [command.name for command in cog.get_commands() if command.hidden is False]))
+                commandList = [
+                    command for command in cog.get_commands() if command.hidden is False]
+                if len(commandList) > 0:
+                    hEmbed.add_field(name=cog.qualified_name.capitalize(), value=", ".join(
+                        [command.name for command in commandList]))
             await ctx.reply(embed=hEmbed)
             return
         if (command_name not in ctx.bot.all_commands.keys()):
             await ctx.send("Command does not exist")
             return
         command: commands.Command = ctx.bot.all_commands[command_name]
+        if command.cog_name == "developer":
+            if not devCheck(ctx):
+                await ctx.send("You do not have access to this command.")
+                return
         commandEmbed = discord.Embed(title=f"Help for `{command.name.capitalize()}`", description=command.description if len(
             command.description) > 0 else "Command has no description, please report this in the support server.")
         if (len(command.clean_params) > 0):
@@ -46,35 +54,6 @@ class other(commands.Cog):
                     f"`{param.name.capitalize()}` `[{'Optional' if type(param.converter) == typing._UnionGenericAlias else 'Required'}]`:{param.description if hasattr(param, 'description') else 'Parameter not described, please report this.'}")
             commandEmbed.add_field(name="Paramaters", value="\n".join(params))
         await ctx.send(embed=commandEmbed)
-
-    @commands.hybrid_command(hidden=True, description="Eval()s the command.")
-    @permissionChecks.developer()
-    async def eval(self, ctx: commands.Context, *, command: str):
-        """
-        Parameters
-        ------------
-        command
-            The command to run. Better not be anything bad or imma get you.
-        """
-        try:
-            await ctx.reply(await eval(command))
-        except Exception as ex:
-            await ctx.reply(ex)
-
-    @commands.hybrid_command(hidden=True, description="Exec()s the command.")
-    @permissionChecks.developer()
-    async def exec(self, ctx: commands.Context, *, command: str):
-        """
-        Parameters
-        ------------
-        command
-            The command to run. Better not be anything bad or imma get you.
-        """
-        try:
-            exec(command)
-            await ctx.reply("Execution complete.")
-        except Exception as ex:
-            await ctx.reply(ex)
 
     @commands.hybrid_command(description="Some info about the bot.")
     async def about(self, ctx: commands.Context):

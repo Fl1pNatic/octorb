@@ -5,8 +5,6 @@ from math import log
 import discord
 from discord.ext import commands, tasks
 
-from PermissionsChecks import permissionChecks
-
 xp = {}
 
 

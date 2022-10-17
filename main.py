@@ -1,21 +1,18 @@
-import importlib
-import os
 import sys
-import typing
 
 import discord
-import git
 import pymysql
 from discord.ext import commands as botCommands
 from dotenv import dotenv_values, load_dotenv
 
+from commands.developer import developer
 from commands.dynamic import dynamic
 from commands.fun import fun
 from commands.math import math
 from commands.moderation import moderation
 from commands.other import other
 from commands.xp import xp
-from PermissionsChecks import devCheck, permissionChecks, permissionErrors
+from PermissionsChecks import devCheck, permissionErrors
 
 sys.path.append(".")
 
@@ -43,13 +40,13 @@ setattr(bot, "db", db)
 
 @bot.event
 async def on_ready():
-    await gitupdate()
     await bot.add_cog(fun(bot))
     await bot.add_cog(xp(bot))
     await bot.add_cog(other(bot))
     await bot.add_cog(moderation(bot))
     await bot.add_cog(math(bot))  # too annoying
     await bot.add_cog(dynamic(bot))
+    await bot.add_cog(developer(bot))
     print(f"It's {bot.user}in' time")
 
 
@@ -60,11 +57,12 @@ async def on_disconnect():
 
 @bot.event
 async def on_message(message: discord.Message):
-    if message.guild == None:
-        if message.author.bot:
+    if not devCheck(message):
+        if message.guild == None:
+            if message.author.bot:
+                return
+            await message.channel.send("You are not allowed to use the bot in DMs")
             return
-        await message.channel.send("You are not allowed to use the bot in DMs")
-        return
     await bot.process_commands(message)
 
 # Helper Commands
@@ -74,113 +72,6 @@ async def getuser(userid, guildid):
     guild = bot.get_guild(guildid)
     user = await guild.fetch_member(userid)
     return user
-
-
-async def loadModule(module, ctx):
-    if module in bot.cogs:
-        await ctx.reply("You can't load a module that's already loaded ffs.")
-        return
-    try:
-        importlib.import_module("commands."+module)
-    except (ImportError) as error:
-        await ctx.reply("Error loading module. "+error.msg)
-        return
-    try:
-        await bot.add_cog(sys.modules[f"commands.{module}"].__getattribute__(f"{module}")(bot))
-    except (AttributeError) as error:
-        await ctx.reply("Error loading module. "+error.name)
-        return
-    await ctx.reply("Loaded module.")
-
-
-async def unloadModule(module, ctx):
-    if not module in bot.cogs:
-        await ctx.reply("Module not loaded.")
-        return
-    await bot.remove_cog(module)
-    del sys.modules["commands."+module]
-    await ctx.reply("Module unloaded.")
-
-
-async def gitupdate():
-    repo: git.Repo = git.Repo(os.path.dirname(__file__))
-    for remote in repo.remotes:
-        remote.pull()
-
-
-@bot.hybrid_command(description="Loads the given module.")
-@permissionChecks.developer()
-async def loadmodule(ctx: botCommands.Context, module_name: str):
-    """
-    Parameters
-    ------------
-    module_name
-        The name of the module you want to load.
-    """
-    await loadModule(module_name, ctx)
-
-
-@bot.hybrid_command(description="Unloads the given module.")
-@permissionChecks.developer()
-async def unloadmodule(ctx: botCommands.Context, module_name: str):
-    """
-    Parameters
-    ------------
-    module_name
-        The name of the module you want to unload.
-    """
-    await unloadModule(module_name, ctx)
-
-
-@bot.hybrid_command(description="Reloads the given module.")
-@permissionChecks.developer()
-async def reloadmodule(ctx: botCommands.Context, module_name: str):
-    """
-    Parameters
-    ------------
-    module_name
-        The name of the module you want to reload.
-    """
-    await unloadModule(module_name, ctx)
-    await loadModule(module_name, ctx)
-
-
-@bot.hybrid_command(description="Update the bot from github.")
-@permissionChecks.developer()
-async def update(ctx: botCommands.Context):
-    await gitupdate()
-    await ctx.reply("Pulled Changes")
-
-
-@bot.command(description="Sync the slash commands.")
-@botCommands.guild_only()
-@permissionChecks.developer()
-async def sync(
-        ctx: botCommands.Context, spec: typing.Optional[typing.Literal["~", "*", "^"]] = None) -> None:
-    """
-    Parameters
-    ------------
-    spec
-        Where to sync. None for everywhere, ~ for the current guild, * to copy the global to the current guild, ^ to delete the current guilds.
-    """
-    if spec == "~":
-        synced = await ctx.bot.tree.sync(guild=ctx.guild)
-    elif spec == "*":
-        ctx.bot.tree.copy_global_to(guild=ctx.guild)
-        synced = await ctx.bot.tree.sync(guild=ctx.guild)
-    elif spec == "^":
-        ctx.bot.tree.clear_commands(guild=ctx.guild)
-        await ctx.bot.tree.sync(guild=ctx.guild)
-        synced = []
-    else:
-        synced = await ctx.bot.tree.sync()
-    print(
-        f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}")
-    await ctx.send(
-        f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
-    )
-    return
-
 
 @bot.event
 async def on_command_error(ctx, error):
