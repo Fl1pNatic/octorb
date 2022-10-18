@@ -42,8 +42,10 @@ yo_vars = ["yo", "yoyo", "yoyoyo", "toe"]
 
 
 class fun(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: discord.Client):
+        gallery_id = 1031954555040170137
         self.bot = bot
+        self.galleryChannel = bot.get_channel(gallery_id)
 
     @commands.hybrid_command(description="Lets you ask Octorb a question.")
     async def ask(self, ctx, question: str):
@@ -108,43 +110,45 @@ class fun(commands.Cog):
 
     @gallery.command(description="Adds the media to the gallery.")
     @commands.has_permissions(manage_emojis_and_stickers=True)
-    async def add(self, ctx: commands.Context):
-        if len(ctx.message.attachments) != 1:
-            await ctx.reply("Please attach one image/video file.")
-            return
-        if not ctx.message.attachments[0].content_type.startswith("image/"):
-            if not ctx.message.attachments[0].content_type.startswith("video/"):
-                await ctx.reply("File does not appear to be an image/video.")
-                return
-        cursor = self.bot.db.cursor()
-        cursor.execute(
-            "SELECT COUNT(*) FROM gallery WHERE serverId = %s", (ctx.guild.id,))
-        count = cursor.fetchone()[0]
-        cursor.close()
-        replaceDeleted = False
-        if count >= imageLimit:
+    async def add(self, ctx: commands.Context, image: discord.Attachment):
+        try:
+            if not image.content_type.startswith("image/"):
+                if not image.content_type.startswith("video/"):
+                    await ctx.reply("File does not appear to be an image/video.")
+                    return
+            galleryChannelMessage: discord.Message = await self.galleryChannel.send(file=await image.to_file())
+            image = galleryChannelMessage.attachments[0]
             cursor = self.bot.db.cursor()
             cursor.execute(
-                "SELECT id FROM gallery WHERE serverId = %s AND picUrl = '0'", (ctx.guild.id,))
-            set0 = cursor.fetchall()
+                "SELECT COUNT(*) FROM gallery WHERE serverId = %s", (ctx.guild.id,))
+            count = cursor.fetchone()[0]
             cursor.close()
-            if len(set0) < 1:
-                await ctx.reply("Max content amount reached for this guild.")
-                return
-            replaceDeleted = set0[0][0]
-        imageId = count
-        if replaceDeleted is not False:
-            imageId = replaceDeleted
+            replaceDeleted = False
+            if count >= imageLimit:
+                cursor = self.bot.db.cursor()
+                cursor.execute(
+                    "SELECT id FROM gallery WHERE serverId = %s AND picUrl = '0'", (ctx.guild.id,))
+                set0 = cursor.fetchall()
+                cursor.close()
+                if len(set0) < 1:
+                    await ctx.reply("Max content amount reached for this guild.")
+                    return
+                replaceDeleted = set0[0][0]
+            imageId = count
+            if replaceDeleted is not False:
+                imageId = replaceDeleted
 
-        cursor = self.bot.db.cursor()
-        if replaceDeleted is False:
-            cursor.execute("INSERT INTO gallery VALUES (%s, %s, %s)",
-                           (ctx.guild.id, count+1, ctx.message.attachments[0].url))
-            await ctx.reply(f"Added media with id {count + 1}")
-            return
-        cursor.execute("UPDATE gallery SET picUrl = %s WHERE serverId = %s AND id = %s",
-                       (ctx.message.attachments[0].url, ctx.guild.id, replaceDeleted))
-        await ctx.reply(f"Added media with id {replaceDeleted}")
+            cursor = self.bot.db.cursor()
+            if replaceDeleted is False:
+                cursor.execute("INSERT INTO gallery VALUES (%s, %s, %s)",
+                            (ctx.guild.id, count+1, image.url))
+                await ctx.reply(f"Added media with id {count + 1}")
+                return
+            cursor.execute("UPDATE gallery SET picUrl = %s WHERE serverId = %s AND id = %s",
+                        (image.url, ctx.guild.id, replaceDeleted))
+            await ctx.reply(f"Added media with id {replaceDeleted}")
+        except Exception as e:
+            print(e)
 
     @gallery.command(name="delete", description="Deletes the image from the gallery.")
     @commands.has_permissions(manage_emojis_and_stickers=True)
