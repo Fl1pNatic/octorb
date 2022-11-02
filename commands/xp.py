@@ -130,11 +130,11 @@ class xp(commands.Cog):
         cursor.execute("SELECT memberXp, memberId FROM xp WHERE serverId = %s ORDER BY memberXp DESC", [
                        str(ctx.message.guild.id)])
         embed = discord.Embed(title="XP Leaderboards", color=0xda7dff)
+        embed.set_footer(text = "Page: " + page)
         data = cursor.fetchall()
         for i in range(min(len(data) + page, 5)):
             embed.add_field(
                 name=f"{(i + 1 + (5 * (page - 1)))}.", value=f"<@{data[i + (5 * (page - 1))][1]}>: `{data[i + (5 * (page - 1))][0]}`", inline=False)
-        embed.set_footer("Page: " + page)
         await ctx.reply(embed=embed)
 
     @commands.hybrid_command(description="Gives the specified user xp.")
