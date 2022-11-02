@@ -3,6 +3,7 @@ import typing
 from math import log
 
 import discord
+import typing
 from discord.ext import commands, tasks
 
 xp = {}
@@ -100,7 +101,8 @@ class xp(commands.Cog):
 
         cursor = self.db.cursor()
         if user is not None:
-            ctx.message.author: discord.Member = user
+            if not user.id in [member.id for member in ctx.guild.members]:
+                user = ctx.message.author
 
         try:
             cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s",
@@ -117,16 +119,19 @@ class xp(commands.Cog):
             return
 
     @commands.hybrid_command(description="Shows the xp leaderboard.")
-    async def xptop(self, ctx: commands.Context):
+    async def xptop(self, ctx: commands.Context, page: typing.Optional[int]):
         if self.db == None:
             await ctx.reply("Squidward")
             return
+
+        if page is None:
+            page = 1
         cursor = self.db.cursor()
         cursor.execute("SELECT memberXp, memberId FROM xp WHERE serverId = %s ORDER BY memberXp DESC", [
                        str(ctx.message.guild.id)])
         embed = discord.Embed(title="XP Leaderboards", color=0xda7dff)
         data = cursor.fetchall()
-        for i in range(min(len(data), 5)):
+        for i in range(min(len(data), 5 * page)):
             embed.add_field(
                 name=f"{i+1}.", value=f"<@{data[i][1]}>: `{data[i][0]}`", inline=False)
 
