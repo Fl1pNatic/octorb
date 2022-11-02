@@ -82,8 +82,10 @@ class other(commands.Cog):
     async def changelog(self, ctx: commands.Context):
         repo: git.Git = git.Git(os.path.dirname(__file__))
         commits = repo.log('--pretty=%s').split("\n")[:10]
+        commitCount = len(repo.log('--pretty=%s').split("\n"))
         commitsHashes = repo.log('--pretty=%h').split("\n")[:10]
         embed = discord.Embed(title="Changelog", color=0xff00bb)
+        embed.set_footer(text = f"Commits: {commitCount}")
         for commit in range(len(commits)):
             embed.add_field(
                 name="`"+commitsHashes[commit]+"`", value="`"+commits[commit]+"`", inline=False)
