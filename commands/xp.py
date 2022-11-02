@@ -124,7 +124,7 @@ class xp(commands.Cog):
             await ctx.reply("Squidward")
             return
 
-        if page is None:
+        if page is None or page < 0:
             page = 1
         cursor = self.db.cursor()
         cursor.execute("SELECT memberXp, memberId FROM xp WHERE serverId = %s ORDER BY memberXp DESC", [
@@ -132,7 +132,7 @@ class xp(commands.Cog):
         embed = discord.Embed(title="XP Leaderboards", color=0xda7dff)
         embed.set_footer(text = f"Page: {+ page}")
         data = cursor.fetchall()
-        for i in range(min(len(data) + page, 5)):
+        for i in range(min(len(data) + page, page + 5)):
             embed.add_field(
                 name=f"{(i + 1 + (5 * (page - 1)))}.", value=f"<@{data[i + (5 * (page - 1))][1]}>: `{data[i + (5 * (page - 1))][0]}`", inline=False)
         await ctx.reply(embed=embed)
