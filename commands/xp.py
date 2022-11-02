@@ -131,9 +131,9 @@ class xp(commands.Cog):
                        str(ctx.message.guild.id)])
         embed = discord.Embed(title="XP Leaderboards", color=0xda7dff)
         data = cursor.fetchall()
-        for i in range(min(len(data), 5 * page)):
+        for i in range(min(len(data) + 5 * page, 5 * page)):
             embed.add_field(
-                name=f"{i * page + 1}.", value=f"<@{data[i * page][1]}>: `{data[i * page][0]}`", inline=False)
+                name=f"{i}.", value=f"<@{data[i][1]}>: `{data[i][0]}`", inline=False)
 
         await ctx.reply(embed=embed)
 
