@@ -133,7 +133,7 @@ class xp(commands.Cog):
         data = cursor.fetchall()
         for i in range(min(len(data) + page, 5)):
             embed.add_field(
-                name=f"{(i + 1 + (5 * (page - 1)))}.", value=f"<@{data[i][1]}>: `{data[i][0]}`", inline=False)
+                name=f"{(i + 1 + (5 * (page - 1)))}.", value=f"<@{data[i + (5 * (page - 1))][1]}>: `{data[i + (5 * (page - 1))][0]}`", inline=False)
 
         await ctx.reply(embed=embed)
 
