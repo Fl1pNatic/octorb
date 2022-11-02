@@ -130,7 +130,7 @@ class xp(commands.Cog):
         cursor.execute("SELECT memberXp, memberId FROM xp WHERE serverId = %s ORDER BY memberXp DESC", [
                        str(ctx.message.guild.id)])
         embed = discord.Embed(title="XP Leaderboards", color=0xda7dff)
-        embed.set_footer(text = "Page: " + page)
+        embed.set_footer(text = f"Page: {+ page}")
         data = cursor.fetchall()
         for i in range(min(len(data) + page, 5)):
             embed.add_field(
