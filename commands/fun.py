@@ -164,6 +164,24 @@ class fun(commands.Cog):
             "UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, image_id))
         await ctx.reply("Deleted content from gallery.")
 
+    @gallery.command(name="show", description="Shows the specific picture from the gallery.")
+    async def show(self, ctx: commands.Context, image_num: int):
+        if image_num is None:
+            await ctx.reply("Please use gallery [media id], gallery add [media], gallery count, or gallery delete [media id].")
+            return
+
+        cursor = self.bot.db.cursor()
+        cursor.execute(
+            "SELECT picUrl FROM gallery WHERE id = %s AND serverId = %s", (image_num, ctx.guild.id))
+        result = cursor.fetchall()
+        if len(result) == 0:
+            await ctx.reply("No media found with that id.")
+            return
+        result = result[0]
+        if result[0] == "0":
+            await ctx.reply("It appears this content has been deleted.")
+            return
+        await ctx.reply(f"{result[0]}")
     @commands.hybrid_command(description="Gets the users server or default avatar.")
     async def avatar(self, ctx: commands.Context, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
         """
