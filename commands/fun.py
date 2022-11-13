@@ -72,33 +72,13 @@ class fun(commands.Cog):
         await ctx.reply(embed=embed)
 
     @commands.hybrid_group(description="Gallery commands.")
-    async def gallery(self, ctx: commands.Context, image_num: typing.Optional[int]):
-        """
-        Parameters
-        ------------
-        image_num
-            The number of the image you want.
-        """
+    async def gallery(self, ctx: commands.Context):
         if ctx.invoked_subcommand is not None:
             return
-        if image_num is None:
-            await ctx.reply("Please use gallery [media id], gallery add [media], gallery count, or gallery delete [media id].")
-            return
+        await ctx.reply("Please use gallery show [media id], gallery add [media], gallery count, or gallery delete [media id].")
+        return
 
-        cursor = self.bot.db.cursor()
-        cursor.execute(
-            "SELECT picUrl FROM gallery WHERE id = %s AND serverId = %s", (image_num, ctx.guild.id))
-        result = cursor.fetchall()
-        if len(result) == 0:
-            await ctx.reply("No media found with that id.")
-            return
-        result = result[0]
-        if result[0] == "0":
-            await ctx.reply("It appears this content has been deleted.")
-            return
-        await ctx.reply(f"{result[0]}")
-
-    @gallery.command(description="Gets the number of images in the server's gallery.")
+    @gallery.command(description="Gets the number of media in the server's gallery.")
     async def count(self, ctx: commands.Context):
         if self.bot.db is None:
             await ctx.reply("There are 69 images.")
@@ -106,18 +86,24 @@ class fun(commands.Cog):
         cursor.execute(
             "SELECT COUNT(*) FROM gallery WHERE serverId = %s AND NOT picUrl = '0'", ctx.guild.id)
         count = cursor.fetchone()[0]
-        await ctx.reply(f"There are {count} stored.")
+        await ctx.reply(f"There are {count} things stored.")
 
     @gallery.command(description="Adds the media to the gallery.")
     @commands.has_permissions(manage_emojis_and_stickers=True)
-    async def add(self, ctx: commands.Context, image: discord.Attachment):
+    async def add(self, ctx: commands.Context, media: discord.Attachment):
+        """
+        Parameters
+        ------------
+        media
+            The image/video you want to add.
+        """
         try:
-            if not image.content_type.startswith("image/"):
-                if not image.content_type.startswith("video/"):
+            if not media.content_type.startswith("image/"):
+                if not media.content_type.startswith("video/"):
                     await ctx.reply("File does not appear to be an image/video.")
                     return
-            galleryChannelMessage: discord.Message = await self.galleryChannel.send(file=await image.to_file())
-            image = galleryChannelMessage.attachments[0]
+            galleryChannelMessage: discord.Message = await self.galleryChannel.send(file=await media.to_file())
+            media = galleryChannelMessage.attachments[0]
             cursor = self.bot.db.cursor()
             cursor.execute(
                 "SELECT COUNT(*) FROM gallery WHERE serverId = %s", (ctx.guild.id,))
@@ -141,38 +127,40 @@ class fun(commands.Cog):
             cursor = self.bot.db.cursor()
             if replaceDeleted is False:
                 cursor.execute("INSERT INTO gallery VALUES (%s, %s, %s)",
-                            (ctx.guild.id, count+1, image.url))
+                            (ctx.guild.id, count+1, media.url))
                 await ctx.reply(f"Added media with id {count + 1}")
                 return
             cursor.execute("UPDATE gallery SET picUrl = %s WHERE serverId = %s AND id = %s",
-                        (image.url, ctx.guild.id, replaceDeleted))
+                        (media.url, ctx.guild.id, replaceDeleted))
             await ctx.reply(f"Added media with id {replaceDeleted}")
         except Exception as e:
             print(e)
 
-    @gallery.command(name="delete", description="Deletes the image from the gallery.")
+    @gallery.command(name="delete", description="Deletes media from the gallery.")
     @commands.has_permissions(manage_emojis_and_stickers=True)
-    async def _delete(self, ctx: commands.Context, image_id: int):
+    async def _delete(self, ctx: commands.Context, media_id: int):
         """
         Parameters
         ------------
-        image_id
-            The number of the image to delete.
+        media_id
+            The image/video to delete.
         """
         cursor = self.bot.db.cursor()
         cursor.execute(
-            "UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, image_id))
+            "UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, media_id))
         await ctx.reply("Deleted content from gallery.")
 
-    @gallery.command(name="show", description="Shows the specific picture from the gallery.")
-    async def show(self, ctx: commands.Context, image_num: int):
-        if image_num is None:
-            await ctx.reply("Please use gallery [media id], gallery add [media], gallery count, or gallery delete [media id].")
-            return
-
+    @gallery.command(name="show", description="Shows the specific picture/video from the gallery.")
+    async def show(self, ctx: commands.Context, media_id: int):
+        """
+        Parameters
+        ------------
+        media_id
+            The specific image/video you want to see.
+        """
         cursor = self.bot.db.cursor()
         cursor.execute(
-            "SELECT picUrl FROM gallery WHERE id = %s AND serverId = %s", (image_num, ctx.guild.id))
+            "SELECT picUrl FROM gallery WHERE id = %s AND serverId = %s", (media_id, ctx.guild.id))
         result = cursor.fetchall()
         if len(result) == 0:
             await ctx.reply("No media found with that id.")
