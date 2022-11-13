@@ -93,7 +93,7 @@ class xp(commands.Cog):
         Parameters
         ------------
         user
-            The user to get the xp of.
+            The user to get the xp of
         """
         if self.db == None:
             await ctx.reply("You have 69 XP")

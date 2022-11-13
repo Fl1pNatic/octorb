@@ -58,7 +58,7 @@ class developer(commands.Cog):
         Parameters
         ------------
         module_name
-            The name of the module you want to load.
+            The name of the module you want to load
         """
         await loadModule(module_name, ctx)
 
@@ -69,7 +69,7 @@ class developer(commands.Cog):
         Parameters
         ------------
         module_name
-            The name of the module you want to unload.
+            The name of the module you want to unload
         """
         await unloadModule(module_name, ctx)
 
@@ -80,7 +80,7 @@ class developer(commands.Cog):
         Parameters
         ------------
         module_name
-            The name of the module you want to reload.
+            The name of the module you want to reload
         """
         await unloadModule(module_name, ctx)
         await loadModule(module_name, ctx)
@@ -92,7 +92,7 @@ class developer(commands.Cog):
         await ctx.reply("Pulled Changes")
 
 
-    @commands.command(description="Sync the slash commands.")
+    @commands.hybrid_command(description="Sync the slash commands.")
     @commands.guild_only()
     async def sync(
             self, ctx: commands.Context, spec: typing.Optional[typing.Literal["~", "*", "^"]] = None) -> None:
@@ -100,7 +100,7 @@ class developer(commands.Cog):
         Parameters
         ------------
         spec
-            Where to sync. None for everywhere, ~ for the current guild, * to copy the global to the current guild, ^ to delete the current guilds.
+            Where to sync. None for everywhere, ~ for the current guild, * to copy the global to the current guild, ^ to delete the current guilds
         """
         if spec == "~":
             synced = await ctx.bot.tree.sync(guild=ctx.guild)
@@ -126,7 +126,7 @@ class developer(commands.Cog):
         Parameters
         ------------
         command
-            The command to run. Better not be anything bad or imma get you.
+            The command to run. Better not be anything bad or imma get you
         """
         try:
             await ctx.reply(await eval(command))
@@ -139,7 +139,7 @@ class developer(commands.Cog):
         Parameters
         ------------
         command
-            The command to run. Better not be anything bad or imma get you.
+            The command to run. Better not be anything bad or imma get you
         """
         try:
             exec(command)
@@ -149,6 +149,12 @@ class developer(commands.Cog):
 
     @commands.hybrid_command(description="Changes Octorb's profile picture to the attached image.")
     async def setpfp(self, ctx: commands.Context, image: discord.Attachment):
+        """
+        Parameters
+        ------------
+        image
+            The image to set the pfp to
+        """
         if not image.content_type.startswith("image"):
             await ctx.reply("Attachement must be an image.")
             return

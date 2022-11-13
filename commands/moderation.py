@@ -85,9 +85,9 @@ class moderation(commands.Cog):
         Parameters
         ------------
         member
-            User you want to ban (ID or ping)
+            User you want to ban
         reason
-            Reason for banning (Text)
+            Reason for banning
         """
         embed = discord.Embed(
             title=f"Banned {member.name + member.discriminator}", color=0xda7dff)
@@ -106,7 +106,7 @@ class moderation(commands.Cog):
         Parameters
         ------------
         member
-            User you want to unban (ID)
+            User you want to unban
         """
         bans = await ctx.guild.bans()
         banned_users = [user.user.id for user in bans]
@@ -123,9 +123,9 @@ class moderation(commands.Cog):
         Parameters
         ------------
         max
-            The most messages this will delete (Number)
+            The most messages this will delete
         from_user
-            The user it will purge from (ID or Ping)
+            The user it will purge from
         """
         if max is None or max > 100:
             max = 100

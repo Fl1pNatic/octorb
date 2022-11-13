@@ -5,8 +5,7 @@ from random import choice
 import discord
 from discord.ext import commands
 from owoify import owoify
-
-imageLimit = 100
+from owoify import Owoness
 
 answer_list = [
     "you sharted", "Maybe not.", "Probably.",
@@ -31,8 +30,8 @@ answer_list = [
     "You asked exactly what you didn't need to ask. Lol.", "YES!", "NO!",
     "Maybe you should stop asking questions.",
     "Lol. Did you really just ask THAT?",
-    "Did you REALLY need to ask me that?", "Hmmmmmmmmmmmmmmmmmmm...\nYes.",
-    "Hmmmmmmmmmmmmmmmmmmm...\nNo.",
+    "Did you REALLY need to ask me that?", "Hmmmmmmmmmmmmmmmmmmm...\n||Yes.||",
+    "Hmmmmmmmmmmmmmmmmmmm...\n||No.||",
     "How about you just shut me off. I can't listen to your stupid questions anymore.",
     "Shut up.", "Touch grass.",
     "Killing an ant is more fun that responding to that", "💀💀💀"
@@ -43,11 +42,9 @@ yo_vars = ["yo", "yoyo", "yoyoyo", "toe"]
 
 class fun(commands.Cog):
     def __init__(self, bot: discord.Client):
-        gallery_id = 1031954555040170137
         self.bot = bot
-        self.galleryChannel = bot.get_channel(gallery_id)
 
-    @commands.hybrid_command(description="Lets you ask Octorb a question.")
+    @commands.hybrid_command(description="Ask Octorb a question")
     async def ask(self, ctx, question: str):
         """
         Parameters
@@ -58,7 +55,7 @@ class fun(commands.Cog):
         a = choice(tuple(answer_list))
         await ctx.reply(a)
 
-    @commands.hybrid_command(hidden=True, description="Owoifwies ywour text, because why nywot.")
+    @commands.hybrid_command(hidden=True, description="Owoifwies ywour text, because why nywot")
     async def owoify(self, ctx: commands.Context, *, phrase: str):
         """
         Parameters
@@ -68,109 +65,10 @@ class fun(commands.Cog):
         """
         embed = discord.Embed(title="OwOified", color=0xda7dff)
         embed.set_author(name=ctx.message.author)
-        embed.description = owoify(phrase)
+        embed.description = owoify(phrase, level=Owoness.Uvu)
         await ctx.reply(embed=embed)
 
-    @commands.hybrid_group(description="Gallery commands.")
-    async def gallery(self, ctx: commands.Context):
-        if ctx.invoked_subcommand is not None:
-            return
-        await ctx.reply("Please use gallery show [media id], gallery add [media], gallery count, or gallery delete [media id].")
-        return
-
-    @gallery.command(description="Gets the number of media in the server's gallery.")
-    async def count(self, ctx: commands.Context):
-        if self.bot.db is None:
-            await ctx.reply("There are 69 images.")
-        cursor = self.bot.db.cursor()
-        cursor.execute(
-            "SELECT COUNT(*) FROM gallery WHERE serverId = %s AND NOT picUrl = '0'", ctx.guild.id)
-        count = cursor.fetchone()[0]
-        await ctx.reply(f"There are {count} things stored.")
-
-    @gallery.command(description="Adds the media to the gallery.")
-    @commands.has_permissions(manage_emojis_and_stickers=True)
-    async def add(self, ctx: commands.Context, media: discord.Attachment):
-        """
-        Parameters
-        ------------
-        media
-            The image/video you want to add.
-        """
-        try:
-            if not media.content_type.startswith("image/"):
-                if not media.content_type.startswith("video/"):
-                    await ctx.reply("File does not appear to be an image/video.")
-                    return
-            galleryChannelMessage: discord.Message = await self.galleryChannel.send(file=await media.to_file())
-            media = galleryChannelMessage.attachments[0]
-            cursor = self.bot.db.cursor()
-            cursor.execute(
-                "SELECT COUNT(*) FROM gallery WHERE serverId = %s", (ctx.guild.id,))
-            count = cursor.fetchone()[0]
-            cursor.close()
-            replaceDeleted = False
-            if count >= imageLimit:
-                cursor = self.bot.db.cursor()
-                cursor.execute(
-                    "SELECT id FROM gallery WHERE serverId = %s AND picUrl = '0'", (ctx.guild.id,))
-                set0 = cursor.fetchall()
-                cursor.close()
-                if len(set0) < 1:
-                    await ctx.reply("Max content amount reached for this guild.")
-                    return
-                replaceDeleted = set0[0][0]
-            imageId = count
-            if replaceDeleted is not False:
-                imageId = replaceDeleted
-
-            cursor = self.bot.db.cursor()
-            if replaceDeleted is False:
-                cursor.execute("INSERT INTO gallery VALUES (%s, %s, %s)",
-                            (ctx.guild.id, count+1, media.url))
-                await ctx.reply(f"Added media with id {count + 1}")
-                return
-            cursor.execute("UPDATE gallery SET picUrl = %s WHERE serverId = %s AND id = %s",
-                        (media.url, ctx.guild.id, replaceDeleted))
-            await ctx.reply(f"Added media with id {replaceDeleted}")
-        except Exception as e:
-            print(e)
-
-    @gallery.command(name="delete", description="Deletes media from the gallery.")
-    @commands.has_permissions(manage_emojis_and_stickers=True)
-    async def _delete(self, ctx: commands.Context, media_id: int):
-        """
-        Parameters
-        ------------
-        media_id
-            The image/video to delete.
-        """
-        cursor = self.bot.db.cursor()
-        cursor.execute(
-            "UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, media_id))
-        await ctx.reply("Deleted content from gallery.")
-
-    @gallery.command(name="show", description="Shows the specific picture/video from the gallery.")
-    async def show(self, ctx: commands.Context, media_id: int):
-        """
-        Parameters
-        ------------
-        media_id
-            The specific image/video you want to see.
-        """
-        cursor = self.bot.db.cursor()
-        cursor.execute(
-            "SELECT picUrl FROM gallery WHERE id = %s AND serverId = %s", (media_id, ctx.guild.id))
-        result = cursor.fetchall()
-        if len(result) == 0:
-            await ctx.reply("No media found with that id.")
-            return
-        result = result[0]
-        if result[0] == "0":
-            await ctx.reply("It appears this content has been deleted.")
-            return
-        await ctx.reply(f"{result[0]}")
-    @commands.hybrid_command(description="Gets the users server or default avatar.")
+    @commands.hybrid_command(description="Gets user's server or default avatar.")
     async def avatar(self, ctx: commands.Context, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
         """
         Parameters
@@ -178,7 +76,7 @@ class fun(commands.Cog):
         user
             The user to get the avatar of
         default
-            Whether to get their account avatar or server avatar.
+            Whether to get user's account avatar [true] or server avatar [false (Default)]
         """
         if user is not None:
             ctx.message.author: discord.Member = user

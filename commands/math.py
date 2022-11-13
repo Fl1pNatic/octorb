@@ -15,15 +15,15 @@ class math(commands.Cog):
         result = random.choice(tuple([0, 1]))
         await ctx.reply("Heads" if result == 1 else "Tails")
 
-    @commands.hybrid_command(description="Gives you a random number.")
+    @commands.hybrid_command(description="Gives you a random number. (Default: 0 - 10)")
     async def rng(self, ctx: commands.Context, min: typing.Optional[int], max: typing.Optional[int]):
         """
         Parameters
         ------------
         min
-            The lowest possible number.
+            The lowest possible number
         max
-            The highest possible number.
+            The highest possible number
         """
         if max is None:
             if min is None:
@@ -43,6 +43,7 @@ class math(commands.Cog):
         result = random.randrange(min, max)
         await ctx.reply(result)
 
+    # This was too broken to be left in
     # @commands.command()
     # @permissionChecks.developer()
     async def math(self, ctx: commands.Context, *, equation: str):

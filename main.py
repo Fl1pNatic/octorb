@@ -48,6 +48,8 @@ async def on_ready():
     await bot.add_cog(dynamic(bot))
     await bot.add_cog(developer(bot))
     print(f"It's {bot.user}in' time")
+    if db is None:
+        print(f"WARNING: BOT IS NOT CONNECT TO A DATABASE. SOME COMMANDS MAY NOT WORK.")
 
 
 @bot.event

@@ -78,7 +78,7 @@ class other(commands.Cog):
        """)
         await ctx.reply(embed=aEmbed)
 
-    @commands.hybrid_command(description="Shows the most recent git commits that are included in the bot.")
+    @commands.hybrid_command(description="Shows the most recent commits to the bot.")
     async def changelog(self, ctx: commands.Context):
         repo: git.Git = git.Git(os.path.dirname(__file__))
         commits = repo.log('--pretty=%s').split("\n")[:10]
