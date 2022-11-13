@@ -114,7 +114,7 @@ class fun(commands.Cog):
 
         uEmbed.add_field(name="Account info", value=f"""Created at: `{str(us.created_at)[0:-9]}`
         User ID: `{us.id}`
-        Accent color: `{us.accent_color}`
+        Accent color: `{us.accent_color if us.accent_color is not None else "Not set"}`
         Bot: `{"Yes" if us.bot else "No" }`""", inline=False)
 
         uEmbed.add_field(name="Member info", value=f"""Joined at: `{str(mem.joined_at)[0:-9]}`
