@@ -24,7 +24,7 @@ command_prefix = ["oc!", "!", "o!"] if not "DEVMODE" in dotenv_values() else [
     "t!"]
 bot = botCommands.Bot(command_prefix=command_prefix,
                       activity=discord.Activity(
-                          type=discord.ActivityType.watching, name="oc! | o! | !help for commands list"),
+                      type=discord.ActivityType.watching, name="oc! | o! | !help for commands list", url="https://github.com/x8c8r/octorb"),
                       intents=discord.Intents.all(),
                       help_command=None,
                       case_insensitive=True

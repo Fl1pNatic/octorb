@@ -59,7 +59,7 @@ class moderation(commands.Cog):
 
     @commands.hybrid_command(description="Kicks specified member.")
     @commands.has_permissions(kick_members=True)
-    async def kick(self, ctx, member: discord.Member, *, reason=None):
+    async def kick(self, ctx, member: discord.Member, *, reason="No reason was given."):
         """
         Parameters
         ------------
@@ -68,19 +68,28 @@ class moderation(commands.Cog):
         reason
             Reason for kicking (Text)
         """
+        if (member.top_role > ctx.me.top_role) or (member == ctx.guild.owner):
+            await ctx.reply("Could not kick member.")
+            return
+
         embed = discord.Embed(
-            title=f"Kicked {member.name + member.discriminator}", color=0xda7dff)
-        embed.description = f"Reason: {reason}"
+            title=f"Kicked {member.name}#{member.discriminator}", 
+            color=0xda7dff, 
+            description = f"Reason: {reason}")
         try:
-            await member.send(f"You were kicked from {ctx.guild.name}, {f'Reason: {reason}' if reason is not None else 'No reason was given.'}")
+            await member.send(f"You were kicked from {ctx.guild.name}, {f'Reason: {reason}'}")
         except:
             await ctx.reply("Unable to message user.")
-        await ctx.reply(embed=embed)
-        await member.kick(reason=reason if reason is not None else 'No reason was given.')
+        try:
+            await member.kick(reason=reason)
+            await ctx.reply(embed=embed)
+        except:
+            await ctx.reply("Could not kick member.")
+            return
 
     @commands.hybrid_command(description="Bans specified member.")
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.Member, *, reason=None):
+    async def ban(self, ctx, member: discord.Member, *, reason="No reason was given."):
         """
         Parameters
         ------------
@@ -89,15 +98,25 @@ class moderation(commands.Cog):
         reason
             Reason for banning
         """
+        if (member.top_role > ctx.me.top_role) or (member == ctx.guild.owner):
+            await ctx.reply("Could not ban member.")
+            return
+
         embed = discord.Embed(
-            title=f"Banned {member.name + member.discriminator}", color=0xda7dff)
-        embed.description = f"Reason: {reason}"
+            title=f"Banned {member.name}#{member.discriminator}", 
+            color=0xda7dff, 
+            description = f"Reason: {reason}")
         try:
-            await member.send(f"You were banned from {ctx.guild.name}, {f'Reason: {reason}' if reason is not None else 'No reason was given.'}")
+            await member.send(f"You were banned from {ctx.guild.name}, {f'Reason: {reason}'}")
         except:
-            await ctx.reply("Unable to message user.")
-        await ctx.reply(embed=embed)
-        await member.ban(reason=reason if reason is not None else 'No reason was given.')
+            await ctx.reply("Could not message member.")
+        try:
+            await member.ban(reason=reason)
+            await ctx.reply(embed=embed)
+        except:
+            await ctx.reply("Could not ban member.")
+            return
+
 
     @commands.hybrid_command(description="Unbans a specified banned member.")
     @commands.has_permissions(ban_members=True)
