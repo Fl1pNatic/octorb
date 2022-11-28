@@ -31,10 +31,8 @@ async def loadModule(module, ctx):
 async def unloadModule(module, ctx):
     if not module in ctx.bot.cogs:
         await ctx.reply("Module not loaded.")
-        print(self, ctx.bot.cogs)
         return
     await ctx.bot.remove_cog(module)
-    print("hwhoehwoi")
     del sys.modules["commands."+module]
     await ctx.reply("Module unloaded.")
 
