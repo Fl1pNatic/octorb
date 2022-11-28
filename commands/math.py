@@ -3,7 +3,6 @@ import typing
 
 import discord
 from discord.ext import commands
-from py_expression_eval import Parser
 
 
 class math(commands.Cog):
@@ -42,14 +41,3 @@ class math(commands.Cog):
 
         result = random.randrange(min, max)
         await ctx.reply(result)
-
-    # This was too broken to be left in
-    # @commands.command()
-    # @permissionChecks.developer()
-    async def math(self, ctx: commands.Context, *, equation: str):
-        mathPars = Parser()
-        try:
-            await ctx.reply(mathPars.parse(equation).evaluate({}))
-        except:
-            await ctx.reply("'"+equation+"' is not a valid expression")
-            return
