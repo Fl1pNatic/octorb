@@ -115,7 +115,6 @@ class xp(commands.Cog):
             return
         except (Exception) as e:
             await ctx.reply("You don't have any XP")
-            await ctx.reply(f"{e}")
             return
 
     @commands.hybrid_command(description="Shows the xp leaderboard.")
