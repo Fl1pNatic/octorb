@@ -1,10 +1,10 @@
 import sys
 
 import discord
-import pymysql
 from discord.ext import commands as botCommands
 from dotenv import dotenv_values, load_dotenv
-
+import sqlite3
+import mysql.connector
 from commands.developer import developer
 from commands.dynamic import dynamic
 from commands.fun import fun
@@ -13,6 +13,7 @@ from commands.moderation import moderation
 from commands.other import other
 from commands.xp import xp
 from PermissionsChecks import devCheck, permissionErrors
+import datetime
 
 sys.path.append(".")
 
@@ -20,23 +21,63 @@ sys.path.append(".")
 load_dotenv()
 TOKEN = dotenv_values()["TOKEN"]
 
-command_prefix = ["oc!", "!", "o!"] if not "DEVMODE" in dotenv_values() else [
-    "t!"]
-bot = botCommands.Bot(command_prefix=command_prefix,
+
+async def determine_prefix(bot, message: discord.Message):
+    if bot.devmode:
+        return [bot.user.mention + " "]
+    return ["!","oc!","o!"]
+    
+
+
+bot = botCommands.Bot(command_prefix=determine_prefix,
                       activity=discord.Activity(
-                      type=discord.ActivityType.watching, name="oc! | o! | !help for commands list", url="https://github.com/x8c8r/octorb"),
+                      type=discord.ActivityType.watching, name="/help for commands", url="https://github.com/x8c8r/octorb", start=datetime.datetime.now()),
                       intents=discord.Intents.all(),
                       help_command=None,
                       case_insensitive=True
                       )
 db = None
+devmode = False
 if not "DEVMODE" in dotenv_values():
-    db = pymysql.connect(host=dotenv_values()['DBHOST'], user=dotenv_values()[
+    db = mysql.connector.connect(host=dotenv_values()['DBHOST'], user=dotenv_values()[
                          'DBUSERNAME'], password=dotenv_values()['DBPASSWORD'], database=dotenv_values()['DB'])
+else:
+    devmode = True
+    db = sqlite3.connect("database.db")
 
+cursor = db.cursor()
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS `gallery` (
+  `serverId` tinytext,
+  `id` int DEFAULT NULL,
+  `picUrl` tinytext
+)
+""")
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS `quickCommands` (
+  `serverId` tinytext,
+  `command` tinytext,
+  `output` text
+)
+""")
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS `xp` (
+  `serverId` text,
+  `memberId` text,
+  `memberXp` int DEFAULT NULL
+)
+""")
+def dbexec(cursor, command:str, params=[]):
+    if isinstance(cursor, sqlite3.Cursor):
+        command = command.replace("%s","?")
+    if not isinstance(params, list):
+        if not isinstance(params, tuple):
+            params = (params,)
+    cursor.execute(command, params)
 
 setattr(bot, "db", db)
-
+setattr(bot, "dbexec", dbexec)
+setattr(bot, "devmode", devmode)
 
 @bot.event
 async def on_ready():
@@ -53,7 +94,7 @@ async def on_ready():
 
 
 @bot.event
-async def on_disconnect():
+async def on_disconnect():  
     print("Disconnected from Discord")
 
 
@@ -97,7 +138,7 @@ async def on_command_error(ctx, error):
         case botCommands.errors.MissingPermissions:
             perms = error.missing_permissions
             await ctx.reply(f"You are missing the following permissions needed to use this command: {' '.join(str(x) for x in perms)}")
-        case _: raise (error)
+        case _: print (error)
 
 
 @bot.check

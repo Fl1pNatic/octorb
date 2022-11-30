@@ -50,7 +50,7 @@ class developer(commands.Cog):
         raise permissionErrors.NonDeveloperError
     
 
-    @commands.hybrid_command(description="Loads the given module.")
+    @commands.command(description="Loads the given module.")
     async def loadmodule(self, ctx: commands.Context, module_name: str):
         """
         Parameters
@@ -61,7 +61,7 @@ class developer(commands.Cog):
         await loadModule(module_name, ctx)
 
 
-    @commands.hybrid_command(description="Unloads the given module.")
+    @commands.command(description="Unloads the given module.")
     async def unloadmodule(self, ctx: commands.Context, module_name: str):
         """
         Parameters
@@ -72,7 +72,7 @@ class developer(commands.Cog):
         await unloadModule(module_name, ctx)
 
 
-    @commands.hybrid_command(description="Reloads the given module.")
+    @commands.command(description="Reloads the given module.")
     async def reloadmodule(self, ctx: commands.Context, module_name: str):
         """
         Parameters
@@ -84,13 +84,13 @@ class developer(commands.Cog):
         await loadModule(module_name, ctx)
 
 
-    @commands.hybrid_command(description="Update the bot from github.")
+    @commands.command(description="Update the bot from github.")
     async def update(self, ctx: commands.Context):
         await gitupdate()
         await ctx.reply("Pulled Changes")
 
 
-    @commands.hybrid_command(description="Sync the slash commands.")
+    @commands.command(description="Sync the slash commands.")
     @commands.guild_only()
     async def sync(
             self, ctx: commands.Context, spec: typing.Optional[typing.Literal["~", "*", "^"]] = None) -> None:
@@ -118,7 +118,7 @@ class developer(commands.Cog):
         )
         return
 
-    @commands.hybrid_command(description="Eval()s the command.")
+    @commands.command(description="Eval()s the command.")
     async def eval(self, ctx: commands.Context, *, command: str):
         """
         Parameters
@@ -131,7 +131,7 @@ class developer(commands.Cog):
         except Exception as ex:
             await ctx.reply(ex)
 
-    @commands.hybrid_command(description="Exec()s the command.")
+    @commands.command(description="Exec()s the command.")
     async def exec(self, ctx: commands.Context, *, command: str):
         """
         Parameters
@@ -145,7 +145,7 @@ class developer(commands.Cog):
         except Exception as ex:
             await ctx.reply(ex)
 
-    @commands.hybrid_command(description="Changes Octorb's profile picture to the attached image.")
+    @commands.command(description="Changes Octorb's profile picture to the attached image.")
     async def setpfp(self, ctx: commands.Context, image: discord.Attachment):
         """
         Parameters

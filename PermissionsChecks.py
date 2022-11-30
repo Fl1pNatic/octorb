@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 developer_ids = [
@@ -13,15 +14,20 @@ class permissionErrors:
         pass
 
 
-def devCheck(ctx: commands.Context):
-    if ctx.author.id in developer_ids:
-        return True
-    return False
+def devCheck(ctx):
+    if isinstance(ctx, discord.Interaction):
+        if ctx.user.id in developer_ids:
+            return True
+        return False
+    else:
+        if ctx.author.id in developer_ids:
+            return True
+        return False
 
 
 class permissionChecks:
     def developer():
-        async def predicate(ctx: commands.Context):
+        async def predicate(ctx: discord.Interaction):
             if devCheck(ctx):
                 return True
         return commands.check(predicate)

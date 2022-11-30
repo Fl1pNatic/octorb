@@ -4,7 +4,8 @@ from math import log
 
 import discord
 import typing
-from discord.ext import commands, tasks
+from discord.ext import tasks, commands
+from discord import app_commands
 
 xp = {}
 
@@ -22,7 +23,7 @@ class xp(commands.Cog):
     async def on_message(self, message: discord.Message):
         if message.author.bot or message.guild is None:
             return
-        for prefix in (self.bot.command_prefix):
+        for prefix in (await self.bot.command_prefix(self.bot, message)):
             if message.content.startswith(prefix):
                 return
         if not message.guild.id in self.messageCounts:
@@ -52,7 +53,7 @@ class xp(commands.Cog):
             # print(xpStore)
             return
         cursor = self.db.cursor()
-        cursor.execute("SELECT * FROM xp")
+        self.bot.dbexec(cursor, "SELECT * FROM xp")
         results = cursor.fetchall()
         members = {}
         for result in results:
@@ -81,14 +82,14 @@ class xp(commands.Cog):
         createCommand = "INSERT INTO xp (serverId, memberId, memberXp) VALUES (%s, %s, %s)"
 
         for user in changedData:
-            cursor.execute(updateCommand, (user[2], user[0], user[1]))
+            self.bot.dbexec(cursor, updateCommand, (user[2], user[0], user[1]))
         for user in newData:
-            cursor.execute(createCommand, (user[0], user[1], user[2]))
+            self.bot.dbexec(cursor, createCommand, (user[0], user[1], user[2]))
 
         self.db.commit()
 
-    @commands.hybrid_command(description="Shows a users xp")
-    async def xp(self, ctx: commands.Context, user: typing.Optional[discord.Member]):
+    @app_commands.command(description="Shows a users xp")
+    async def xp(self, ctx: discord.Interaction, user: typing.Optional[discord.Member]):
         """
         Parameters
         ------------
@@ -96,49 +97,43 @@ class xp(commands.Cog):
             The user to get the xp of
         """
         if self.db == None:
-            await ctx.reply("You have 69 XP")
+            await ctx.response.send_message("You have 69 XP")
             return
 
         cursor = self.db.cursor()
         if user is not None:
             if not user.id in [member.id for member in ctx.guild.members]:
-                user = ctx.message.author
+                user = ctx.user
 
-        try:
-            cursor.execute("SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s",
-                           (ctx.message.guild.id, ctx.message.author.id))
-            embed = discord.Embed(title="XP", color=0xda7dff)
-            embed.add_field(
-                name=f"{ctx.message.author.display_name}", value=f"`XP: {cursor.fetchone()[0]}`")
-            embed.set_thumbnail(url=str(ctx.message.author.display_avatar.url))
-            await ctx.reply(embed=embed)
-            return
-        except (Exception) as e:
-            await ctx.reply("You don't have any XP")
-            return
+        self.bot.dbexec(cursor, "SELECT memberXp FROM xp WHERE serverId = %s and memberId = %s",
+                        (ctx.guild.id, ctx.user.id))
+        embed = discord.Embed(title="XP", color=0xda7dff)
+        embed.add_field(
+            name=f"{ctx.user.display_name}", value=f"`XP: {cursor.fetchone()[0]}`")
+        embed.set_thumbnail(url=str(ctx.user.display_avatar.url))
+        await ctx.response.send_message(embed=embed)
+        return
 
-    @commands.hybrid_command(description="Shows the xp leaderboard.")
-    async def xptop(self, ctx: commands.Context, page: typing.Optional[int]):
-        if self.db == None:
-            await ctx.reply("Squidward")
-            return
-
-        if page is None or page < 0:
-            page = 1
+    @app_commands.command(description="Shows the xp leaderboard.")
+    async def xptop(self, interaction: discord.Interaction, page: typing.Optional[int]=1):
         cursor = self.db.cursor()
-        cursor.execute("SELECT memberXp, memberId FROM xp WHERE serverId = %s ORDER BY memberXp DESC", [
-                       str(ctx.message.guild.id)])
+        self.bot.dbexec(cursor, "SELECT memberXp, memberId FROM xp WHERE serverId = %s ORDER BY memberXp DESC LIMIT %s,5", [
+                       str(interaction.guild.id), (page-1)*5])
         embed = discord.Embed(title="XP Leaderboards", color=0xda7dff)
         embed.set_footer(text = f"Page: {+ page}")
         data = cursor.fetchall()
-        for i in range(min(len(data) + page, page + 5)):
+        if len(data) == 0:
+            await interaction.response.send_message("Page has no data!")
+            return
+        for row in range(len(data)):
             embed.add_field(
-                name=f"{(i + 1 + (5 * (page - 1)))}.", value=f"<@{data[i + (5 * (page - 1))][1]}>: `{data[i + (5 * (page - 1))][0]}`", inline=False)
-        await ctx.reply(embed=embed)
+                name=f"{(page-1)*5+1+row}.",
+                value=f"<@{data[row][1]}>: `{data[row][0]}`", inline=False)
+        await interaction.response.send_message(embed=embed)
 
-    @commands.hybrid_command(description="Gives the specified user xp.")
+    @app_commands.command(description="Gives the specified user xp.")
     @commands.has_guild_permissions(manage_messages=True)
-    async def givexp(self, ctx: commands.Context, member: discord.Member, xp: int):
+    async def givexp(self, ctx: discord.Interaction, member: discord.Member, xp: int):
         """
         Parameters
         ------------
@@ -151,4 +146,4 @@ class xp(commands.Cog):
             print("No db?")
             return
         await self.storeXP([{"server": ctx.guild.id, "user": member.id, "xp": xp}])
-        await ctx.reply(f"Gave {xp} xp to {member.display_name}.")
+        await ctx.response.send_message(f"Gave {xp} xp to {member.display_name}.")

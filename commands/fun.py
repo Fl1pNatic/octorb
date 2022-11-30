@@ -4,6 +4,7 @@ from random import choice
 
 import discord
 from discord.ext import commands
+from discord import app_commands
 from owoify import owoify
 from owoify import Owoness
 
@@ -44,8 +45,8 @@ class fun(commands.Cog):
     def __init__(self, bot: discord.Client):
         self.bot = bot
 
-    @commands.hybrid_command(description="Ask Octorb a question")
-    async def ask(self, ctx, question: str):
+    @app_commands.command(description="Ask Octorb a question")
+    async def ask(self, ctx: discord.Interaction, question: str):
         """
         Parameters
         ------------
@@ -53,10 +54,10 @@ class fun(commands.Cog):
             The question you're asking.
         """
         a = choice(tuple(answer_list))
-        await ctx.reply(a)
+        await ctx.response.send_message(a)
 
-    @commands.hybrid_command(hidden=True, description="Owoifwies ywour text, because why nywot")
-    async def owoify(self, ctx: commands.Context, *, phrase: str):
+    @app_commands.command(description="Owoifwies ywour text, because why nywot")
+    async def owoify(self, ctx: discord.Interaction, *, phrase: str):
         """
         Parameters
         ------------
@@ -64,12 +65,12 @@ class fun(commands.Cog):
             Teh thing u want Owoifwied :3
         """
         embed = discord.Embed(title="OwOified", color=0xda7dff)
-        embed.set_author(name=ctx.message.author)
+        embed.set_author(name=ctx.user)
         embed.description = owoify(phrase, level=Owoness.Uvu)
-        await ctx.reply(embed=embed)
+        await ctx.response.send_message(embed=embed)
 
-    @commands.hybrid_command(description="Gets user's server or default avatar.")
-    async def avatar(self, ctx: commands.Context, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
+    @app_commands.command(description="Gets user's server or default avatar.")
+    async def avatar(self, ctx: discord.Interaction, user: typing.Optional[discord.Member], default: typing.Optional[bool]):
         """
         Parameters
         ------------
@@ -79,20 +80,20 @@ class fun(commands.Cog):
             Whether to get user's account avatar [true] or server avatar [false (Default)]
         """
         if user is not None:
-            ctx.message.author: discord.Member = user
+            ctx.user: discord.Member = user
         avEmbed = discord.Embed(color=0xda7dff)
-        if ctx.message.author.nick == None:
-            ctx.message.author.nick: str = ctx.message.author.name
+        if ctx.user.nick == None:
+            ctx.user.nick: str = ctx.user.name
         if default != True:
-            avEmbed.title = ctx.message.author.nick + "'s avatar"
-            avEmbed.set_image(url=ctx.message.author.display_avatar.url)
+            avEmbed.title = ctx.user.nick + "'s avatar"
+            avEmbed.set_image(url=ctx.user.display_avatar.url)
         else:
-            avEmbed.title = ctx.message.author.name + "'s default avatar"
-            avEmbed.set_image(url=ctx.message.author.avatar.url)
-        await ctx.reply(embed=avEmbed)
+            avEmbed.title = ctx.user.name + "'s default avatar"
+            avEmbed.set_image(url=ctx.user.avatar.url)
+        await ctx.response.send_message(embed=avEmbed)
 
-    @commands.hybrid_command(description="Shows some information about the user.")
-    async def userinfo(self, ctx: commands.Context, user: typing.Optional[discord.Member]):
+    @app_commands.command(description="Shows some information about the user.")
+    async def userinfo(self, ctx: discord.Interaction, user: typing.Optional[discord.Member]):
         """
         Parameters
         ------------
@@ -100,10 +101,10 @@ class fun(commands.Cog):
             The user to get info about
         """
         if user is not None:
-            ctx.message.author: discord.Member = user
+            ctx.user: discord.Member = user
 
-        us = await self.bot.fetch_user(ctx.message.author.id)
-        mem = ctx.message.author
+        us = await self.bot.fetch_user(ctx.user.id)
+        mem = ctx.user
 
         boostText = '`Never`' if len(str(mem.premium_since)[
                                      0:-9]) == 0 else f'`{str(mem.premium_since)[0:-9]}`'
@@ -121,4 +122,4 @@ class fun(commands.Cog):
         Top Role: `{mem.top_role}`
         Display Name: `{mem.display_name}`
         Boosting since: {boostText}""", inline=False)
-        await ctx.reply(embed=uEmbed,)
+        await ctx.response.send_message(embed=uEmbed,)
