@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands as botCommands
 from dotenv import dotenv_values, load_dotenv
 import sqlite3
-import mysql.connector
+import pymysql
 from commands.developer import developer
 from commands.dynamic import dynamic
 from commands.fun import fun
@@ -39,7 +39,7 @@ bot = botCommands.Bot(command_prefix=determine_prefix,
 db = None
 devmode = False
 if not "DEVMODE" in dotenv_values():
-    db = mysql.connector.connect(host=dotenv_values()['DBHOST'], user=dotenv_values()[
+    db = pymysql.connect(host=dotenv_values()['DBHOST'], user=dotenv_values()[
                          'DBUSERNAME'], password=dotenv_values()['DBPASSWORD'], database=dotenv_values()['DB'])
 else:
     devmode = True
