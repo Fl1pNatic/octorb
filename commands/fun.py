@@ -1,7 +1,7 @@
 import typing
 from os import O_WRONLY
 from random import choice
-
+import aiohttp
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -91,6 +91,16 @@ class fun(commands.Cog):
             avEmbed.title = ctx.user.name + "'s default avatar"
             avEmbed.set_image(url=ctx.user.avatar.url)
         await ctx.response.send_message(embed=avEmbed)
+
+    @app_commands.command(description="Gets the definition for a word.")
+    async def define(self, ctx: discord.Interaction, word: str):
+        async with aiohttp.ClientSession() as session:
+            e = await (await session.get(
+            f'https://api.urbandictionary.com/v0/define?term={word}')).json()
+            if len(e['list']) < 1:
+                await ctx.response.send_message("Definition not found.")
+                return
+            await ctx.response.send_message(embed=discord.Embed(color=0xda7dff, title=f"Definition of {word}", description=e['list'][0]['definition']))
 
     @app_commands.command(description="Shows some information about the user.")
     async def userinfo(self, ctx: discord.Interaction, user: typing.Optional[discord.Member]):
