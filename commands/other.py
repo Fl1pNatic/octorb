@@ -15,7 +15,7 @@ class other(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @app_commands.command(description="Shows you help for the bot and it's commands.")
+    @app_commands.command(description="Shows you help for the bot and its commands.")
     async def help(self, ctx: discord.Interaction, command_name: typing.Optional[str]):
         """
         Parameters
