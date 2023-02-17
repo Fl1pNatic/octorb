@@ -38,6 +38,8 @@ class moderation(commands.Cog):
         message
             Message you want to pin (ID)
         """
+        if ctx.message.type != discord.MessageType.reply:
+            print("Reply")
         message = await ctx.channel.fetch_message(message)
         if message.pinned:
             await message.unpin()

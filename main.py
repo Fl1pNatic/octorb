@@ -36,14 +36,8 @@ bot = botCommands.Bot(command_prefix=determine_prefix,
                       help_command=None,
                       case_insensitive=True
                       )
-db = None
-devmode = False
-if not "DEVMODE" in dotenv_values():
-    db = pymysql.connect(host=dotenv_values()['DBHOST'], user=dotenv_values()[
-                         'DBUSERNAME'], password=dotenv_values()['DBPASSWORD'], database=dotenv_values()['DB'])
-else:
-    devmode = True
-    db = sqlite3.connect("database.db")
+db = sqlite3.connect("database.db")
+devmode = "DEVMODE" in dotenv_values()
 
 cursor = db.cursor()
 cursor.execute("""
@@ -62,21 +56,13 @@ CREATE TABLE IF NOT EXISTS `quickCommands` (
 """)
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS `xp` (
-  `serverId` text,
-  `memberId` text,
+  `serverId` VARCHAR(25),
+  `memberId` VARCHAR(25),
   `memberXp` int DEFAULT NULL
 )
 """)
-def dbexec(cursor, command:str, params=[]):
-    if isinstance(cursor, sqlite3.Cursor):
-        command = command.replace("%s","?")
-    if not isinstance(params, list):
-        if not isinstance(params, tuple):
-            params = (params,)
-    cursor.execute(command, params)
 
 setattr(bot, "db", db)
-setattr(bot, "dbexec", dbexec)
 setattr(bot, "devmode", devmode)
 
 @bot.event

@@ -30,14 +30,13 @@ class dynamic(commands.Cog):
         cursor = self.bot.db.cursor()
         command_name = command_name.replace("'", "\'").replace('"', '\"')
         message = message.replace("'", "\'").replace('"', '\"')
-        self.bot.dbexec(cursor, 
-            "SELECT COUNT(*) FROM quickCommands WHERE serverId = %s AND command = %s;", (ctx.guild.id, command_name))
+        cursor.execute("SELECT COUNT(*) FROM quickCommands WHERE serverId = ? AND command = ?;", (ctx.guild.id, command_name))
         currentAmount = cursor.fetchone()
         if currentAmount[0] != 0:
-            self.bot.dbexec(cursor, "UPDATE quickCommands SET output = %s WHERE serverId = %s AND command = %s",
+            cursor.execute("UPDATE quickCommands SET output = ? WHERE serverId = ? AND command = ?",
                            (message, ctx.guild.id, command_name))
         else:
-            self.bot.dbexec(cursor, "INSERT INTO quickCommands VALUES ( %s, %s, %s )",
+            cursor.execute("INSERT INTO quickCommands VALUES ( ?, ?, ? )",
                            (ctx.guild.id, command_name, message))
         self.bot.db.commit()
         await ctx.response.send_message("Created quick command.")
@@ -53,8 +52,7 @@ class dynamic(commands.Cog):
         """
         cursor = self.bot.db.cursor()
         command_name = command_name.replace("'", "\'").replace('"', '\"')
-        self.bot.dbexec(cursor, 
-            "DELETE FROM quickCommands WHERE serverId = %s AND command = %s;", (ctx.guild.id, command_name))
+        cursor.execute("DELETE FROM quickCommands WHERE serverId = ? AND command = ?;", (ctx.guild.id, command_name))
         self.bot.db.commit()
         if cursor.rowcount == 0:
             await ctx.response.send_message("No quick command with this name.")
@@ -64,8 +62,7 @@ class dynamic(commands.Cog):
     @quickcommand.command(name="list", description="Lists all the server's quickcommands.")
     async def qlist(self, ctx: discord.Interaction):
         cursor = self.bot.db.cursor()
-        self.bot.dbexec(cursor, 
-            "SELECT command FROM quickCommands WHERE serverId = %s", (ctx.guild.id,))
+        cursor.execute("SELECT command FROM quickCommands WHERE serverId = ?", (ctx.guild.id,))
         embed = discord.Embed(
             title="Quick commands list.",
             color=0xff00bb,
@@ -88,8 +85,7 @@ class dynamic(commands.Cog):
         if self.bot.db is None:
             await ctx.response.send_message("There are 69 images.")
         cursor = self.bot.db.cursor()
-        self.bot.dbexec(cursor, 
-            "SELECT COUNT(*) FROM gallery WHERE serverId = %s AND NOT picUrl = '0'", ctx.guild.id)
+        cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = ? AND NOT picUrl = '0'", ctx.guild.id)
         count = cursor.fetchone()[0]
         await ctx.response.send_message(f"There are {count} things stored.")
 
@@ -110,15 +106,14 @@ class dynamic(commands.Cog):
             galleryChannelMessage: discord.Message = await self.galleryChannel.send(file=await media.to_file())
             media = galleryChannelMessage.attachments[0]
             cursor = self.bot.db.cursor()
-            self.bot.dbexec(cursor, 
-                "SELECT COUNT(*) FROM gallery WHERE serverId = %s", (ctx.guild.id,))
+            cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = ?", (ctx.guild.id,))
             count = cursor.fetchone()[0]
             cursor.close()
             replaceDeleted = False
             if count >= imageLimit:
                 cursor = self.bot.db.cursor()
-                self.bot.dbexec(cursor, 
-                    "SELECT id FROM gallery WHERE serverId = %s AND picUrl = '0'", (ctx.guild.id,))
+                cursor.execute( 
+                    "SELECT id FROM gallery WHERE serverId = ? AND picUrl = '0'", (ctx.guild.id,))
                 set0 = cursor.fetchall()
                 cursor.close()
                 if len(set0) < 1:
@@ -131,11 +126,11 @@ class dynamic(commands.Cog):
 
             cursor = self.bot.db.cursor()
             if replaceDeleted is False:
-                self.bot.dbexec(cursor, "INSERT INTO gallery VALUES (%s, %s, %s)",
+                cursor.execute( "INSERT INTO gallery VALUES (?, ?, ?)",
                             (ctx.guild.id, count+1, media.url))
                 await ctx.response.send_message(f"Added media with id {count + 1}")
                 return
-            self.bot.dbexec(cursor, "UPDATE gallery SET picUrl = %s WHERE serverId = %s AND id = %s",
+            cursor.execute( "UPDATE gallery SET picUrl = ? WHERE serverId = ? AND id = ?",
                         (media.url, ctx.guild.id, replaceDeleted))
             await ctx.response.send_message(f"Added media with id {replaceDeleted}")
         except Exception as e:
@@ -151,8 +146,8 @@ class dynamic(commands.Cog):
             The image/video to delete
         """
         cursor = self.bot.db.cursor()
-        self.bot.dbexec(cursor, 
-            "UPDATE gallery SET picUrl = '0' WHERE serverId = %s AND id = %s", (ctx.guild.id, media_id))
+        cursor.execute( 
+            "UPDATE gallery SET picUrl = '0' WHERE serverId = ? AND id = ?", (ctx.guild.id, media_id))
         await ctx.response.send_message("Deleted content from gallery.")
 
     @gallery.command(name="show", description="Shows the specific picture/video from the gallery.")
@@ -164,8 +159,8 @@ class dynamic(commands.Cog):
             The specific image/video you want to see
         """
         cursor = self.bot.db.cursor()
-        self.bot.dbexec(cursor, 
-            "SELECT picUrl FROM gallery WHERE id = %s AND serverId = %s", (media_id, ctx.guild.id))
+        cursor.execute( 
+            "SELECT picUrl FROM gallery WHERE id = ? AND serverId = ?", (media_id, ctx.guild.id))
         result = cursor.fetchall()
         if len(result) == 0:
             await ctx.response.send_message("No media found with that id.")
@@ -185,8 +180,8 @@ class dynamic(commands.Cog):
         command = str(error)[9:-14]
         cursor = self.bot.db.cursor()
         command = command.replace("'", "\'").replace('"', '\"')
-        self.bot.dbexec(cursor, 
-            "SELECT output FROM quickCommands WHERE serverId = %s AND command = %s", (ctx.guild.id, command))
+        cursor.execute( 
+            "SELECT output FROM quickCommands WHERE serverId = ? AND command = ?", (ctx.guild.id, command))
 
         returns = cursor.fetchall()
         if len(returns) == 0:
