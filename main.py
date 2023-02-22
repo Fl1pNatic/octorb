@@ -58,7 +58,8 @@ cursor.execute("""
 CREATE TABLE IF NOT EXISTS `xp` (
   `serverId` VARCHAR(25),
   `memberId` VARCHAR(25),
-  `memberXp` int DEFAULT NULL
+  `memberXp` int DEFAULT NULL,
+  PRIMARY KEY ('serverId', 'memberId')
 )
 """)
 
