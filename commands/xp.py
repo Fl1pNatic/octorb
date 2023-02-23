@@ -4,7 +4,6 @@ import typing
 import discord
 import typing
 from discord.ext import tasks, commands
-from discord import app_commands
 import string
 from collections import Counter
 
@@ -79,8 +78,8 @@ class xp(commands.Cog):
         return True
         
 
-    @app_commands.command(description="Shows a users xp")
-    async def xp(self, ctx: discord.Interaction, user: typing.Optional[discord.Member]):
+    @commands.command(description="Shows a users xp")
+    async def xp(self, ctx: commands.Context, user: typing.Optional[discord.Member]):
         """
         Parameters
         ------------
@@ -88,27 +87,27 @@ class xp(commands.Cog):
             The user to get the xp of
         """
         if self.db == None:
-            await ctx.response.send_message("You have 69 XP")
+            await ctx.send("You have 69 XP")
             return
 
         cursor = self.db.cursor()
         if user is not None:
             if not user.id in [member.id for member in ctx.guild.members]:
-                user = ctx.user
+                user = ctx.author
 
         cursor.execute( "SELECT memberXp FROM xp WHERE serverId = ? and memberId = ?",
-                        (ctx.guild.id, ctx.user.id))
+                        (ctx.guild.id, ctx.author.id))
         embed = discord.Embed(title="XP", color=0xda7dff)
         data = cursor.fetchone()
         if data is None:
             data = [0]
         embed.add_field(
-            name=f"{ctx.user.display_name}", value=f"`XP: {data[0]}`")
-        embed.set_thumbnail(url=str(ctx.user.display_avatar.url))
-        await ctx.response.send_message(embed=embed)
+            name=f"{ctx.author.display_name}", value=f"`XP: {data[0]}`")
+        embed.set_thumbnail(url=str(ctx.author.display_avatar.url))
+        await ctx.send(embed=embed)
 
-    @app_commands.command(description="Shows the xp leaderboard.")
-    async def xptop(self, interaction: discord.Interaction, page: typing.Optional[int]=1):
+    @commands.command(description="Shows the xp leaderboard.")
+    async def xptop(self, interaction: commands.Context, page: typing.Optional[int]=1):
         cursor = self.db.cursor()
         cursor.execute( "SELECT memberXp, memberId FROM xp WHERE serverId = ? ORDER BY memberXp DESC LIMIT ?,5", [
                        str(interaction.guild.id), (page-1)*5])
@@ -116,17 +115,17 @@ class xp(commands.Cog):
         embed.set_footer(text = f"Page: {+ page}")
         data = cursor.fetchall()
         if len(data) == 0:
-            await interaction.response.send_message("Page has no data!")
+            await interaction.send("Page has no data!")
             return
         for row in range(len(data)):
             embed.add_field(
                 name=f"{(page-1)*5+1+row}.",
                 value=f"<@{data[row][1]}>: `{data[row][0]}`", inline=False)
-        await interaction.response.send_message(embed=embed)
+        await interaction.send(embed=embed)
 
-    @app_commands.command(description="Gives the specified user xp.")
+    @commands.command(description="Gives the specified user xp.")
     @commands.has_guild_permissions(manage_messages=True)
-    async def givexp(self, ctx: discord.Interaction, member: discord.Member, xp: int):
+    async def givexp(self, ctx: commands.Context, member: discord.Member, xp: int):
         """
         Parameters
         ------------
@@ -139,6 +138,6 @@ class xp(commands.Cog):
             print("No db?")
             return
         if await self.addUserXp(member.id, ctx.guild_id, xp):
-            await ctx.response.send_message(f"Gave {xp} xp to {member.display_name}.")
+            await ctx.send(f"Gave {xp} xp to {member.display_name}.")
         else:
-            await ctx.response.send_message("Failed to give member xp.")
+            await ctx.send("Failed to give member xp.")

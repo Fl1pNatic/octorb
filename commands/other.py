@@ -3,9 +3,7 @@ import typing
 from typing import ItemsView, OrderedDict
 
 import discord
-from discord import app_commands
 import git
-from discord import Button, ButtonStyle, app_commands
 from discord.ext import commands
 
 from PermissionsChecks import devCheck, permissionChecks
@@ -15,8 +13,8 @@ class other(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @app_commands.command(description="Shows you help for the bot and its commands.")
-    async def help(self, ctx: discord.Interaction, command_name: typing.Optional[str]):
+    @commands.command(description="Shows you help for the bot and its commands.")
+    async def help(self, ctx: commands.Context, command_name: typing.Optional[str]):
         """
         Parameters
         ------------
@@ -39,7 +37,7 @@ class other(commands.Cog):
                     commandList.sort()
                     hEmbed.add_field(name=cog.qualified_name.capitalize(), value=", ".join(
                         commandList))
-            await ctx.response.send_message(embed=hEmbed)
+            await ctx.send(embed=hEmbed)
             return
         allCommandsList = []
         cogs = self.bot.cogs
@@ -51,30 +49,22 @@ class other(commands.Cog):
             commandList += [command for command in cog.get_commands()]
             allCommandsList += commandList
         if (command_name not in [command.name for command in allCommandsList]):
-            await ctx.response.send_message("Command does not exist")
+            await ctx.send("Command does not exist")
             return
         commandDict = {command.name: command for command in allCommandsList}
         command: commands.Command = commandDict[command_name]
         commandEmbed = discord.Embed(title=f"Help for `{command.name.capitalize()}`", description=command.description if len(
             command.description) > 0 else "Command has no description, please report this in the support server.")
-        if isinstance(command, app_commands.Command):
-            if (len(command.parameters) > 0):
-                params = []
-                for param in command.parameters:
-                    params.append(
-                        f"`{param.name.capitalize()}` `({param.type.name.capitalize()})` `[{'Required' if param.required else 'Optional'}]`:{param.description if hasattr(param, 'description') else 'Parameter not described, please report this.'}")
-                commandEmbed.add_field(name="Paramaters", value="\n".join(params))
-        else:
-            if (len(command.clean_params) > 0):
-                params = []
-                for param in command.clean_params.values():
-                    params.append(
-                        f"`{param.name.capitalize()}` `[{'Optional' if type(param.converter) == typing._UnionGenericAlias else 'Required'}]`:{param.description if hasattr(param, 'description') else 'Parameter not described, please report this.'}")
-                commandEmbed.add_field(name="Paramaters", value="\n".join(params))
-        await ctx.response.send_message(embed=commandEmbed)
+        if (len(command.clean_params) > 0):
+            params = []
+            for param in command.clean_params.values():
+                params.append(
+                    f"`{param.name.capitalize()}` `[{'Optional' if type(param.converter) == typing._UnionGenericAlias else 'Required'}]`:{param.description if hasattr(param, 'description') else 'Parameter not described, please report this.'}")
+            commandEmbed.add_field(name="Paramaters", value="\n".join(params))
+        await ctx.send(embed=commandEmbed)
 
-    @app_commands.command(description="Some info about the bot.")
-    async def about(self, ctx: discord.Interaction):
+    @commands.command(description="Some info about the bot.")
+    async def about(self, ctx: commands.Context):
         aEmbed = discord.Embed(
             title="About Octorb", description="Some information about the bot", color=0xda7dff)
         aEmbed.add_field(name="History", value="""The bot was originally made for a Minecraft SMP Discord server.
@@ -92,10 +82,10 @@ class other(commands.Cog):
 
         aEmbed.add_field(name="Technical", value=f"""discord.py version: {discord.__version__}
        """)
-        await ctx.response.send_message(embed=aEmbed)
+        await ctx.send(embed=aEmbed)
 
-    @app_commands.command(description="Shows the most recent commits to the bot.")
-    async def changelog(self, ctx: discord.Interaction):
+    @commands.command(description="Shows the most recent commits to the bot.")
+    async def changelog(self, ctx: commands.Context):
         repo: git.Git = git.Git(os.path.dirname(__file__))
         commits = repo.log('--pretty=%s').split("\n")[:10]
         commitCount = len(repo.log('--pretty=%s').split("\n"))
@@ -106,4 +96,4 @@ class other(commands.Cog):
             embed.add_field(
                 name="`"+commitsHashes[commit]+"`", value="`"+commits[commit]+"`", inline=False)
 
-        await ctx.response.send_message(embed=embed)
+        await ctx.send(embed=embed)

@@ -6,7 +6,7 @@ from dotenv import dotenv_values, load_dotenv
 import sqlite3
 import pymysql
 from commands.developer import developer
-from commands.dynamic import dynamic
+#from commands.dynamic import dynamic
 from commands.fun import fun
 from commands.math import math
 from commands.moderation import moderation
@@ -73,7 +73,7 @@ async def on_ready():
     await bot.add_cog(other(bot))
     await bot.add_cog(moderation(bot))
     await bot.add_cog(math(bot))  # too annoying
-    await bot.add_cog(dynamic(bot))
+    #await bot.add_cog(dynamic(bot))
     await bot.add_cog(developer(bot))
     print(f"It's {bot.user}in' time")
     if db is None:
@@ -112,8 +112,6 @@ async def on_command_error(ctx, error):
             await ctx.reply(f"Missing argument: {error.param.name.capitalize()}")
         case botCommands.errors.MissingRequiredAttachment:
             await ctx.reply(f"Missing attachement.")
-        case botCommands.errors.CommandNotFound:
-            pass
         case botCommands.errors.CommandInvokeError:
             if isinstance(error.original, discord.errors.HTTPException):
                 print(error.original.code)
@@ -121,7 +119,8 @@ async def on_command_error(ctx, error):
                     await ctx.reply("it's too big daddy, it won't fit~")
                     print(error.original.text)
                     return
-                raise (error)
+                print(error)
+            print(error)
         case botCommands.errors.MissingPermissions:
             perms = error.missing_permissions
             await ctx.reply(f"You are missing the following permissions needed to use this command: {' '.join(str(x) for x in perms)}")
