@@ -14,6 +14,7 @@ from commands.other import other
 from commands.xp import xp
 from PermissionsChecks import devCheck, permissionErrors
 import datetime
+import editdistance
 
 sys.path.append(".")
 
@@ -104,7 +105,7 @@ async def getuser(userid, guildid):
     return user
 
 @bot.event
-async def on_command_error(ctx, error):
+async def on_command_error(ctx: botCommands.Context, error):
     match type(error):
         case permissionErrors.NonDeveloperError:
             await ctx.reply("This command is limited to Octorb Developers.")
@@ -116,7 +117,7 @@ async def on_command_error(ctx, error):
             if isinstance(error.original, discord.errors.HTTPException):
                 print(error.original.code)
                 if error.original.code == 50035:
-                    await ctx.reply("it's too big daddy, it won't fit~")
+                    await ctx.reply("Command output too large.")
                     print(error.original.text)
                     return
                 print(error)
@@ -124,6 +125,14 @@ async def on_command_error(ctx, error):
         case botCommands.errors.MissingPermissions:
             perms = error.missing_permissions
             await ctx.reply(f"You are missing the following permissions needed to use this command: {' '.join(str(x) for x in perms)}")
+        case botCommands.errors.CommandNotFound:
+            closestCommand = (2, None)
+            for command in bot.commands:
+                dist = editdistance.eval(command.name, ctx.invoked_with)
+                if dist < closestCommand[0]:
+                    closestCommand = (dist, command.name)
+            if closestCommand[1] is not None:
+                await ctx.reply(f"That command does not exist. Maybe you meant {ctx.prefix}{closestCommand[1]}{ctx.message.content.split(ctx.invoked_with)[1]}?")
         case _: print (error)
 
 
