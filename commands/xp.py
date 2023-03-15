@@ -37,12 +37,16 @@ def english_score(text):
 
 
 class xp(commands.Cog):
+    def user_in_server(self, USERID, SERVERID):
+        print(USERID, SERVERID)
+        return 0 if self.bot.get_guild(int(SERVERID)).get_member(int(USERID)) is None else 1
     def __init__(self, bot: commands.Bot) -> None:
         self.cooldowns = {}
         self.bot = bot
         self.messageCounts = {}
         self.db = bot.db
         self.clearCooldowns.start()
+        self.db.create_function("USERINSERVER", 2, self.user_in_server)
 
     @tasks.loop(minutes=1)
     async def clearCooldowns(self):
@@ -109,7 +113,7 @@ class xp(commands.Cog):
     @commands.command(description="Shows the xp leaderboard.")
     async def xptop(self, interaction: commands.Context, page: typing.Optional[int]=1):
         cursor = self.db.cursor()
-        cursor.execute( "SELECT memberXp, memberId FROM xp WHERE serverId = ? ORDER BY memberXp DESC LIMIT ?,5", [
+        cursor.execute( "SELECT memberXp, memberId FROM xp WHERE serverId = ? and USERINSERVER(memberId, serverId) = 1 ORDER BY memberXp DESC LIMIT ?,5", [
                        str(interaction.guild.id), (page-1)*5])
         embed = discord.Embed(title="XP Leaderboards", color=0xda7dff)
         embed.set_footer(text = f"Page: {+ page}")
