@@ -38,8 +38,8 @@ def english_score(text):
 
 class xp(commands.Cog):
     def user_in_server(self, USERID, SERVERID):
-        print(USERID, SERVERID)
         return 0 if self.bot.get_guild(int(SERVERID)).get_member(int(USERID)) is None else 1
+        
     def __init__(self, bot: commands.Bot) -> None:
         self.cooldowns = {}
         self.bot = bot
