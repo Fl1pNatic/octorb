@@ -32,7 +32,7 @@ async def determine_prefix(bot, message: discord.Message):
 
 bot = botCommands.Bot(command_prefix=determine_prefix,
                       activity=discord.Activity(
-                      type=discord.ActivityType.watching, name="/help for commands", url="https://github.com/x8c8r/octorb", start=datetime.datetime.now()),
+                      type=discord.ActivityType.watching, name="!help for commands", url="https://github.com/x8c8r/octorb", start=datetime.datetime.now()),
                       intents=discord.Intents.all(),
                       help_command=None,
                       case_insensitive=True
