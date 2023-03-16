@@ -13,3 +13,6 @@ Support Server - [Link](https://discord.gg/wEweHdyvy6)
 ### Former Devs
 [BlackthornZZ](https://github.com/BlackthornZZ) - Started the original bot, was eventually demoted from a dev, due to not working on the bot anymore <br>
 [kenan238](https://github.com/kenan238) - Was working on the original bot, but was also eventually demoted due to not working
+
+## Contributing/Hosting
+If you want to host your own instance of Octorb for development or personal use, see [Hosting.md](/Hosting.md)
