@@ -39,7 +39,7 @@ def english_score(text):
 class xp(commands.Cog):
     def user_in_server(self, USERID, SERVERID):
         return 0 if self.bot.get_guild(int(SERVERID)).get_member(int(USERID)) is None else 1
-        
+
     def __init__(self, bot: commands.Bot) -> None:
         self.cooldowns = {}
         self.bot = bot
@@ -95,19 +95,18 @@ class xp(commands.Cog):
             return
 
         cursor = self.db.cursor()
-        if user is not None:
-            if not user.id in [member.id for member in ctx.guild.members]:
-                user = ctx.author
-
-        cursor.execute( "SELECT memberXp FROM xp WHERE serverId = ? and memberId = ?",
-                        (ctx.guild.id, ctx.author.id))
+        if user is None or not user.id in [member.id for member in ctx.guild.members]:
+            user = ctx.author
+        cursor.execute( "SELECT memberXp, (SELECT COUNT(*)+1 FROM xp AS x WHERE x.serverId = xp.serverId AND x.memberXp > xp.memberXp AND USERINSERVER(x.memberId, x.serverId) = 1) AS position FROM xp WHERE serverId = ? AND memberId = ?",
+                        (ctx.guild.id, user.id))
         embed = discord.Embed(title="XP", color=0xda7dff)
         data = cursor.fetchone()
         if data is None:
-            data = [0]
+            await ctx.reply(f"No xp data for user {user.display_name}")
+            return
         embed.add_field(
-            name=f"{ctx.author.display_name}", value=f"`XP: {data[0]}`")
-        embed.set_thumbnail(url=str(ctx.author.display_avatar.url))
+            name=f"{user.display_name}", value=f"`XP: {data[0]}`\n`Position: {data[1]} of {len(ctx.guild.members)}`")
+        embed.set_thumbnail(url=str(user.display_avatar.url))
         await ctx.send(embed=embed)
 
     @commands.command(description="Shows the xp leaderboard.")
