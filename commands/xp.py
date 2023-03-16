@@ -140,7 +140,7 @@ class xp(commands.Cog):
         if self.db is None:
             print("No db?")
             return
-        if await self.addUserXp(member.id, ctx.guild_id, xp):
+        if await self.addUserXp(member.id, ctx.guild.id, xp):
             await ctx.send(f"Gave {xp} xp to {member.display_name}.")
         else:
             await ctx.send("Failed to give member xp.")
@@ -162,3 +162,4 @@ class xp(commands.Cog):
             await ctx.reply("No user specified!")
         cursor.execute( "DELETE FROM xp WHERE serverId = ? and memberId = ?;",
                         (ctx.guild.id, user.id))
+        await ctx.reply(f"Deleted XP data of {user.name}." )
