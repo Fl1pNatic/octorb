@@ -144,3 +144,21 @@ class xp(commands.Cog):
             await ctx.send(f"Gave {xp} xp to {member.display_name}.")
         else:
             await ctx.send("Failed to give member xp.")
+    
+    @commands.command(description="Clears specified user's xp data.")
+    @commands.has_guild_permissions(manage_messages=True)
+    async def clearxp(self, ctx: commands.Context, member: discord.Member):
+        """
+        Parameters
+        ------------
+        user
+            The user to clear xp data of.
+        """
+        if self.db is None:
+            print("No db?")
+            return
+        cursor = self.db.cursor()
+        if user is None or not user.id in [member.id for member in ctx.guild.members]:
+            await ctx.reply("No user specified!")
+        cursor.execute( "DELETE FROM xp WHERE serverId = ? and memberId = ?;",
+                        (ctx.guild.id, user.id))
