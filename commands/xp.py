@@ -147,7 +147,7 @@ class xp(commands.Cog):
     
     @commands.command(description="Clears specified user's xp data.")
     @commands.has_guild_permissions(manage_messages=True)
-    async def clearxp(self, ctx: commands.Context, member: discord.Member):
+    async def clearxp(self, ctx: commands.Context, user: discord.Member):
         """
         Parameters
         ------------
