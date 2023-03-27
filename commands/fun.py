@@ -92,7 +92,7 @@ class fun(commands.Cog):
         await ctx.send(embed=avEmbed)
 
     @commands.command(description="Gets the definition for a word.")
-    async def define(self, ctx: commands.Context, word: str):
+    async def define(self, ctx: commands.Context, *, word: str):
         async with aiohttp.ClientSession() as session:
             e = await (await session.get(
             f'https://api.urbandictionary.com/v0/define?term={word}')).json()
