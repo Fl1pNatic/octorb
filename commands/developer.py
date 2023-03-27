@@ -3,45 +3,12 @@ import importlib
 import os
 import sys
 import typing
-
+import traceback
 import git
 import discord
 from discord.ext import commands
 
 from PermissionsChecks import devCheck, permissionErrors
-
-
-async def loadModule(module, ctx):
-    if module in ctx.bot.cogs:
-        await ctx.reply("You can't load a module that's already loaded ffs.")
-        return
-    try:
-        importlib.import_module("commands."+module)
-    except (ImportError) as error:
-        await ctx.reply("Error loading module. "+error.msg)
-        return
-    try:
-        await ctx.bot.add_cog(sys.modules[f"commands.{module}"].__getattribute__(f"{module}")(ctx.bot))
-    except (AttributeError) as error:
-        await ctx.reply("Error loading module. "+error.name)
-        return
-    await ctx.reply("Loaded module.")
-
-
-async def unloadModule(module, ctx):
-    if not module in ctx.bot.cogs:
-        await ctx.reply("Module not loaded.")
-        return
-    await ctx.bot.remove_cog(module)
-    del sys.modules["commands."+module]
-    await ctx.reply("Module unloaded.")
-
-
-async def gitupdate():
-    repo: git.Repo = git.Repo(os.path.dirname(__file__ )+ "/..")
-    for remote in repo.remotes:
-        remote.pull()
-
 
 class developer(commands.Cog):
     def cog_check(self, ctx):
@@ -58,7 +25,24 @@ class developer(commands.Cog):
         module_name
             The name of the module you want to load
         """
-        await loadModule(module_name, ctx)
+        try:
+            await ctx.bot.load_extension("commands."+module_name)
+            await ctx.reply("Loaded extension")
+        except Exception as e :
+            match type(e):
+                case commands.ExtensionNotFound:
+                    await ctx.reply("Extension not found.")
+                case commands.ExtensionAlreadyLoaded:
+                    await ctx.reply("Extension already loaded")
+                case commands.NoEntryPointError:
+                    await ctx.reply("No entry point to extension")
+                case commands.ExtensionFailed:
+                    await ctx.reply("Extension loading failed")
+                    await ctx.reply(''.join(traceback.TracebackException.from_exception(e).format()))
+                case _:
+                    print(e)
+                    await ctx.reply("Unknown error")
+
 
 
     @commands.command(description="Unloads the given module.")
@@ -69,7 +53,18 @@ class developer(commands.Cog):
         module_name
             The name of the module you want to unload
         """
-        await unloadModule(module_name, ctx)
+        try:
+            await ctx.bot.unload_extension("commands."+module_name)
+            await ctx.reply("Unloaded extension")
+        except Exception as e :
+            match type(e):
+                case commands.ExtensionNotFound:
+                    await ctx.reply("Extension not found.")
+                case commands.ExtensionNotLoaded:
+                    await ctx.reply("Extension not loaded")
+                case _:
+                    print(e)
+                    await ctx.reply("Unknown error")
 
 
     @commands.command(description="Reloads the given module.")
@@ -80,13 +75,27 @@ class developer(commands.Cog):
         module_name
             The name of the module you want to reload
         """
-        await unloadModule(module_name, ctx)
-        await loadModule(module_name, ctx)
-
+        try:
+            await ctx.bot.reload_extension("commands."+module_name)
+            await ctx.reply("Reloaded extension")
+        except Exception as e :
+            match type(e):
+                case commands.ExtensionNotFound:
+                    await ctx.reply("Extension not found.")
+                case commands.ExtensionNotLoaded:
+                    await ctx.reply("Extension not loaded")
+                case commands.NoEntryPointError:
+                    await ctx.reply("No entry point to extension")
+                case commands.ExtensionFailed:
+                    await ctx.reply("Extension loading failed")
+                case _:
+                    print(e.with_traceback)
+                    await ctx.reply("Unknown error")
 
     @commands.command(description="Update the bot from github.")
     async def update(self, ctx: commands.Context):
-        await gitupdate()
+        repo: git.Repo = git.Repo(os.path.dirname(__file__ )+ "/..")
+        [remote.pull() for remote in repo.remotes]
         await ctx.reply("Pulled Changes")
 
 
@@ -162,4 +171,6 @@ class developer(commands.Cog):
             await ctx.reply("Avatar updated!")
         except Exception as e:
             await ctx.reply(e)
-            
+
+async def setup(bot):
+    await bot.add_cog(developer(bot))

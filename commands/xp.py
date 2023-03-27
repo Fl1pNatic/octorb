@@ -163,3 +163,6 @@ class xp(commands.Cog):
         cursor.execute( "DELETE FROM xp WHERE serverId = ? and memberId = ?;",
                         (ctx.guild.id, user.id))
         await ctx.reply(f"Deleted XP data of {user.name}." )
+
+async def setup(bot):
+    await bot.add_cog(xp(bot))

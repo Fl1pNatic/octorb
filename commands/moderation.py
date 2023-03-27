@@ -173,3 +173,6 @@ class moderation(commands.Cog):
     async def pardon_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.errors.CommandInvokeError):
             await ctx.send("Error pardoning member.")
+
+async def setup(bot):
+    await bot.add_cog(moderation(bot))

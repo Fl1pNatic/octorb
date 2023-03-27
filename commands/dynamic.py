@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import dotenv
+import typing
 
 imageLimit = 100
 
@@ -12,8 +13,10 @@ class dynamic(commands.Cog):
         self.bot = bot
         self.galleryChannel = bot.get_channel(gallery_id)
 
-
-    quickcommand = commands.Group(name='quickcommand', description='Commands for quick commands.')
+    @commands.group()
+    async def quickcommand(self, ctx):
+        if ctx.invoked_subcommand is None:
+                await ctx.reply("Use create, delete, or list!")
     # Quick commands
     @quickcommand.command(name="create", description="Creates a quick command.")
     @commands.has_guild_permissions(manage_messages=True)
@@ -77,14 +80,38 @@ class dynamic(commands.Cog):
 
     # Gallery
 
-    gallery = commands.Group(name="gallery", description="Gallery commands.")
+    @commands.group(description="Shows the specific picture/video from the gallery, or allows for other gallery actions.")
+    async def gallery(self, ctx: commands.Context, media_id: typing.Optional[int]):
+        """
+        Parameters
+        ------------
+        media_id
+            The specific image/video you want to see
+        """
+        if ctx.invoked_subcommand is not None:
+            return
+        if media_id is None:
+            await ctx.reply("Please use gallery [media id], gallery add [media], gallery count, or gallery delete [media id].")
+            return
+        cursor = self.bot.db.cursor()
+        cursor.execute( 
+            "SELECT picUrl FROM gallery WHERE id = ? AND serverId = ?", (media_id, ctx.guild.id))
+        result = cursor.fetchall()
+        if len(result) == 0:
+            await ctx.send("No media found with that id.")
+            return
+        result = result[0]
+        if result[0] == "0":
+            await ctx.send("It appears this content has been deleted.")
+            return
+        await ctx.send(f"{result[0]}")
 
     @gallery.command(name="count", description="Gets the number of media in the server's gallery.")
     async def gcount(self, ctx: commands.Context):
         if self.bot.db is None:
             await ctx.send("There are 69 images.")
         cursor = self.bot.db.cursor()
-        cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = ? AND NOT picUrl = '0'", ctx.guild.id)
+        cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = ? AND NOT picUrl = '0'", (ctx.guild.id, ))
         count = cursor.fetchone()[0]
         await ctx.send(f"There are {count} things stored.")
 
@@ -148,34 +175,15 @@ class dynamic(commands.Cog):
         cursor.execute( 
             "UPDATE gallery SET picUrl = '0' WHERE serverId = ? AND id = ?", (ctx.guild.id, media_id))
         await ctx.send("Deleted content from gallery.")
-
-    @gallery.command(name="show", description="Shows the specific picture/video from the gallery.")
-    async def gshow(self, ctx: commands.Context, media_id: int):
-        """
-        Parameters
-        ------------
-        media_id
-            The specific image/video you want to see
-        """
-        cursor = self.bot.db.cursor()
-        cursor.execute( 
-            "SELECT picUrl FROM gallery WHERE id = ? AND serverId = ?", (media_id, ctx.guild.id))
-        result = cursor.fetchall()
-        if len(result) == 0:
-            await ctx.send("No media found with that id.")
-            return
-        result = result[0]
-        if result[0] == "0":
-            await ctx.send("It appears this content has been deleted.")
-            return
-        await ctx.send(f"{result[0]}")
+        
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Command, error: Exception):
+        if not isinstance(error, commands.errors.CommandNotFound):
+            #await self.bot.on_command_error(ctx, error)
+            return
         if self.bot.db is None:
             return
-        if not isinstance(error, commands.errors.CommandNotFound):
-            raise (error)
         command = str(error)[9:-14]
         cursor = self.bot.db.cursor()
         command = command.replace("'", "\'").replace('"', '\"')
@@ -187,3 +195,6 @@ class dynamic(commands.Cog):
             return
 
         await ctx.channel.send(returns[0][0])
+
+async def setup(bot):
+    await bot.add_cog(dynamic(bot))

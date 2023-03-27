@@ -33,3 +33,6 @@ class math(commands.Cog):
 
         result = random.randrange(min, max)
         await ctx.send(result)
+
+async def setup(bot):
+    await bot.add_cog(math(bot))

@@ -97,3 +97,6 @@ class other(commands.Cog):
                 name="`"+commitsHashes[commit]+"`", value="`"+commits[commit]+"`", inline=False)
 
         await ctx.send(embed=embed)
+
+async def setup(bot):
+    await bot.add_cog(other(bot))

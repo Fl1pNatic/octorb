@@ -1,19 +1,14 @@
 import sys
+import traceback
 
 import discord
-from discord.ext import commands as botCommands
+from discord.ext import commands
 from dotenv import dotenv_values, load_dotenv
 import sqlite3
-import pymysql
-from commands.developer import developer
-#from commands.dynamic import dynamic
-from commands.fun import fun
-from commands.math import math
-from commands.moderation import moderation
-from commands.other import other
-from commands.xp import xp
-from PermissionsChecks import devCheck, permissionErrors
+from PermissionsChecks import permissionErrors
+import PermissionsChecks
 import datetime
+import aiohttp
 import editdistance
 
 sys.path.append(".")
@@ -23,6 +18,7 @@ load_dotenv()
 TOKEN = dotenv_values()["TOKEN"]
 
 
+
 async def determine_prefix(bot, message: discord.Message):
     if bot.devmode:
         return [bot.user.mention + " "]
@@ -30,14 +26,10 @@ async def determine_prefix(bot, message: discord.Message):
     
 
 
-bot = botCommands.Bot(command_prefix=determine_prefix,
-                      activity=discord.Activity(
-                      type=discord.ActivityType.watching, name="!help for commands", url="https://github.com/x8c8r/octorb", start=datetime.datetime.now()),
-                      intents=discord.Intents.all(),
-                      help_command=None,
-                      case_insensitive=True
-                      )
+
+
 db = sqlite3.connect("database.db")
+
 devmode = "DEVMODE" in dotenv_values()
 
 cursor = db.cursor()
@@ -64,93 +56,107 @@ CREATE TABLE IF NOT EXISTS `xp` (
 )
 """)
 
-setattr(bot, "db", db)
-setattr(bot, "devmode", devmode)
+async def devCheck(ctx: commands.Context):
+    if PermissionsChecks.devCheck(ctx):
+        return True
+class Octorb(commands.Bot):
+    def __init__(self, db, devmode):
+        super().__init__(command_prefix=determine_prefix,
+                      activity=discord.Activity(
+                      type=discord.ActivityType.watching, name="!help for commands", url="https://github.com/x8c8r/octorb", start=datetime.datetime.now()),
+                      intents=discord.Intents.all(),
+                      help_command=None,
+                      case_insensitive=True)
+        self.db = db
+        self.devmode = devmode
+        if self.devmode:
+            self.add_check(devCheck)
 
-@bot.event
-async def on_ready():
-    await bot.add_cog(fun(bot))
-    await bot.add_cog(xp(bot))
-    await bot.add_cog(other(bot))
-    await bot.add_cog(moderation(bot))
-    await bot.add_cog(math(bot))  # too annoying
-    #await bot.add_cog(dynamic(bot))
-    await bot.add_cog(developer(bot))
-    print(f"It's {bot.user}in' time")
-    if db is None:
-        print(f"WARNING: BOT IS NOT CONNECT TO A DATABASE. SOME COMMANDS MAY NOT WORK.")
+    async def setup_hook(self):
+        await self.load_extension("commands.fun")
+        await self.load_extension("commands.xp")
+        await self.load_extension("commands.other")
+        await self.load_extension("commands.moderation")
+        await self.load_extension("commands.math")
+        await self.load_extension("commands.developer")
+        await self.load_extension("commands.dynamic")
+        
+        self.logging_session = aiohttp.ClientSession()
+        webhook_url = dotenv_values()["logger_webhook"]
+        self.logging_hook = discord.Webhook.from_url(webhook_url, session=self.logging_session)
 
+        self.log_upload_session = aiohttp.ClientSession()
+        self.log_upload_session.headers.update({"Authorization": f"Bearer {dotenv_values()['HASTEBIN_API_KEY']}","content-type": "text/json"})
 
-@bot.event
-async def on_disconnect():  
-    print("Disconnected from Discord")
+        print(f"It's {self.user}in' time")
+        if db is None:
+            print(f"WARNING: BOT IS NOT CONNECT TO A DATABASE. SOME COMMANDS MAY NOT WORK.")
 
+    async def on_disconnect():  
+        print("Disconnected from Discord")
 
-@bot.event
-async def on_message(message: discord.Message):
-    if not devCheck(message):
-        if message.guild == None:
-            if message.author.bot:
-                return
-            await message.channel.send("You are not allowed to use the bot in DMs")
-            return
-    await bot.process_commands(message)
-
-# Helper Commands
-
-
-async def getuser(userid, guildid):
-    guild = bot.get_guild(guildid)
-    user = await guild.fetch_member(userid)
-    return user
-
-@bot.event
-async def on_command_error(ctx: botCommands.Context, error):
-    match type(error):
-        case permissionErrors.NonDeveloperError:
-            await ctx.reply("This command is limited to Octorb Developers.")
-        case botCommands.errors.MissingRequiredArgument:
-            await ctx.reply(f"Missing argument: {error.param.name.capitalize()}")
-        case botCommands.errors.MissingRequiredAttachment:
-            await ctx.reply(f"Missing attachement.")
-        case botCommands.errors.CommandInvokeError:
-            if isinstance(error.original, discord.errors.HTTPException):
-                print(error.original.code)
-                if error.original.code == 50035:
-                    await ctx.reply("Command output too large.")
-                    print(error.original.text)
+    async def on_message(self, message: discord.Message):
+        if not PermissionsChecks.devCheck(message):
+            if message.guild == None:
+                if message.author.bot:
                     return
-                print(error)
-            print(error)
-        case botCommands.errors.MissingPermissions:
-            perms = error.missing_permissions
-            await ctx.reply(f"You are missing the following permissions needed to use this command: {' '.join(str(x) for x in perms)}")
-        case botCommands.errors.CommandNotFound:
-            closestCommand = (2, None)
-            for command in bot.commands:
-                dist = editdistance.eval(command.name, ctx.invoked_with)
-                if dist < closestCommand[0]:
-                    closestCommand = (dist, command.name)
-            if closestCommand[1] is not None:
-                await ctx.reply(f"That command does not exist. Maybe you meant {ctx.prefix}{closestCommand[1]}{ctx.message.content.split(ctx.invoked_with)[1]}?")
-        case _: print (error)
+                await message.channel.send("You are not allowed to use the bot in DMs")
+                return
+        await self.process_commands(message)
+
+    async def on_command_error(self, ctx: commands.Context, error):
+        match error:
+            case permissionErrors.NonDeveloperError():
+                await ctx.reply("This command is limited to Octorb Developers.")
+            case commands.errors.MissingRequiredArgument():
+                await ctx.reply(f"Missing argument: {error.param.name.capitalize()}")
+            case commands.errors.MissingRequiredAttachment():
+                await ctx.reply(f"Missing attachement.")
+            case commands.CommandInvokeError(original=discord.HTTPException(code=50035)):
+                    await ctx.reply("Command output too large.")
+            case commands.errors.MissingPermissions():
+                perms = error.missing_permissions
+                await ctx.reply(f"You are missing the following permissions needed to use this command: {' '.join(str(x) for x in perms)}")
+            case commands.errors.CommandNotFound():
+                closestCommand = (2, None)
+                for command in self.commands:
+                    dist = editdistance.eval(command.name, ctx.invoked_with)
+                    if dist < closestCommand[0]:
+                        closestCommand = (dist, command.name)
+                if closestCommand[1] is not None:
+                    await ctx.reply(f"That command does not exist. Maybe you meant {ctx.prefix}{closestCommand[1]}{ctx.message.content.split(ctx.invoked_with)[1]}?")
+            case _:
+                etype = type(error)
+                trace = error.__traceback__
+
+                lines = traceback.format_exception(etype, error, trace)
+                traceback_text = ''.join(lines)
+
+                log_upload = await self.log_upload_session.post("https://hastebin.com/documents", data=f"{traceback_text}")
+                content = await log_upload.json()
+                if(log_upload.status != 200):
+                    print(f"Error! Logging the error returned status {log_upload.status}")
+                    print(content["message"])
+                    return
+
+                await self.logging_hook.send(
+                    ' '.join([f"<@{id}>" for id in PermissionsChecks.developer_ids]),
+                    embed=discord.Embed(title="ERROR", description="An error occurred!")
+                        .add_field(name="Error Type:", value=etype.__name__, inline=False)
+                        .add_field(name="Traceback:", value=f"https://hastebin.com/share/{content['key']}")
+                        )
+                await ctx.send("We ran into an unknown problem, and we're working on it.")
 
 
-@bot.check
-async def botperms_check(ctx: botCommands.Context):
-    guild = ctx.guild
-    me = guild.me if guild is not None else ctx.bot.user
-    permissions = ctx.channel.permissions_for(me)
+    async def botperms_check(ctx: commands.Context):
+        guild = ctx.guild
+        me = guild.me if guild is not None else ctx.bot.user
+        permissions = ctx.channel.permissions_for(me)
 
-    if getattr(permissions, "send_messages") is False:
-        raise botCommands.BotMissingPermissions(["send_messages"])
-    return True
-
-if "DEVMODE" in dotenv_values():
-    @bot.check
-    async def devckeck(ctx: botCommands.Context):
-        if devCheck(ctx):
-            return True
+        if getattr(permissions, "send_messages") is False:
+            raise commands.BotMissingPermissions(["send_messages"])
+        return True
 
 
+bot = Octorb(db, devmode)
 bot.run(TOKEN)

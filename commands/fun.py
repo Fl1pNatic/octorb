@@ -132,3 +132,5 @@ class fun(commands.Cog):
         Display Name: `{mem.display_name}`
         Boosting since: {boostText}""", inline=False)
         await ctx.send(embed=uEmbed,)
+async def setup(bot):
+    await bot.add_cog(fun(bot))
