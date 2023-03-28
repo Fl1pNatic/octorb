@@ -197,6 +197,7 @@ class xp(commands.Cog):
         await ctx.reply(embed=embed)
 
     @rewards.command(description="Creates an XP Reward")
+    @commands.has_permissions(manage_roles=True)
     async def add(self, ctx, xp: int, role: discord.Role):
         """
         Parameters
@@ -206,6 +207,9 @@ class xp(commands.Cog):
         role
             The role to be rewarded.
         """
+        if role >= ctx.guild.get_member(ctx.bot.user.id).top_role or role >= ctx.author.top_role:
+            await ctx.reply("Role too high!")
+            return
         cursor = self.db.cursor()
         cursor.execute("SELECT COUNT(roleId) FROM xpRewards WHERE serverId = ?", (ctx.guild.id, ))
         e = cursor.fetchone()[0]
@@ -217,7 +221,11 @@ class xp(commands.Cog):
         await ctx.reply("Set XP Reward!")
 
     @rewards.command(description="Deletes an XP Reward")
+    @commands.has_permissions(manage_roles=True)
     async def remove(self, ctx, role: discord.Role):
+        if role >= ctx.guild.get_member(ctx.bot.user.id).top_role or role >= ctx.author.top_role:
+            await ctx.reply("Role too high!")
+            return
         cursor = self.db.cursor()
         cursor.execute("DELETE FROM xpRewards WHERE serverId = ? AND roleId = ?", (ctx.guild.id, role.id))
         await ctx.reply("Deleted xp reward.\n`Note: This does not remove the role from users who had already gained it.`")
