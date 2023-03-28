@@ -117,12 +117,17 @@ class xp(commands.Cog):
         cursor.execute( "SELECT memberXp, (SELECT COUNT(*)+1 FROM xp AS x WHERE x.serverId = xp.serverId AND x.memberXp > xp.memberXp AND USERINSERVER(x.memberId, x.serverId) = 1) AS position FROM xp WHERE serverId = ? AND memberId = ?",
                         (ctx.guild.id, user.id))
         embed = discord.Embed(title="XP", color=0xda7dff)
-        data = cursor.fetchone()
+        data = cursor.fetchall()[0]
         if data is None:
             await ctx.reply(f"No xp data for user {user.display_name}")
             return
+        
+        cursor.execute("SELECT roleId, roleXp FROM xpRewards WHERE serverId = ? AND roleXp > ? ORDER BY roleXp ASC LIMIT 1;", (ctx.guild.id, data[0]))
+
+        nextRole = cursor.fetchone()
+
         embed.add_field(
-            name=f"{user.display_name}", value=f"`XP: {data[0]}`\n`Position: {data[1]} of {len(ctx.guild.members)}`")
+            name=f"{user.display_name}", value=f"`XP: {data[0]}`\n`Position: {data[1]} of {len(ctx.guild.members)}`\n {f'`{nextRole[1]-data[0]} xp to` <@&{nextRole[0]}>' if nextRole is not None else 'No more xp rewards.'}")
         embed.set_thumbnail(url=str(user.display_avatar.url))
         await ctx.send(embed=embed)
 
