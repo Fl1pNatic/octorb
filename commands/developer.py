@@ -7,6 +7,7 @@ import traceback
 import git
 import discord
 from discord.ext import commands
+import re
 
 from PermissionsChecks import devCheck, permissionErrors
 
@@ -127,32 +128,34 @@ class developer(commands.Cog):
         )
         return
 
-    @commands.command(description="Eval()s the command.")
-    async def eval(self, ctx: commands.Context, *, command: str):
-        """
-        Parameters
-        ------------
-        command
-            The command to run. Better not be anything bad or imma get you
-        """
-        try:
-            await ctx.reply(await eval(command))
-        except Exception as ex:
-            await ctx.reply(ex)
-
     @commands.command(description="Exec()s the command.")
-    async def exec(self, ctx: commands.Context, *, command: str):
+    async def exec(self, ctx: commands.Context, *, code: str):
         """
         Parameters
         ------------
         command
             The command to run. Better not be anything bad or imma get you
         """
+        if code.startswith('```'):
+            code = code.strip('```').partition('\n')[2].strip()  # Remove multiline code blocks
+        else:
+            code = code.strip('`').strip()
+
+        e = discord.Embed(type='rich')
+        e.add_field(name='Code', value=f'```py\n{code}\n```', inline=False)
         try:
-            exec(command)
-            await ctx.reply("Execution complete.")
-        except Exception as ex:
-            await ctx.reply(ex)
+            locals_ = locals()
+            load_function(code, locals_)
+            ret = await locals_['evl_func'](ctx)
+
+            e.title = 'Success'
+            retr_str = f'{ret!r} ({type(ret).__name__})'
+            e.add_field(name='Output', value=f'```\n{retr_str if len(retr_str) < 1010 else retr_str[:1010] + "..."}\n```', inline=False)
+        except Exception as err:
+            e.title = 'Error'
+            retr_str = repr(err)
+            e.add_field(name='Error', value=f'```\n{retr_str if len(retr_str) < 1010 else retr_str[:1010] + "..."}\n```')
+        await ctx.send('', embed=e)
 
     @commands.command(description="Changes Octorb's profile picture to the attached image.")
     async def setpfp(self, ctx: commands.Context, image: discord.Attachment):
@@ -171,6 +174,30 @@ class developer(commands.Cog):
             await ctx.reply("Avatar updated!")
         except Exception as e:
             await ctx.reply(e)
+
+def load_function(code: str, locals_):
+    """Loads the user-evaluted code as a function so it can be executed."""
+    function_header = 'async def evl_func(ctx):'
+
+    lines = code.splitlines()
+    if len(lines) > 1:
+        indent = 4
+        for line in lines:
+            line_indent = re.search(r'\S', line).start()
+            if line_indent:
+                indent = line_indent
+                break
+        line_sep = '\n' + ' ' * indent
+        exec(function_header + line_sep + line_sep.join(lines), locals_)
+    else:
+        try:
+            exec(function_header + '\n\treturn ' + lines[0], locals_)
+        except SyntaxError as err:
+            if err.text[err.offset - 1] == '=' or err.text[err.offset - 3:err.offset] == 'del' \
+                    or err.text[err.offset - 6:err.offset] == 'return':
+                exec(function_header + '\n\t' + lines[0], locals_)
+            else:
+                raise err
 
 async def setup(bot):
     await bot.add_cog(developer(bot))
