@@ -213,7 +213,6 @@ class xp(commands.Cog):
         cursor = self.db.cursor()
         cursor.execute("SELECT COUNT(roleId) FROM xpRewards WHERE serverId = ?", (ctx.guild.id, ))
         e = cursor.fetchone()[0]
-        await ctx.reply(e)
         if e >= 25:
             await ctx.reply("You can only have 25 role rewards.")
             return
