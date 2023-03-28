@@ -52,7 +52,15 @@ CREATE TABLE IF NOT EXISTS `xp` (
   `serverId` VARCHAR(25),
   `memberId` VARCHAR(25),
   `memberXp` int DEFAULT NULL,
-  PRIMARY KEY ('serverId', 'memberId')
+  PRIMARY KEY (serverId, memberId)
+)
+""")
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS `xpRewards` (
+  `serverId` VARCHAR(25),
+  `roleId` VARCHAR(25),
+  `roleXp` int DEFAULT NULL,
+  PRIMARY KEY (serverId, roleId)
 )
 """)
 
@@ -125,6 +133,10 @@ class Octorb(commands.Bot):
                         closestCommand = (dist, command.name)
                 if closestCommand[1] is not None:
                     await ctx.reply(f"That command does not exist. Maybe you meant {ctx.prefix}{closestCommand[1]}{ctx.message.content.split(ctx.invoked_with)[1]}?")
+            case commands.errors.NoPrivateMessage():
+                await ctx.reply("This command cannot be used in dms.")
+            case commands.errors.BadArgument():
+                await ctx.reply("Argument is an incorrect type.")
             case _:
                 etype = type(error)
                 trace = error.__traceback__
@@ -132,7 +144,7 @@ class Octorb(commands.Bot):
                 lines = traceback.format_exception(etype, error, trace)
                 traceback_text = ''.join(lines)
 
-                log_upload = await self.log_upload_session.post("https://hastebin.com/documents", data=f"Command: {ctx.message}\n\n\n Traceback: {traceback_text}")
+                log_upload = await self.log_upload_session.post("https://hastebin.com/documents", data=f"Message Info: {ctx.message}\n\nCommand: {ctx.message.content}\n\nTraceback: {traceback_text}")
                 content = await log_upload.json()
                 if(log_upload.status != 200):
                     print(f"Error! Logging the error returned status {log_upload.status}")

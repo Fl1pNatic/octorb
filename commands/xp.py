@@ -67,10 +67,10 @@ class xp(commands.Cog):
 
 
         ## Frequency analysis, find xp amount and shit.
-        await self.addUserXp(message.author.id, message.guild.id, int(english_score(message.content)*maxXp))
+        await self.addUserXp(message.author.id, message.guild.id, int(english_score(message.content)*maxXp), message.channel)
 
 
-    async def addUserXp(self, memberId, serverId, xp):
+    async def addUserXp(self, memberId, serverId, xp, channel):
         if self.db == None:
             return False
         if xp == 0:
@@ -79,6 +79,23 @@ class xp(commands.Cog):
         cursor = self.db.cursor()
         cursor.execute( "INSERT INTO xp (serverId, memberId, memberXp) VALUES (?, ?, ?) ON CONFLICT(serverId, memberId) DO UPDATE SET memberXp = memberXp + ?;", (serverId, memberId, xp, xp))
         self.db.commit()
+        cursor.execute(" SELECT memberXp FROM xp WHERE serverId = ? AND memberId = ?", (serverId, memberId))
+        newXp = cursor.fetchone()[0]
+        cursor.execute("SELECT * FROM xpRewards WHERE serverId = ? AND ? >= roleXp AND ? < roleXp", (serverId, newXp, newXp-xp))
+        roles = cursor.fetchall()
+        if len(roles) < 1:
+            return True
+
+        await channel.guild.get_member(memberId).add_roles(*[channel.guild.get_role(int(id[1])) for id in roles])
+
+        if len(roles) > 1:
+            rewardsEmbed = discord.Embed(title="XP Rewards!", description=f"<@{memberId}> just got the following rewards:\n", color=0xda7dff)
+            for role in roles:
+                rewardsEmbed.description += f"\n<@&{role[1]}> for {role[2]} xp."
+            await channel.send(embed=rewardsEmbed)
+        
+        else: await channel.send(embed=discord.Embed(title="XP Reward!", description=f"<@{memberId}> just gained the <@&{roles[0][1]}> role for {roles[0][2]} xp!", color=0xda7dff))
+
         return True
         
 
@@ -140,7 +157,7 @@ class xp(commands.Cog):
         if self.db is None:
             print("No db?")
             return
-        if await self.addUserXp(member.id, ctx.guild.id, xp):
+        if await self.addUserXp(member.id, ctx.guild.id, xp, ctx.channel):
             await ctx.send(f"Gave {xp} xp to {member.display_name}.")
         else:
             await ctx.send("Failed to give member xp.")
@@ -163,6 +180,47 @@ class xp(commands.Cog):
         cursor.execute( "DELETE FROM xp WHERE serverId = ? and memberId = ?;",
                         (ctx.guild.id, user.id))
         await ctx.reply(f"Deleted XP data of {user.name}." )
+
+    @commands.group(description="Xp Rewards")
+    @commands.guild_only()
+    async def rewards(self, ctx: commands.Context):
+        if ctx.invoked_subcommand is not None:
+            return
+        cursor = self.db.cursor()
+        cursor.execute("SELECT * FROM xpRewards WHERE serverId = ?", (ctx.guild.id, ))
+        embed = discord.Embed(title="Xp Rewards")
+        for reward in cursor:
+            embed.add_field(value=f"<@&{reward[1]}>", name=f"{reward[2]} xp", inline=False)
+        if len(embed.fields) < 1:
+            await ctx.reply("No rewards for this server.")
+            return
+        await ctx.reply(embed=embed)
+
+    @rewards.command(description="Creates an XP Reward")
+    async def add(self, ctx, xp: int, role: discord.Role):
+        """
+        Parameters
+        ------------
+        xp
+            The amount of xp to reward the role at.
+        role
+            The role to be rewarded.
+        """
+        cursor = self.db.cursor()
+        cursor.execute("SELECT COUNT(roleId) FROM xpRewards WHERE serverId = ?", (ctx.guild.id, ))
+        e = cursor.fetchone()[0]
+        await ctx.reply(e)
+        if e >= 25:
+            await ctx.reply("You can only have 25 role rewards.")
+            return
+        cursor.execute("INSERT INTO xpRewards (serverId, roleId, roleXp) VALUES (?, ?, ?) ON CONFLICT(serverId, roleId) DO UPDATE SET roleXp = ?;", (ctx.guild.id, role.id, xp, xp))
+        await ctx.reply("Set XP Reward!")
+
+    @rewards.command(description="Deletes an XP Reward")
+    async def remove(self, ctx, role: discord.Role):
+        cursor = self.db.cursor()
+        cursor.execute("DELETE FROM xpRewards WHERE serverId = ? AND roleId = ?", (ctx.guild.id, role.id))
+        await ctx.reply("Deleted xp reward.\n`Note: This does not remove the role from users who had already gained it.`")
 
 async def setup(bot):
     await bot.add_cog(xp(bot))
