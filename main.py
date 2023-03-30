@@ -131,8 +131,8 @@ class Octorb(commands.Bot):
                     dist = editdistance.eval(command.name, ctx.invoked_with)
                     if dist < closestCommand[0]:
                         closestCommand = (dist, command.name)
-                if closestCommand[1] is not None:
-                    await ctx.reply(f"That command does not exist. Maybe you meant {ctx.prefix}{closestCommand[1]}{ctx.message.content.split(ctx.invoked_with)[1]}?")
+                #if closestCommand[1] is not None:
+                #    await ctx.reply(f"That command does not exist. Maybe you meant {ctx.prefix}{closestCommand[1]}{ctx.message.content.split(ctx.invoked_with)[1]}?")
             case commands.errors.NoPrivateMessage():
                 await ctx.reply("This command cannot be used in dms.")
             case commands.errors.BadArgument():
