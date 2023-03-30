@@ -62,13 +62,6 @@ async def devCheck(ctx: commands.Context):
     if PermissionsChecks.devCheck(ctx):
         return True
 
-# I am not taking any chances
-async def removePings(content):
-    content = content.replace("<@", "")
-    content = content.replace("<@&", "")
-    content = content.replace("@everyone", "")
-    content = content.replace("@here", "")
-    return content
 
 class Octorb(commands.Bot):
     def __init__(self, db, devmode):
@@ -113,8 +106,7 @@ class Octorb(commands.Bot):
                     return
                 await message.channel.send("You are not allowed to use the bot in DMs")
                 return
-        if PermissionsChecks.blockedCheck(message):
-            await self.process_commands(message)
+        await self.process_commands(message)
 
     async def on_command_error(self, ctx: commands.Context, error):
         match error:
@@ -136,8 +128,7 @@ class Octorb(commands.Bot):
                     if dist < closestCommand[0]:
                         closestCommand = (dist, command.name)
                 if closestCommand[1] is not None and ctx.message.author.bot is not True:
-                    content = await removePings(ctx.message.content)
-                    await ctx.reply(f"That command does not exist. Maybe you meant {ctx.prefix}{closestCommand[1]}{content.split(ctx.invoked_with)[1]}?")
+                    await ctx.reply(f"That command does not exist. Maybe you meant {ctx.prefix}{closestCommand[1]}?")
             case commands.errors.NoPrivateMessage():
                 await ctx.reply("This command cannot be used in dms.")
             case commands.errors.BadArgument():
