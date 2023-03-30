@@ -7,6 +7,10 @@ developer_ids = [
     391234130387533825
 ]
 
+blocked_ids = [
+    568050419251675176
+]
+
 
 class permissionErrors:
     class NonDeveloperError(commands.CheckFailure):
@@ -22,6 +26,16 @@ def devCheck(ctx):
         if ctx.author.id in developer_ids:
             return True
         return False
+
+def blockedCheck(ctx):
+    if isinstance(ctx, discord.Interaction):
+        if ctx.user.id in blocked_ids:
+            return False
+        return True
+    else:
+        if ctx.author.id in blocked_ids:
+            return False
+        return True
 
 
 class permissionChecks:

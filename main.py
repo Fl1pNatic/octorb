@@ -1,5 +1,6 @@
 import sys
 import traceback
+import re
 
 import discord
 from discord.ext import commands
@@ -13,21 +14,14 @@ import editdistance
 
 sys.path.append(".")
 
-
 load_dotenv()
 TOKEN = dotenv_values()["TOKEN"]
-
-
 
 async def determine_prefix(bot, message: discord.Message):
     if bot.devmode:
         return [bot.user.mention + " "]
     return ["!","oc!","o!"]
     
-
-
-
-
 db = sqlite3.connect("database.db")
 
 devmode = "DEVMODE" in dotenv_values()
@@ -67,6 +61,15 @@ CREATE TABLE IF NOT EXISTS `xpRewards` (
 async def devCheck(ctx: commands.Context):
     if PermissionsChecks.devCheck(ctx):
         return True
+
+# I am not taking any chances
+async def removePings(content):
+    content = content.replace("<@", "")
+    content = content.replace("<@&", "")
+    content = content.replace("@everyone", "")
+    content = content.replace("@here", "")
+    return content
+
 class Octorb(commands.Bot):
     def __init__(self, db, devmode):
         super().__init__(command_prefix=determine_prefix,
@@ -96,7 +99,7 @@ class Octorb(commands.Bot):
         self.log_upload_session = aiohttp.ClientSession()
         self.log_upload_session.headers.update({"Authorization": f"Bearer {dotenv_values()['HASTEBIN_API_KEY']}","content-type": "text/json"})
 
-        print(f"It's {self.user}in' time")
+        print(f"It's {self.user.name}in' time")
         if db is None:
             print(f"WARNING: BOT IS NOT CONNECT TO A DATABASE. SOME COMMANDS MAY NOT WORK.")
 
@@ -110,7 +113,8 @@ class Octorb(commands.Bot):
                     return
                 await message.channel.send("You are not allowed to use the bot in DMs")
                 return
-        await self.process_commands(message)
+        if PermissionsChecks.blockedCheck(message):
+            await self.process_commands(message)
 
     async def on_command_error(self, ctx: commands.Context, error):
         match error:
@@ -131,8 +135,9 @@ class Octorb(commands.Bot):
                     dist = editdistance.eval(command.name, ctx.invoked_with)
                     if dist < closestCommand[0]:
                         closestCommand = (dist, command.name)
-                #if closestCommand[1] is not None:
-                #    await ctx.reply(f"That command does not exist. Maybe you meant {ctx.prefix}{closestCommand[1]}{ctx.message.content.split(ctx.invoked_with)[1]}?")
+                if closestCommand[1] is not None and ctx.message.author.bot is not True:
+                    content = await removePings(ctx.message.content)
+                    await ctx.reply(f"That command does not exist. Maybe you meant {ctx.prefix}{closestCommand[1]}{content.split(ctx.invoked_with)[1]}?")
             case commands.errors.NoPrivateMessage():
                 await ctx.reply("This command cannot be used in dms.")
             case commands.errors.BadArgument():
