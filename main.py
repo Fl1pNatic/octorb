@@ -67,6 +67,10 @@ CREATE TABLE IF NOT EXISTS `xpRewards` (
 async def devCheck(ctx: commands.Context):
     if PermissionsChecks.devCheck(ctx):
         return True
+    
+def escapeDangerousPings(content):
+    return content.replace("@everyone", "\\@everyone").replace("@here", "\\@here")
+
 class Octorb(commands.Bot):
     def __init__(self, db, devmode):
         super().__init__(command_prefix=determine_prefix,
@@ -131,8 +135,9 @@ class Octorb(commands.Bot):
                     dist = editdistance.eval(command.name, ctx.invoked_with)
                     if dist < closestCommand[0]:
                         closestCommand = (dist, command.name)
-                #if closestCommand[1] is not None:
-                #    await ctx.reply(f"That command does not exist. Maybe you meant {ctx.prefix}{closestCommand[1]}{ctx.message.content.split(ctx.invoked_with)[1]}?")
+                if closestCommand[1] is not None:
+                    escapedContent = escapeDangerousPings(ctx.message.content.split(ctx.invoked_with)[1])
+                    await ctx.reply(f"That command does not exist. Maybe you meant {ctx.prefix}{closestCommand[1]}{escapedContent}?")
             case commands.errors.NoPrivateMessage():
                 await ctx.reply("This command cannot be used in dms.")
             case commands.errors.BadArgument():
