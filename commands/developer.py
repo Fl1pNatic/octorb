@@ -174,6 +174,20 @@ class developer(commands.Cog):
             await ctx.reply("Avatar updated!")
         except Exception as e:
             await ctx.reply(e)
+    
+    @commands.command(description="Runs the command as the specified user. Does not trigger message events.")
+    async def sudo(self, ctx: commands.Context, user: discord.Member, *, command: str):
+        """
+        Parameters
+        ------------
+        user
+            The user to run the command as
+        command
+            The command to run as the user.
+        """
+        ctx.message.author = user
+        ctx.message.content = command
+        await ctx.bot.process_commands(ctx.message)
 
 def load_function(code: str, locals_):
     """Loads the user-evaluted code as a function so it can be executed."""
@@ -198,6 +212,7 @@ def load_function(code: str, locals_):
                 exec(function_header + '\n\t' + lines[0], locals_)
             else:
                 raise err
+    
 
 async def setup(bot):
     await bot.add_cog(developer(bot))
