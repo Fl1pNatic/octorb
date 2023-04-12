@@ -3,6 +3,8 @@ import typing
 
 import discord
 from discord.ext import commands
+import aiohttp
+import json
 
 
 class math(commands.Cog):
@@ -33,6 +35,18 @@ class math(commands.Cog):
 
         result = random.randrange(min, max)
         await ctx.send(result)
+
+    @commands.command(description="Gets the result of the given math equation.")
+    async def math(self, ctx: commands.Context, *, equation: str):
+        async with aiohttp.ClientSession() as session:
+            e = await (await session.post(
+            f'http://api.mathjs.org/v4/', data=json.dumps({"expr":equation.splitlines()}), headers={'content-type': 'application/json'})).json()
+        if e['result'] == None:
+            await ctx.reply(embed=discord.Embed(title="Error in math equation!").add_field(name="Error",value=e['error']))
+        else:
+            await ctx.reply(embed=discord.Embed(title="Math Evaluation").add_field(name="Equation"+("s" if len(equation.splitlines()) > 1 else ""), value=equation, inline=False).add_field(name="Result"+("s" if len(e['result']) > 1 else ""), value="\n".join(e['result'])))
+
+
 
 async def setup(bot):
     await bot.add_cog(math(bot))
