@@ -57,6 +57,14 @@ CREATE TABLE IF NOT EXISTS `xpRewards` (
   PRIMARY KEY (serverId, roleId)
 )
 """)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS `serverNotifications` (
+  `serverId` VARCHAR(25),
+  `channelId` VARCHAR(25),
+  `sendNotifs` INTEGER,
+  PRIMARY KEY (serverId)
+)
+""")
 
 async def devCheck(ctx: commands.Context):
     if PermissionsChecks.devCheck(ctx):
@@ -84,6 +92,7 @@ class Octorb(commands.Bot):
         await self.load_extension("commands.math")
         await self.load_extension("commands.developer")
         await self.load_extension("commands.dynamic")
+        
         
         self.logging_session = aiohttp.ClientSession()
         webhook_url = dotenv_values()["logger_webhook"]
@@ -120,7 +129,7 @@ class Octorb(commands.Bot):
                     await ctx.reply("Command output too large.")
             case commands.errors.MissingPermissions():
                 perms = error.missing_permissions
-                await ctx.reply(f"You are missing the following permissions needed to use this command: {' '.join(str(x) for x in perms)}")
+                await ctx.reply(f"You are missing the following permissions needed to use this command: {' '.join(str(x).replace('_', ' ').capitalize() for x in perms)}")
             case commands.errors.CommandNotFound():
                 closestCommand = (2, None)
                 for command in self.commands:
@@ -133,6 +142,12 @@ class Octorb(commands.Bot):
                 await ctx.reply("This command cannot be used in dms.")
             case commands.errors.BadArgument():
                 await ctx.reply("Argument is an incorrect type.")
+            case commands.errors.BadLiteralArgument():
+                await ctx.reply(f"Parameter `{error.param.name}` must be one of " + ' '.join([f"`{option}`" for option in error.literals]))
+            case commands.errors.CheckFailure():
+                await ctx.reply("You can't run this command.")
+            case commands.errors.CommandOnCooldown():
+                await ctx.reply(f"You can't use this command for {round(error.retry_after,1)} seconds.")
             case _:
                 etype = type(error)
                 trace = error.__traceback__
@@ -148,7 +163,7 @@ class Octorb(commands.Bot):
                     return
 
                 await self.logging_hook.send(
-                    ' '.join([f"<@{id}>" for id in PermissionsChecks.developer_ids]),
+                    ' '.join([f"<@{id}>" for id in PermissionsChecks.developer_ids] if self.devmode == False else 'Error'),
                     embed=discord.Embed(title="ERROR", description="An error occurred!")
                         .add_field(name="Error Type:", value=etype.__name__, inline=False)
                         .add_field(name="Traceback:", value=f"https://hastebin.com/share/{content['key']}")

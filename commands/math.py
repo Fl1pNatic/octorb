@@ -37,6 +37,7 @@ class math(commands.Cog):
         await ctx.send(result)
 
     @commands.command(description="Gets the result of the given math equation.")
+    @commands.cooldown(1, 5.0, lambda i: (i.guild.id, i.author.id))
     async def math(self, ctx: commands.Context, *, equation: str):
         async with aiohttp.ClientSession() as session:
             try:
