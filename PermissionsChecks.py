@@ -3,7 +3,6 @@ from discord.ext import commands
 
 developer_ids = [
     404590613057503233,
-    426024775333314570,
     391234130387533825
 ]
 
