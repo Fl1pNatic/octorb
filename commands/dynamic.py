@@ -7,11 +7,7 @@ imageLimit = 100
 
 class dynamic(commands.Cog):
     def __init__(self, bot):
-        gallery_id = 1031954555040170137
-        if(bot.devmode):
-            gallery_id = 1047158396966678560
         self.bot = bot
-        self.galleryChannel = bot.get_channel(gallery_id)
 
     @commands.group()
     async def quickcommand(self, ctx):
@@ -129,8 +125,6 @@ class dynamic(commands.Cog):
                 if not media.content_type.startswith("video/"):
                     await ctx.send("File does not appear to be an image/video.")
                     return
-            galleryChannelMessage: discord.Message = await self.galleryChannel.send(file=await media.to_file())
-            media = galleryChannelMessage.attachments[0]
             cursor = self.bot.db.cursor()
             cursor.execute("SELECT COUNT(*) FROM gallery WHERE serverId = ?", (ctx.guild.id,))
             count = cursor.fetchone()[0]
@@ -154,7 +148,7 @@ class dynamic(commands.Cog):
             if replaceDeleted is False:
                 cursor.execute( "INSERT INTO gallery VALUES (?, ?, ?)",
                             (ctx.guild.id, count+1, media.url))
-                await ctx.send(f"Added media with id {count + 1}")
+                await ctx.send(f"Added media with id {count + 1}. Please note that if the original command with the file is deleted, the file will be removed.")
                 return
             cursor.execute( "UPDATE gallery SET picUrl = ? WHERE serverId = ? AND id = ?",
                         (media.url, ctx.guild.id, replaceDeleted))
