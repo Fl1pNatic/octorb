@@ -25,6 +25,20 @@ class moderation(commands.Cog):
         """
         await ctx.channel.send(phrase)
         await ctx.message.delete()
+    
+    @commands.command(description="Makes the bot say anything you want in a specific channel.")
+    @commands.has_permissions(manage_messages=True)
+    async def sayin(self, ctx: commands.Context, channel: discord.TextChannel, phrase: str):
+        """
+        Parameters
+        ------------
+        channel
+            The channel you want bot to say in
+        phrase
+            The thing you want bot to say
+        """
+        await channel.send(phrase)
+        await ctx.message.delete()
 
     @commands.command(description="Pins specified message.")
     @commands.has_permissions(manage_messages=True)
