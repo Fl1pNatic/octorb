@@ -28,7 +28,7 @@ class moderation(commands.Cog):
     
     @commands.command(description="Makes the bot say anything you want in a specific channel.")
     @commands.has_permissions(manage_messages=True)
-    async def sayin(self, ctx: commands.Context, channel: discord.TextChannel, phrase: str):
+    async def sayin(self, ctx: commands.Context, channel: discord.TextChannel, *, phrase: str):
         """
         Parameters
         ------------
