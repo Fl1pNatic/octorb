@@ -16,7 +16,7 @@ class moderation(commands.Cog):
 
     @commands.command(description="Makes the bot say anything you want.")
     @commands.has_permissions(manage_messages=True)
-    async def say(self, ctx: commands.Context, phrase: str):
+    async def say(self, ctx: commands.Context, *, phrase: str):
         """
         Parameters
         ------------
