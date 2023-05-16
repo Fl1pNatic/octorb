@@ -95,7 +95,7 @@ class fun(commands.Cog):
     async def define(self, ctx: commands.Context, *, word: str):
         async with aiohttp.ClientSession() as session:
             e = await (await session.get(
-            f'https://api.urbandictionary.com/v0/define?term={word}')).json()
+            f'https://api.urbandictionary.com/v0/define?term={word.capitalize()}')).json()
             if len(e['list']) < 1:
                 await ctx.send("Definition not found.")
                 return
