@@ -115,11 +115,13 @@ class fun(commands.Cog):
         us = await self.bot.fetch_user(ctx.author.id)
         mem = ctx.author
 
+        userTag = "@" + us.name if us.discriminator == "0" else us.name + "#" + us.discriminator
+
         boostText = '`Never`' if len(str(mem.premium_since)[
                                      0:-9]) == 0 else f'`{str(mem.premium_since)[0:-9]}`'
 
         uEmbed = discord.Embed(title="Info about: " + str(
-            us), description="Through the power of Discord's API, here is some info about this user.", color=us.accent_color)
+            userTag), description="Through the power of Discord's API, here is some info about this user.", color=us.accent_color)
         uEmbed.set_thumbnail(url=us.display_avatar.url)
 
         uEmbed.add_field(name="Account info", value=f"""Created at: `{str(us.created_at)[0:-9]}`
@@ -131,6 +133,7 @@ class fun(commands.Cog):
         Top Role: `{mem.top_role}`
         Display Name: `{mem.display_name}`
         Boosting since: {boostText}""", inline=False)
+
         await ctx.send(embed=uEmbed,)
 async def setup(bot):
     await bot.add_cog(fun(bot))
