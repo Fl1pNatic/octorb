@@ -186,12 +186,9 @@ class xp(commands.Cog):
                         (ctx.guild.id, user.id))
         await ctx.reply(f"Deleted XP data of {user.name}." )
 
-    @commands.group(description="Xp Rewards")
+    @commands.group(description="Use to list xp rewards, or use subcommands add and remove to create xp rewards")
     @commands.guild_only()
     async def rewards(self, ctx: commands.Context):
-        """
-        Use to list xp rewards, or use subcommands add and remove to create xp rewards
-        """
         if ctx.invoked_subcommand is not None:
             return
         cursor = self.db.cursor()
