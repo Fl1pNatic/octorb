@@ -189,6 +189,9 @@ class xp(commands.Cog):
     @commands.group(description="Xp Rewards")
     @commands.guild_only()
     async def rewards(self, ctx: commands.Context):
+        """
+        Use to list xp rewards, or use subcommands add and remove to create xp rewards
+        """
         if ctx.invoked_subcommand is not None:
             return
         cursor = self.db.cursor()
